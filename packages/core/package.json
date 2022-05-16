@@ -1,6 +1,24 @@
 {
   "name": "@chijs/core",
   "version": "0.0.1",
-  "main": "index.js",
-  "license": "MIT"
+  "main": "lib/index.js",
+  "license": "AGPL-3.0",
+  "description": "Core components of Chi framwork",
+  "author": "thezzisu <thezzisu@gmail.com>",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thezzisu/chi.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/thezzisu/chi/issues"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.23.5",
+    "pino": "^7.11.0"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
 }
