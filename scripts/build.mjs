@@ -29,11 +29,11 @@ for (const path of packages) {
       if (await fs.pathExists('scripts/build.mjs')) {
         await $`node scripts/build.mjs`
       } else {
-        await fs.remove('lib')
+        if (argv.rebuild) {
+          await fs.remove('lib')
+          await fs.remove('tsconfig.tsbuildinfo')
+        }
         await $`tsc`
-      }
-      if (argv.tidy) {
-        await fs.remove('lib/tsconfig.tsbuildinfo')
       }
       success.push(name)
     } catch {

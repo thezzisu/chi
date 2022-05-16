@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "node ../../scripts/build.mjs --package core",
-    "prepare": "node ../../scripts/build.mjs --package core --tidy"
+    "prepare": "node ../../scripts/build.mjs --package core"
   },
   "files": [
     "lib"

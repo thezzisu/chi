@@ -66,7 +66,7 @@ export interface IRpcCallRequest {
   rpcId: string
   method: string
   args: unknown[]
-  ctx: IRpcContext
+  ctx?: IRpcContext
 }
 
 export interface IRpcCallResponse {
@@ -79,7 +79,7 @@ export interface IRpcCallResponse {
 export interface IRpcDispatchRequest {
   method: string
   args: unknown[]
-  ctx: IRpcContext
+  ctx?: IRpcContext
 }
 
 export type RpcRequest = IRpcCallRequest | IRpcDispatchRequest

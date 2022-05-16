@@ -47,11 +47,11 @@ export class RpcServer {
     private send: (msg: RpcResponse) => Awaitable<void>
   ) {}
 
-  async handle(msg: RpcRequest) {
+  async handle(msg: RpcRequest, ctx: IRpcContext) {
     if ('rpcId' in msg) {
       // Call
       try {
-        const resolve = await this.impl.call(msg.method, msg.args, msg.ctx)
+        const resolve = await this.impl.call(msg.method, msg.args, ctx)
         await this.send({ rpcId: msg.rpcId, resolve })
       } catch (reject) {
         try {
@@ -62,7 +62,7 @@ export class RpcServer {
       }
     } else {
       // Dispatch
-      this.impl.call(msg.method, msg.args, msg.ctx)
+      this.impl.call(msg.method, msg.args, ctx)
     }
   }
 }

@@ -30,7 +30,8 @@ export class RpcClient<M extends FnMap> implements IRpcClient<M> {
   }
 
   handle(msg: RpcResponse) {
-    this.handleRemoteResponse(msg.rpcId, msg.resolve, msg.reject)
+    const { rpcId, resolve, reject } = msg
+    this.handleRemoteResponse(rpcId, resolve, reject)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,4 +1,4 @@
 export interface IScript {
-  name: string
+  id: string
   description: string
 }
