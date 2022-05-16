@@ -1,26 +1,22 @@
 {
-  "name": "@chijs/core",
+  "name": "@chijs/server",
   "version": "0.0.1",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
-  "description": "Core components of Chi framwork",
+  "description": "Chi server",
   "author": "thezzisu <thezzisu@gmail.com>",
   "private": false,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thezzisu/chi.git",
-    "directory": "packages/core"
+    "directory": "packages/server"
   },
   "bugs": {
     "url": "https://github.com/thezzisu/chi/issues"
   },
-  "dependencies": {
-    "@sinclair/typebox": "^0.23.5",
-    "pino": "^7.11.0"
-  },
+  "dependencies": {},
   "scripts": {
-    "build": "node ../../scripts/build.mjs --package core",
-    "prepare": "node ../../scripts/build.mjs --package core --tidy"
+    "build": "tsc"
   },
   "files": [
     "lib"

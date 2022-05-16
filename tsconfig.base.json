@@ -7,7 +7,9 @@
     "strict": true,
     "sourceMap": true,
     "declaration": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "incremental": true,
+    "composite": true,
   },
   "ts-node": {
     "transpileOnly": true
