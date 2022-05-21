@@ -1,52 +1,63 @@
 import { createLogger } from '../logger/index.js'
 import { Awaitable } from '../utils/index.js'
 import {
-  FnMap,
   Args,
   Return,
   RpcResponse,
   RpcRequest,
-  RpcMsgType
+  RpcMsgType,
+  Fn
 } from './base.js'
 
-export class RpcImpl<M extends FnMap> {
-  protected implementations: FnMap
+export type RpcImplFn<T> = T extends Fn<infer A, infer R>
+  ? (...args: A) => Awaitable<R>
+  : never
 
-  constructor(base: RpcImpl<FnMap> | null = null) {
-    this.implementations = Object.create(base?.implementations || null)
+export type Implementations<M> = {
+  [K in keyof M]: RpcImplFn<M[K]>
+}
+
+export class RpcImpl<M> {
+  protected implementations: Implementations<M>
+
+  constructor(base: RpcImpl<unknown> | null = null) {
+    this.implementations = Object.create(<never>base?.implementations || null)
   }
 
-  implement<K extends keyof M>(method: K, implementation: M[K]) {
-    this.implementations[<string>method] = implementation
+  implement<K extends keyof M>(method: K, implementation: RpcImplFn<M[K]>) {
+    this.implementations[method] = implementation
+  }
+
+  async directCall<K extends keyof M>(
+    method: K,
+    params: Args<M[K]>
+  ): Promise<Return<M[K]>> {
+    const implementation: unknown = this.implementations[method]
+    if (!implementation) {
+      throw new Error(`Method ${method} not implemented`)
+    }
+    return (<Fn<unknown[], never>>implementation)(...params)
   }
 }
 
 const logger = createLogger('core', 'rpc/server')
 
-export class RpcServer<M extends FnMap> extends RpcImpl<M> {
+export class RpcServer<M> extends RpcImpl<M> {
   constructor(
     private send: (msg: RpcResponse) => Awaitable<void>,
-    base: RpcImpl<FnMap> | null = null
+    base: RpcImpl<unknown> | null = null
   ) {
     super(base)
-  }
-
-  async call<K extends keyof M>(
-    method: K,
-    params: Args<M[K]>
-  ): Promise<Return<M[K]>> {
-    const implementation = this.implementations[<string>method]
-    if (!implementation) {
-      throw new Error(`Method ${method} not implemented`)
-    }
-    return <never>implementation(...(params as unknown[] as never[]))
   }
 
   async handle(msg: RpcRequest) {
     if ('rpcId' in msg) {
       // Call
       try {
-        const resolve = await this.call(msg.method, <never>msg.args)
+        const resolve = await this.directCall(
+          <never>msg.method,
+          <never>msg.args
+        )
         await this.send({ t: RpcMsgType.Response, rpcId: msg.rpcId, resolve })
       } catch (reject) {
         try {
@@ -57,7 +68,7 @@ export class RpcServer<M extends FnMap> extends RpcImpl<M> {
       }
     } else {
       // Dispatch
-      this.call(msg.method, <never>msg.args)
+      this.directCall(<never>msg.method, <never>msg.args)
     }
   }
 }

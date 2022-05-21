@@ -1,12 +1,11 @@
-import { RpcImpl } from '../../rpc/index.js'
-import { Id } from '../../utils/index.js'
+import { RpcImpl } from '../rpc/index.js'
 
-export interface IWorkerRpcFn {
+export interface IWorkerRpcFns {
   ['worker:exit'](): void
   ['worker:print'](msg: string): void
 }
 
-export const workerBaseImpl = new RpcImpl<Id<IWorkerRpcFn>>()
+export const workerBaseImpl = new RpcImpl<IWorkerRpcFns>()
 
 workerBaseImpl.implement('worker:exit', async () => {
   console.log('LALALA')

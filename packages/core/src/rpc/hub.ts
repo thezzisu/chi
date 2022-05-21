@@ -1,7 +1,6 @@
 import { Awaitable } from '../utils/index.js'
 import {
   Args,
-  FnMap,
   IRpcCallOptions,
   IRpcClient,
   IRpcExecOptions,
@@ -13,36 +12,35 @@ import {
 import { RpcClient } from './client.js'
 import { RpcImpl, RpcServer } from './server.js'
 
-export class RpcHub<M extends FnMap> implements IRpcClient<M> {
-  private server: RpcServer<M>
-  private client: RpcClient<M>
+export class RpcHub<R, L> extends RpcServer<L> implements IRpcClient<R> {
+  private client: RpcClient<R>
   constructor(
     send: (msg: RpcRequest | RpcResponse) => Awaitable<void>,
-    base: RpcImpl<FnMap> | null = null
+    base: RpcImpl<unknown> | null = null
   ) {
-    this.server = new RpcServer(send, base)
+    super(send, base)
     this.client = new RpcClient(send)
   }
 
-  handle(msg: RpcRequest | RpcResponse) {
+  async handle(msg: RpcRequest | RpcResponse) {
     if (msg.t === RpcMsgType.Request) {
-      this.server.handle(msg)
+      super.handle(msg)
     } else {
       this.client.handle(msg)
     }
   }
 
-  async call<K extends keyof M>(
+  async call<K extends keyof R>(
     method: K,
-    args: Args<M[K]>,
+    args: Args<R[K]>,
     options?: IRpcCallOptions
-  ): Promise<Return<M[K]>> {
+  ): Promise<Return<R[K]>> {
     return this.client.call(method, args, options)
   }
 
-  async exec<K extends keyof M>(
+  async exec<K extends keyof R>(
     method: K,
-    args: Args<M[K]>,
+    args: Args<R[K]>,
     options?: IRpcExecOptions
   ): Promise<void> {
     return this.client.exec(method, args, options)

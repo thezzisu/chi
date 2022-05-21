@@ -1,6 +1,6 @@
 import { Static, TSchema } from '@sinclair/typebox'
 import addFormats from 'ajv-formats'
-import Ajv from 'ajv/dist/2019'
+import Ajv from 'ajv/dist/2019.js'
 
 const ajv = addFormats(new Ajv({}), [
   'date-time',

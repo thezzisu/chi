@@ -3,13 +3,19 @@ import { Awaitable } from '../utils'
 export type Fn<A extends unknown[], R> = (...args: A) => Awaitable<R>
 export type AnyFn = Fn<never[], unknown>
 
-export type Args<T extends AnyFn> = T extends Fn<infer A, unknown>
-  ? never[] extends A
-    ? unknown[]
-    : A
+export type Args<T> = T extends AnyFn
+  ? T extends Fn<infer A, unknown>
+    ? never[] extends A
+      ? unknown[]
+      : A
+    : never
   : never
 
-export type Return<T extends AnyFn> = T extends Fn<never[], infer R> ? R : never
+export type Return<T> = T extends AnyFn
+  ? T extends Fn<never[], infer R>
+    ? R
+    : never
+  : never
 
 export type FnMap = {
   [k: string]: AnyFn
@@ -25,7 +31,7 @@ export interface IRpcExecOptions {
   //
 }
 
-export interface IRpcClient<M extends FnMap> {
+export interface IRpcClient<M> {
   call<K extends keyof M>(
     method: K,
     args: Args<M[K]>,

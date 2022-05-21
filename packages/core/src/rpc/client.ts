@@ -2,7 +2,6 @@ import { nanoid } from 'nanoid'
 import { Awaitable } from '../utils/index.js'
 import {
   Args,
-  FnMap,
   IRpcCallOptions,
   IRpcClient,
   IRpcExecOptions,
@@ -19,7 +18,7 @@ interface RpcCall<T> {
   timeout?: NodeJS.Timeout
 }
 
-export class RpcClient<M extends FnMap> implements IRpcClient<M> {
+export class RpcClient<M> implements IRpcClient<M> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private calls: Record<string, RpcCall<any>>
   constructor(private send: (msg: RpcRequest) => Awaitable<void>) {
