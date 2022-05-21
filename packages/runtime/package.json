@@ -16,7 +16,7 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/core": "^0.0.1"
+    "@chijs/core": "^0.0.2"
   },
   "devDependencies": {},
   "scripts": {
