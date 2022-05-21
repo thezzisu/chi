@@ -1,6 +1,6 @@
+import { basename, dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import glob from 'glob-promise'
-import { basename, dirname, join, resolve } from 'path'
-import { fileURLToPath } from 'url'
 import { argv, fs, chalk, cd, $ } from 'zx'
 
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
@@ -33,7 +33,11 @@ for (const path of packages) {
           await fs.remove('lib')
           await fs.remove('tsconfig.tsbuildinfo')
         }
-        await $`tsc`
+        if (argv.w || argv.watch) {
+          $`tsc -w`
+        } else {
+          await $`tsc`
+        }
       }
       success.push(name)
     } catch {

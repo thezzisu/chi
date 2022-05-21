@@ -1,9 +1,11 @@
 import pino from 'pino'
 
-const baseLogger = pino({ name: 'chiichan' })
+const baseLogger = pino({ name: 'chi' })
 
-export function createLogger(module: string, bindings?: pino.Bindings) {
-  return baseLogger.child({ module, ...(bindings ?? {}) })
+export function createLogger(
+  module: string,
+  component: string,
+  bindings?: pino.Bindings
+) {
+  return baseLogger.child({ module, component, ...(bindings ?? {}) })
 }
-
-export const logger = createLogger('core')

@@ -1,68 +1,63 @@
-import { logger } from '../logger'
-import { Awaitable } from '../utils'
+import { createLogger } from '../logger/index.js'
+import { Awaitable } from '../utils/index.js'
 import {
-  AnyFn,
   FnMap,
-  IRpcContext,
-  IRpcImpl,
-  IRpcImplBuilder,
   Args,
   Return,
-  RpcFn,
   RpcResponse,
-  RpcRequest
+  RpcRequest,
+  RpcMsgType
 } from './base.js'
 
-export class RpcImpl<M extends FnMap> implements IRpcImpl<M> {
-  constructor(private implementations: Record<string, RpcFn<AnyFn>>) {}
+export class RpcImpl<M extends FnMap> {
+  protected implementations: FnMap
+
+  constructor(base: RpcImpl<FnMap> | null = null) {
+    this.implementations = Object.create(base?.implementations || null)
+  }
+
+  implement<K extends keyof M>(method: K, implementation: M[K]) {
+    this.implementations[<string>method] = implementation
+  }
+}
+
+const logger = createLogger('core', 'rpc/server')
+
+export class RpcServer<M extends FnMap> extends RpcImpl<M> {
+  constructor(
+    private send: (msg: RpcResponse) => Awaitable<void>,
+    base: RpcImpl<FnMap> | null = null
+  ) {
+    super(base)
+  }
+
   async call<K extends keyof M>(
     method: K,
-    params: Args<M[K]>,
-    ctx: IRpcContext
+    params: Args<M[K]>
   ): Promise<Return<M[K]>> {
     const implementation = this.implementations[<string>method]
     if (!implementation) {
       throw new Error(`Method ${method} not implemented`)
     }
-    return <never>implementation(ctx, ...(params as unknown[] as never[]))
+    return <never>implementation(...(params as unknown[] as never[]))
   }
-}
 
-export class RpcImplBuilder<M extends FnMap> implements IRpcImplBuilder<M> {
-  implementations: Record<string, RpcFn<AnyFn>>
-  constructor() {
-    this.implementations = Object.create(null)
-  }
-  implement<K extends keyof M>(method: K, implementation: RpcFn<M[K]>) {
-    this.implementations[<string>method] = implementation
-  }
-  build(): IRpcImpl<M> {
-    return new RpcImpl(this.implementations)
-  }
-}
-
-export class RpcServer {
-  constructor(
-    private impl: IRpcImpl<FnMap>,
-    private send: (msg: RpcResponse) => Awaitable<void>
-  ) {}
-
-  async handle(msg: RpcRequest, ctx: IRpcContext) {
+  async handle(msg: RpcRequest) {
     if ('rpcId' in msg) {
       // Call
       try {
-        const resolve = await this.impl.call(msg.method, msg.args, ctx)
-        await this.send({ rpcId: msg.rpcId, resolve })
+        const resolve = await this.call(msg.method, <never>msg.args)
+        await this.send({ t: RpcMsgType.Response, rpcId: msg.rpcId, resolve })
       } catch (reject) {
         try {
-          await this.send({ rpcId: msg.rpcId, reject })
+          await this.send({ t: RpcMsgType.Response, rpcId: msg.rpcId, reject })
         } catch (e) {
           logger.error(e)
         }
       }
     } else {
       // Dispatch
-      this.impl.call(msg.method, msg.args, ctx)
+      this.call(msg.method, <never>msg.args)
     }
   }
 }

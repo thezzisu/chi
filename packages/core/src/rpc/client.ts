@@ -1,13 +1,13 @@
 import { nanoid } from 'nanoid'
-import { Awaitable } from '../utils'
+import { Awaitable } from '../utils/index.js'
 import {
   Args,
   FnMap,
   IRpcCallOptions,
   IRpcClient,
-  IRpcContext,
-  IRpcDispatchOptions,
+  IRpcExecOptions,
   Return,
+  RpcMsgType,
   RpcRequest,
   RpcResponse
 } from './base.js'
@@ -22,10 +22,7 @@ interface RpcCall<T> {
 export class RpcClient<M extends FnMap> implements IRpcClient<M> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private calls: Record<string, RpcCall<any>>
-  constructor(
-    private send: (msg: RpcRequest) => Awaitable<void>,
-    private ctx: IRpcContext = {}
-  ) {
+  constructor(private send: (msg: RpcRequest) => Awaitable<void>) {
     this.calls = Object.create(null)
   }
 
@@ -52,10 +49,10 @@ export class RpcClient<M extends FnMap> implements IRpcClient<M> {
   ): Promise<Return<M[K]>> {
     const rpcId = nanoid()
     const msg: RpcRequest = {
+      t: RpcMsgType.Request,
       rpcId,
       method: <string>method,
-      args,
-      ctx: this.ctx
+      args: args ?? []
     }
     await this.send(msg)
 
@@ -80,15 +77,15 @@ export class RpcClient<M extends FnMap> implements IRpcClient<M> {
     })
   }
 
-  async dispatch<K extends keyof M>(
+  async exec<K extends keyof M>(
     method: K,
     args: Args<M[K]>,
-    _options?: IRpcDispatchOptions
+    _options?: IRpcExecOptions
   ): Promise<void> {
     const msg: RpcRequest = {
+      t: RpcMsgType.Request,
       method: <string>method,
-      args,
-      ctx: this.ctx
+      args: args ?? []
     }
     await this.send(msg)
   }

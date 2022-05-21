@@ -15,23 +15,13 @@ export type FnMap = {
   [k: string]: AnyFn
 }
 
-export interface IRpcContext {
-  session?: string
-  task?: string
-  job?: string
-}
-
-export type RpcFn<F extends AnyFn> = F extends Fn<infer A, infer R>
-  ? (ctx: IRpcContext, ...args: A) => Awaitable<R>
-  : never
-
 export interface IRpcCallOptions {
   signal?: AbortSignal
   timeout?: number
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IRpcDispatchOptions {
+export interface IRpcExecOptions {
   //
 }
 
@@ -42,45 +32,38 @@ export interface IRpcClient<M extends FnMap> {
     options?: IRpcCallOptions
   ): Promise<Return<M[K]>>
 
-  dispatch<K extends keyof M>(
+  exec<K extends keyof M>(
     method: K,
     args: Args<M[K]>,
-    options?: IRpcDispatchOptions
+    options?: IRpcExecOptions
   ): Promise<void>
 }
 
-export interface IRpcImpl<M extends FnMap> {
-  call<K extends keyof M>(
-    method: K,
-    args: Args<M[K]>,
-    ctx: IRpcContext
-  ): Promise<Return<M[K]>>
-}
-
-export interface IRpcImplBuilder<M extends FnMap> {
-  implement<K extends keyof M>(method: K, implementation: RpcFn<M[K]>): void
-  build(): IRpcImpl<M>
+export enum RpcMsgType {
+  Request = 0,
+  Response = 1
 }
 
 export interface IRpcCallRequest {
+  t: RpcMsgType.Request
   rpcId: string
   method: string
   args: unknown[]
-  ctx?: IRpcContext
 }
 
 export interface IRpcCallResponse {
+  t: RpcMsgType.Response
   rpcId: string
   resolve?: unknown
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reject?: any
 }
 
-export interface IRpcDispatchRequest {
+export interface IRpcExecRequest {
+  t: RpcMsgType.Request
   method: string
   args: unknown[]
-  ctx?: IRpcContext
 }
 
-export type RpcRequest = IRpcCallRequest | IRpcDispatchRequest
+export type RpcRequest = IRpcCallRequest | IRpcExecRequest
 export type RpcResponse = IRpcCallResponse
