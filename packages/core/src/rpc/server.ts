@@ -1,13 +1,14 @@
 import { createLogger } from '../logger/index.js'
-import { Awaitable } from '../utils/index.js'
 import {
   Args,
   Return,
   RpcResponse,
   RpcRequest,
   RpcMsgType,
-  Fn
+  Fn,
+  encodeReject
 } from './base.js'
+import type { Awaitable } from '../utils/index.js'
 
 export type RpcImplFn<T> = T extends Fn<infer A, infer R>
   ? (...args: A) => Awaitable<R>
@@ -61,7 +62,11 @@ export class RpcServer<M> extends RpcImpl<M> {
         await this.send({ t: RpcMsgType.Response, rpcId: msg.rpcId, resolve })
       } catch (reject) {
         try {
-          await this.send({ t: RpcMsgType.Response, rpcId: msg.rpcId, reject })
+          await this.send({
+            t: RpcMsgType.Response,
+            rpcId: msg.rpcId,
+            reject: encodeReject(reject)
+          })
         } catch (e) {
           logger.error(e)
         }

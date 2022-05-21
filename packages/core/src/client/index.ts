@@ -1,6 +1,6 @@
 import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
-import { IAppClientApiFns } from '../app/api/index.js'
 import { RpcHub } from '../rpc/index.js'
+import type { IAppClientApiFns } from '../app/api/index.js'
 
 export interface IClientRpcFns {
   ['client:notify'](msg: string): void

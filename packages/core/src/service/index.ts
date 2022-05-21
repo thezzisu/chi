@@ -3,3 +3,5 @@ export interface ServiceBootstrapData {
   plugin: string
   params: Record<string, unknown>
 }
+
+export * from './plugin.js'

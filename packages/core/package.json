@@ -21,11 +21,11 @@
     "ajv-formats": "^2.1.1",
     "fastify": "^3.29.0",
     "fastify-socket.io": "^3.0.0",
-    "minimist": "^1.2.6",
     "pino": "^7.11.0",
     "socket.io": "^4.5.1",
     "socket.io-client": "^4.5.1"
   },
+  "devDependencies": {},
   "scripts": {
     "build": "node ../../scripts/build.mjs --package core",
     "prepare": "node ../../scripts/build.mjs --package core"
@@ -33,7 +33,7 @@
   "files": [
     "lib"
   ],
-  "devDependencies": {
-    "@types/minimist": "^1.2.2"
+  "bin": {
+    "chi": "lib/cli/index.js"
   }
 }

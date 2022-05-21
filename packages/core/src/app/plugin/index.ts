@@ -1,15 +1,12 @@
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { ChiApp } from '../index.js'
-import { TSchema, validate } from '../../utils/index.js'
+import { validate } from '../../utils/index.js'
+import { IPluginDefn } from '../../service/index.js'
 
-export interface IPlugin {
+export interface IPlugin extends IPluginDefn {
   name: string
-  params: Record<string, TSchema>
-  main: (params: never) => unknown
 }
-
-export type PluginDefn = Omit<IPlugin, 'name'>
 
 export type PluginInfo = Omit<IPlugin, 'main'>
 

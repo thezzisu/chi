@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid'
-import { Awaitable } from '../utils/index.js'
 import {
   Args,
+  decodeReject,
   IRpcCallOptions,
   IRpcClient,
   IRpcExecOptions,
@@ -10,6 +10,7 @@ import {
   RpcRequest,
   RpcResponse
 } from './base.js'
+import type { Awaitable } from '../utils/index.js'
 
 interface RpcCall<T> {
   resolve: (value: T | PromiseLike<T>) => void
@@ -36,7 +37,7 @@ export class RpcClient<M> implements IRpcClient<M> {
       const call = this.calls[cid]
       delete this.calls[cid]
       call.timeout && clearTimeout(call.timeout)
-      if (rejected) return call.reject(rejected)
+      if (rejected) return call.reject(decodeReject(rejected))
       call.resolve(resolved)
     }
   }

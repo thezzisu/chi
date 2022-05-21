@@ -1,4 +1,4 @@
-import { Awaitable } from '../utils'
+import type { Awaitable } from '../utils'
 
 export type Fn<A extends unknown[], R> = (...args: A) => Awaitable<R>
 export type AnyFn = Fn<never[], unknown>
@@ -73,3 +73,17 @@ export interface IRpcExecRequest {
 
 export type RpcRequest = IRpcCallRequest | IRpcExecRequest
 export type RpcResponse = IRpcCallResponse
+
+export function encodeReject(reject: unknown) {
+  if (reject instanceof Error) {
+    return { e: 1, msg: reject.message }
+  }
+  return { e: 0, reject }
+}
+
+export function decodeReject(reject: ReturnType<typeof encodeReject>) {
+  if (reject.e) {
+    return new Error(reject.msg)
+  }
+  return reject.reject
+}

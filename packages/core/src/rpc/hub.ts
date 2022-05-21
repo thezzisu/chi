@@ -1,4 +1,3 @@
-import { Awaitable } from '../utils/index.js'
 import {
   Args,
   IRpcCallOptions,
@@ -11,6 +10,7 @@ import {
 } from './base.js'
 import { RpcClient } from './client.js'
 import { RpcImpl, RpcServer } from './server.js'
+import type { Awaitable } from '../utils/index.js'
 
 export class RpcHub<R, L> extends RpcServer<L> implements IRpcClient<R> {
   private client: RpcClient<R>
