@@ -1,17 +1,23 @@
-import type {
+import {
   TSchema,
   SchemaMap,
   MapStatic,
   Id,
   IPluginDefn,
-  IPluginContext
+  IPluginContext,
+  Type
 } from '@chijs/core'
 
 export function definePlugin<M extends SchemaMap>(options: {
   params: M
   main: (ctx: IPluginContext, params: MapStatic<M>) => unknown
 }): IPluginDefn {
-  return options
+  return {
+    ...options,
+    params: Object.fromEntries(
+      Object.entries(options.params).map(([k, v]) => [k, Type.Strict(v)])
+    )
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -33,7 +39,7 @@ export class PluginBuilder<M = {}> {
     schema: T
   ): PluginBuilder<Id<M & { [k in K]: T }>> {
     const builder = this.clone()
-    builder.params[name] = schema
+    builder.params[name] = Type.Strict(schema)
     return <never>builder
   }
 

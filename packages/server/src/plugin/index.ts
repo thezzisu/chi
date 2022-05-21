@@ -16,7 +16,7 @@ export class PluginRegistry {
   async register(name: string) {
     try {
       const {
-        default: { _main, ...info }
+        default: { main: _main, ...info }
       } = await import(pathToFileURL(join(process.cwd(), name)).href)
       this.plugins[name] = { ...info, name }
     } catch (e) {

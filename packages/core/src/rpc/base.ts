@@ -21,6 +21,12 @@ export type FnMap = {
   [k: string]: AnyFn
 }
 
+export type MapAsync<M> = {
+  [K in keyof M]: M[K] extends Fn<infer A, infer R>
+    ? (...args: A) => Promise<R>
+    : never
+}
+
 export interface IRpcCallOptions {
   signal?: AbortSignal
   timeout?: number
