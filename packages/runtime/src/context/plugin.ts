@@ -16,10 +16,10 @@ export class PluginContext implements IPluginContext {
   plugin: RpcWrapped<IServerWorkerRpcFns, 'app:plugin'>
 
   constructor(
-    private hub: RpcHub<IServerWorkerRpcFns, IWorkerRpcFns>,
+    public hub: RpcHub<IServerWorkerRpcFns, IWorkerRpcFns>,
     private bootstrapData: ServiceBootstrapData
   ) {
-    this.logger = createLogger('core', 'service', {
+    this.logger = createLogger('runtime', 'plugin', {
       service: bootstrapData.service,
       plugin: bootstrapData.plugin
     })

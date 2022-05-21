@@ -41,7 +41,7 @@ export class RpcImpl<M> {
   }
 }
 
-const logger = createLogger('core', 'rpc/server')
+const logger = createLogger('server', 'rpc')
 
 export class RpcServer<M> extends RpcImpl<M> {
   constructor(

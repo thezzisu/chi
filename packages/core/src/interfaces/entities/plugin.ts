@@ -1,12 +1,13 @@
 import { Logger } from 'pino'
-import { RpcWrapped } from '../../rpc/wrapper.js'
+import { RpcWrapped, RpcHub } from '../../rpc/index.js'
 import { TSchema } from '../../utils/index.js'
-import { IServerWorkerRpcFns } from '../rpc/server.js'
+import { IServerWorkerRpcFns, IWorkerRpcFns } from '../rpc/index.js'
 
 export interface IPluginContext {
-  logger: Logger
-  plugin: RpcWrapped<IServerWorkerRpcFns, 'app:plugin'>
-  service: RpcWrapped<IServerWorkerRpcFns, 'app:service'>
+  readonly logger: Logger
+  readonly plugin: RpcWrapped<IServerWorkerRpcFns, 'app:plugin'>
+  readonly service: RpcWrapped<IServerWorkerRpcFns, 'app:service'>
+  readonly hub: RpcHub<IServerWorkerRpcFns, IWorkerRpcFns>
 }
 
 export interface IPluginDefn {
