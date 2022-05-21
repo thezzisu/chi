@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
-  "description": "Core components of Chi framwork",
+  "description": "Server for Chi framework",
   "author": "thezzisu <thezzisu@gmail.com>",
   "private": false,
   "type": "module",
@@ -29,8 +29,5 @@
   },
   "files": [
     "lib"
-  ],
-  "bin": {
-    "chi": "lib/cli/index.js"
-  }
+  ]
 }

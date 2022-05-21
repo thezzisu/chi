@@ -1,29 +1,34 @@
 {
-  "name": "@chijs/runtime",
+  "name": "@chijs/cli",
   "version": "0.0.1",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
-  "description": "Module for Chi plugins",
+  "description": "Command line interface for Chi framework",
   "author": "thezzisu <thezzisu@gmail.com>",
   "private": false,
   "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thezzisu/chi.git",
-    "directory": "packages/runtime"
+    "directory": "packages/cli"
   },
   "bugs": {
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/core": "^0.0.2"
+    "@chijs/client": "^0.0.1",
+    "@chijs/server": "^0.0.1",
+    "yargs": "^17.5.1"
   },
   "devDependencies": {},
   "scripts": {
-    "build": "node ../../scripts/build.mjs --package runtime",
-    "prepare": "node ../../scripts/build.mjs --package runtime --rebuild"
+    "build": "node ../../scripts/build.mjs --package cli",
+    "prepare": "node ../../scripts/build.mjs --package cli --rebuild"
   },
   "files": [
     "lib"
-  ]
+  ],
+  "bin": {
+    "chi": "lib/index.js"
+  }
 }

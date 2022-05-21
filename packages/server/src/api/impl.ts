@@ -20,7 +20,7 @@ export function createAppApiBaseImpls(app: ChiApp) {
   })
 
   baseImpl.implement('app:plugin:load', async (mod) => {
-    await app.pluginRegistry.register(mod)
+    await app.pluginRegistry.load(mod)
   })
 
   baseImpl.implement('app:plugin:list', () => {

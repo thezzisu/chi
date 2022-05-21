@@ -13,7 +13,7 @@ export class PluginRegistry {
     return Object.values(this.plugins)
   }
 
-  async register(name: string) {
+  async load(name: string) {
     try {
       const {
         default: { main: _main, ...info }

@@ -29,8 +29,5 @@
   },
   "files": [
     "lib"
-  ],
-  "bin": {
-    "chi": "lib/cli/index.js"
-  }
+  ]
 }
