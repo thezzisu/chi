@@ -21,7 +21,7 @@ const ajv = addFormats(new Ajv({}), [
   .addKeyword('kind')
   .addKeyword('modifier')
 
-export function validate<S extends TSchema>(
+export function validateJsonSchema<S extends TSchema>(
   object: unknown,
   schema: S
 ): object is Static<S> {

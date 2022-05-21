@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
-  "description": "Chi server",
+  "description": "Core components of Chi framwork",
   "author": "thezzisu <thezzisu@gmail.com>",
   "private": false,
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thezzisu/chi.git",
@@ -14,11 +15,22 @@
   "bugs": {
     "url": "https://github.com/thezzisu/chi/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@chijs/core": "^0.0.1",
+    "@chijs/runtime": "^0.0.1",
+    "fastify": "^3.29.0",
+    "fastify-socket.io": "^3.0.0",
+    "socket.io": "^4.5.1"
+  },
+  "devDependencies": {},
   "scripts": {
-    "build": "tsc"
+    "build": "node ../../scripts/build.mjs --package server",
+    "prepare": "node ../../scripts/build.mjs --package server --rebuild"
   },
   "files": [
     "lib"
-  ]
+  ],
+  "bin": {
+    "chi": "lib/cli/index.js"
+  }
 }
