@@ -83,11 +83,13 @@ export class ServiceManager {
       throw new Error('Service is running')
     }
     const service = this.services[name]
+    const plugin = this.app.pluginRegistry.get(service.plugin)
     const ps = forkWorker({
       data: {
         service: service.name,
         plugin: service.plugin,
-        params: service.params
+        params: service.params,
+        resolved: plugin.resolved
       },
       logger: this.app.logger
     })

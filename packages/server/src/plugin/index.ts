@@ -1,7 +1,8 @@
 import { IPluginInfo, validateJsonSchema } from '@chijs/core'
-import { join } from 'node:path'
+import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { ChiApp } from '../index.js'
+import { resolveImport } from '../utils/import.js'
 
 export class PluginRegistry {
   private plugins: Record<string, IPluginInfo>
@@ -13,12 +14,20 @@ export class PluginRegistry {
     return Object.values(this.plugins)
   }
 
+  get(name: string): IPluginInfo {
+    if (!(name in this.plugins)) throw new Error('Plugin not found')
+    return this.plugins[name]
+  }
+
   async load(name: string) {
     try {
+      let resolved = resolveImport(name, this.app.configManager.config.resolve)
+      resolved = resolve(resolved)
+      resolved = pathToFileURL(resolved).href
       const {
         default: { main: _main, ...info }
-      } = await import(pathToFileURL(join(process.cwd(), name)).href)
-      this.plugins[name] = { ...info, name }
+      } = await import(resolved)
+      this.plugins[name] = { ...info, name, resolved }
     } catch (e) {
       this.app.logger.error(e)
     }

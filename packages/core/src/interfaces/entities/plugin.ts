@@ -17,4 +17,5 @@ export interface IPluginDefn {
 
 export interface IPluginInfo extends Omit<IPluginDefn, 'main'> {
   name: string
+  resolved: string
 }

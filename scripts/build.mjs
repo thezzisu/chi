@@ -27,7 +27,7 @@ for (const path of packages) {
     try {
       console.log(`Building package ${chalk.green(name)}`)
       if (await fs.pathExists('scripts/build.mjs')) {
-        await $`node scripts/build.mjs`
+        await $`node scripts/build.mjs ${process.argv.slice(2)}`
       } else {
         if (argv.rebuild) {
           await fs.remove('lib')

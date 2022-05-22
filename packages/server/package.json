@@ -1,6 +1,6 @@
 {
   "name": "@chijs/server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Server for Chi framework",
@@ -17,15 +17,20 @@
   },
   "dependencies": {
     "@chijs/core": "^0.0.2",
-    "@chijs/runtime": "^0.0.1",
+    "@chijs/runtime": "^0.0.2",
     "fastify": "^3.29.0",
     "fastify-socket.io": "^3.0.0",
-    "socket.io": "^4.5.1"
+    "json5": "^2.2.1",
+    "socket.io": "^4.5.1",
+    "ts-node": "^10.8.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "pino": "^7.11.0"
+  },
   "scripts": {
     "build": "node ../../scripts/build.mjs --package server",
-    "prepare": "node ../../scripts/build.mjs --package server --rebuild"
+    "prepare": "node ../../scripts/build.mjs --package server --rebuild",
+    "test": "mocha"
   },
   "files": [
     "lib"

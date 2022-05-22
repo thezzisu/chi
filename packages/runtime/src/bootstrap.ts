@@ -1,6 +1,4 @@
 import { IServerWorkerRpcFns, IWorkerRpcFns, RpcHub } from '@chijs/core'
-import { join } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import { deserialize } from 'node:v8'
 import { PluginContext } from './context/plugin.js'
 import { ServiceBootstrapData } from './index.js'
@@ -14,9 +12,7 @@ if (!payload) {
 const data: ServiceBootstrapData = deserialize(Buffer.from(payload, 'base64'))
 
 try {
-  const { default: plugin } = await import(
-    pathToFileURL(join(process.cwd(), data.plugin)).href
-  )
+  const { default: plugin } = await import(data.resolved)
   const hub = new RpcHub<IServerWorkerRpcFns, IWorkerRpcFns>(
     (msg) => void process.send?.(msg),
     workerBaseImpl

@@ -1,19 +1,11 @@
-import { createLogger, IServiceDefn } from '@chijs/core'
+import './utils/preload.js'
+import { createLogger } from '@chijs/core'
 import type { Logger } from 'pino'
-import { ConfigManager } from './config/index.js'
+import { ChiAppOptions, ConfigManager } from './config/index.js'
 import { PluginRegistry } from './plugin/index.js'
 import { ServiceManager } from './service/index.js'
 import { ApiServer } from './server/index.js'
 import { ApiManager } from './api/index.js'
-
-export interface ICliAppServiceOption extends IServiceDefn {
-  autostart?: boolean
-}
-
-export interface IChiAppOptions {
-  plugins: string[]
-  services: ICliAppServiceOption[]
-}
 
 export class ChiApp {
   logger: Logger
@@ -23,9 +15,9 @@ export class ChiApp {
   serviceManager: ServiceManager
   apiServer: ApiServer
 
-  constructor(public options: IChiAppOptions) {
+  constructor(options?: ChiAppOptions) {
     this.logger = createLogger('core', 'app')
-    this.configManager = new ConfigManager(this)
+    this.configManager = new ConfigManager(this, options)
     this.apiManager = new ApiManager(this)
     this.pluginRegistry = new PluginRegistry(this)
     this.serviceManager = new ServiceManager(this)
@@ -35,23 +27,32 @@ export class ChiApp {
   async start() {
     this.logger.error(`Starting Chi`)
     await this.apiServer.start()
-    for (const plugin of this.options.plugins) {
+    this.logger.info(`Loading plugins`)
+    for (const plugin of this.configManager.config.plugins) {
       try {
         await this.pluginRegistry.load(plugin)
       } catch (e) {
         this.logger.error(e)
       }
     }
-    for (const service of this.options.services) {
+    this.logger.info(`Loading services`)
+    for (const service of this.configManager.config.services) {
       try {
         this.serviceManager.addService(
           service.name,
           service.plugin,
           service.params
         )
-        if (service.autostart) {
-          this.serviceManager.startService(service.name)
-        }
+      } catch (e) {
+        this.logger.error(e)
+      }
+    }
+    this.logger.info(`Starting services`)
+    for (const service of this.configManager.config.services.filter(
+      (s) => s.autostart
+    )) {
+      try {
+        this.serviceManager.startService(service.name)
       } catch (e) {
         this.logger.error(e)
       }

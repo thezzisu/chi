@@ -3,14 +3,17 @@ import { serialize } from 'node:v8'
 import { ServiceBootstrapData } from '@chijs/runtime'
 import { Logger } from 'pino'
 import { workerPath } from './worker.js'
+import { openSync } from 'node:fs'
 
 export interface IForkWorkerOptions {
   data: ServiceBootstrapData
+  logPath?: string
   logger?: Logger
 }
 
 export function forkWorker(options: IForkWorkerOptions) {
-  const { data } = options
+  const { data, logPath } = options
+  const out = logPath ? openSync(logPath, 'a') : 'inherit'
   options.logger?.info(
     `Forking worker for ${data.service} using ${data.plugin}`
   )
@@ -22,7 +25,7 @@ export function forkWorker(options: IForkWorkerOptions) {
       env: {
         CHI_WORKER_OPTIONS: payload
       },
-      stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
+      stdio: ['ignore', out, out, 'ipc'],
       serialization: 'advanced'
     }
   )
