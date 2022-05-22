@@ -31,6 +31,7 @@
     "zx": "^6.0.7"
   },
   "scripts": {
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/test.mjs"
   }
 }

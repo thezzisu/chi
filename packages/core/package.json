@@ -25,7 +25,8 @@
   "devDependencies": {},
   "scripts": {
     "build": "node ../../scripts/build.mjs --package core",
-    "prepare": "node ../../scripts/build.mjs --package core --rebuild"
+    "prepare": "node ../../scripts/build.mjs --package core --rebuild",
+    "test": "mocha"
   },
   "files": [
     "lib"

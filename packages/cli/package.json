@@ -23,7 +23,8 @@
   "devDependencies": {},
   "scripts": {
     "build": "node ../../scripts/build.mjs --package cli",
-    "prepare": "node ../../scripts/build.mjs --package cli --rebuild"
+    "prepare": "node ../../scripts/build.mjs --package cli --rebuild",
+    "test": "mocha"
   },
   "files": [
     "lib"
