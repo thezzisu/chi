@@ -1,15 +1,15 @@
-import { existsSync, readFileSync } from 'node:fs'
+import fs from 'fs-extra'
 import { extname, join, normalize, resolve, sep } from 'node:path'
 import JSON5 from 'json5'
 import { pathToFileURL } from 'node:url'
 
 export async function unifiedImport(path: string, allowJson = false) {
   path = resolve(path)
-  if (!existsSync(path)) {
+  if (!(await fs.pathExists(path))) {
     throw new Error(`File not found: ${path}`)
   }
   if (allowJson && /\.json5?$/.test(extname(path))) {
-    return { default: JSON5.parse(readFileSync(path).toString()) }
+    return { default: JSON5.parse((await fs.readFile(path)).toString()) }
   } else if (/.(m|c)?(j|t)s$/.test(extname(path))) {
     const imported = await import(pathToFileURL(path).href)
     return imported

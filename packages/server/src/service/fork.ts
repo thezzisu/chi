@@ -1,9 +1,10 @@
+import fs from 'fs-extra'
 import { fork } from 'node:child_process'
 import { serialize } from 'node:v8'
+import { dirname } from 'node:path'
 import { ServiceBootstrapData } from '@chijs/runtime'
 import { Logger } from 'pino'
 import { workerPath } from './worker.js'
-import { openSync } from 'node:fs'
 
 export interface IForkWorkerOptions {
   data: ServiceBootstrapData
@@ -13,7 +14,10 @@ export interface IForkWorkerOptions {
 
 export function forkWorker(options: IForkWorkerOptions) {
   const { data, logPath } = options
-  const out = logPath ? openSync(logPath, 'a') : 'inherit'
+  if (logPath) {
+    fs.ensureDirSync(dirname(logPath))
+  }
+  const out = logPath ? fs.openSync(logPath, 'a') : 'inherit'
   options.logger?.info(
     `Forking worker for ${data.service} using ${data.plugin}`
   )

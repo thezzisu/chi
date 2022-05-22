@@ -15,7 +15,7 @@ export class PluginRegistry {
   }
 
   get(name: string): IPluginInfo {
-    if (!(name in this.plugins)) throw new Error('Plugin not found')
+    if (!(name in this.plugins)) throw new Error(`Plugin not found: ${name}`)
     return this.plugins[name]
   }
 

@@ -10,6 +10,7 @@ export interface IChiConfig {
   plugins: string[]
   services: IChiServiceConfig[]
   resolve: Record<string, string>
+  logDir: string
 }
 
 export type ChiAppOptions = Partial<IChiConfig>
@@ -17,7 +18,8 @@ export type ChiAppOptions = Partial<IChiConfig>
 const defaultConfig: IChiConfig = {
   plugins: [],
   services: [],
-  resolve: {}
+  resolve: {},
+  logDir: 'logs'
 }
 
 export class ConfigManager {

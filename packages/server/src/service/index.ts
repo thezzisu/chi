@@ -6,6 +6,7 @@ import {
   RpcHub
 } from '@chijs/core'
 import { ChildProcess } from 'node:child_process'
+import { join } from 'node:path'
 import { ChiApp } from '../index.js'
 import { forkWorker } from './fork.js'
 
@@ -91,7 +92,15 @@ export class ServiceManager {
         params: service.params,
         resolved: plugin.resolved
       },
-      logger: this.app.logger
+      logger: this.app.logger,
+      logPath:
+        this.app.configManager.config.logDir === 'stdout'
+          ? undefined
+          : join(
+              this.app.configManager.config.logDir,
+              service.name,
+              `${+new Date()}.log`
+            )
     })
     const hub = new RpcHub<IWorkerRpcFns, IServerWorkerRpcFns>(
       (msg) =>

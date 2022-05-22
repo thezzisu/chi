@@ -4,7 +4,7 @@ import {
   IServerWorkerRpcFns,
   RpcImpl
 } from '@chijs/core'
-import { readFile } from 'node:fs/promises'
+import fs from 'fs-extra'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { ChiApp } from '../index.js'
@@ -12,7 +12,7 @@ import { ChiApp } from '../index.js'
 export function createAppApiBaseImpls(app: ChiApp) {
   const baseImpl = new RpcImpl<IServerBaseRpcFns>()
   baseImpl.implement('app:versions', async () => {
-    const content = await readFile(
+    const content = await fs.readFile(
       join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'package.json')
     )
     const json = JSON.parse(content.toString())
@@ -76,7 +76,7 @@ export function createAppApiBaseImpls(app: ChiApp) {
   const clientImpl = new RpcImpl<IServerClientRpcFns>(baseImpl)
 
   clientImpl.implement('app:util:readFile', async (path) => {
-    const content = await readFile(path)
+    const content = await fs.readFile(path)
     return content
   })
 
