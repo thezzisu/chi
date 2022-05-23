@@ -3,6 +3,8 @@
 const { configure } = require('quasar/wrappers')
 const path = require('path')
 
+const CHIUI_VERSION = require('./package.json').version
+
 module.exports = configure(function () {
   return {
     eslint: {
@@ -23,7 +25,10 @@ module.exports = configure(function () {
           '@intlify/vite-plugin-vue-i18n',
           { include: path.resolve(__dirname, './src/i18n/**') }
         ]
-      ]
+      ],
+      env: {
+        CHIUI_VERSION
+      }
     },
     devServer: {
       open: true
@@ -31,7 +36,7 @@ module.exports = configure(function () {
     framework: {
       config: {},
       iconSet: 'mdi-v6',
-      plugins: []
+      plugins: ['Notify']
     },
     animations: 'all',
     electron: {

@@ -3,8 +3,24 @@ import { RouteRecordRaw } from 'vue-router'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }]
+    component: () => import('src/layouts/InstanceManagerLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/InstanceManager.vue') }
+    ]
+  },
+  {
+    path: '/edit',
+    component: () => import('src/layouts/InstanceManagerLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/InstanceEditor.vue') }
+    ]
+  },
+  {
+    path: '/edit/:id',
+    component: () => import('src/layouts/InstanceManagerLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/InstanceEditor.vue') }
+    ]
   },
   {
     path: '/:catchAll(.*)*',
