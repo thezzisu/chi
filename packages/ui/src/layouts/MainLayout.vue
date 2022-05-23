@@ -1,31 +1,48 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
+  <q-layout view="lHh LpR lFf">
+    <q-header elevated class="row no-wrap">
+      <q-toolbar class="col-auto bg-purple q-px-none">
         <q-btn
           flat
-          dense
           round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
+          dense
+          icon="mdi-menu"
+          class="q-mx-sm"
+          @click="navOpen = !navOpen"
         />
-
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-separator dark vertical inset />
+        <q-btn stretch flat no-caps :to="base">
+          <q-toolbar-title>ChiUI</q-toolbar-title>
+        </q-btn>
+      </q-toolbar>
+      <q-toolbar>
+        <q-toolbar-title>Dashboard</q-toolbar-title>
+        <q-btn
+          flat
+          round
+          dense
+          :icon="`mdi-${
+            connected ? 'check-network-outline' : 'close-network-outline'
+          }`"
+        />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer v-model="navOpen" side="left" show-if-above bordered>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item
+          v-for="(item, i) of menuItems"
+          :key="i"
+          :to="`${base}${item.to}`"
+          exact
+        >
+          <q-item-section avatar>
+            <q-icon :name="item.icon" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ item.label }}</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -35,72 +52,33 @@
   </q-layout>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+<script lang="ts" setup>
+import { ChiClient } from '@chijs/client'
+import { clientKey } from 'src/shared/injections'
+import { getInstance } from 'src/shared/instance'
+import { provide, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
+const navOpen = ref(false)
+
+const route = useRoute()
+const base = `/instance/${route.params.instanceId}`
+
+const menuItems = [
+  { icon: 'mdi-clipboard-text-outline', label: 'Overview', to: '/' },
+  { icon: 'mdi-power-plug-outline', label: 'Plugin', to: '/plugin' },
+  { icon: 'mdi-cog-outline', label: 'Service', to: '/service' }
 ]
 
-export default defineComponent({
-  name: 'MainLayout',
+const instance = getInstance(<string>route.params.instanceId)
 
-  components: {
-    EssentialLink
-  },
-
-  setup() {
-    const leftDrawerOpen = ref(false)
-
-    return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      }
-    }
-  }
+const client = new ChiClient(instance.value.url)
+const connected = ref(false)
+provide(clientKey, client)
+client.socket.on('connect', () => {
+  connected.value = true
+})
+client.socket.on('disconnect', () => {
+  connected.value = false
 })
 </script>

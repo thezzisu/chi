@@ -1,5 +1,6 @@
 import type { Socket } from 'socket.io'
 import fastify, { FastifyInstance } from 'fastify'
+import cors from '@fastify/cors'
 import fastifySocketIo from 'fastify-socket.io'
 import { Logger } from 'pino'
 import { ChiApp } from '../index.js'
@@ -29,7 +30,12 @@ export class ApiServer {
   }
 
   async start() {
-    await this.server.register(fastifySocketIo, {})
+    await this.server.register(cors, { origin: true })
+    await this.server.register(fastifySocketIo, {
+      cors: {
+        origin: true
+      }
+    })
     this.server.io.use((socket, next) => {
       return next()
     })

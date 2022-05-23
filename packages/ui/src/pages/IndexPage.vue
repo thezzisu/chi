@@ -1,49 +1,45 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
+  <q-page padding class="row">
+    <div class="q-pa-sm col-12">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Server Status</div>
+        </q-card-section>
+        <q-separator />
+        <q-list>
+          <q-item v-for="(info, i) of infos" :key="i">
+            <q-item-section>
+              <q-item-label>{{ info.label }}</q-item-label>
+              <q-item-label caption>{{ info.content }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
+    </div>
   </q-page>
 </template>
 
-<script lang="ts">
-import { Todo, Meta } from 'components/models'
-import ExampleComponent from 'components/ExampleComponent.vue'
-import { defineComponent, ref } from 'vue'
+<script lang="ts" setup>
+import { inject, ref } from 'vue'
+import { clientKey } from 'src/shared/injections'
 
-export default defineComponent({
-  name: 'IndexPage',
-  components: { ExampleComponent },
-  setup() {
-    const todos = ref<Todo[]>([
-      {
-        id: 1,
-        content: 'ct1'
-      },
-      {
-        id: 2,
-        content: 'ct2'
-      },
-      {
-        id: 3,
-        content: 'ct3'
-      },
-      {
-        id: 4,
-        content: 'ct4'
-      },
-      {
-        id: 5,
-        content: 'ct5'
-      }
-    ])
-    const meta = ref<Meta>({
-      totalCount: 1200
-    })
-    return { todos, meta }
-  }
-})
+interface Info {
+  label: string
+  content: string
+}
+
+const infos = ref<Info[]>([])
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const client = inject(clientKey)!
+
+async function load() {
+  const versions = await client.hub.call('app:versions', [])
+  infos.value.push({
+    label: 'Server version',
+    content: versions.server
+  })
+}
+
+load()
 </script>
