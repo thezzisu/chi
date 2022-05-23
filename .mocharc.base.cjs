@@ -1,0 +1,9 @@
+module.exports = {
+  extension: ['ts'],
+  spec: 'test/**/*.spec.ts',
+  'node-option': [
+    'experimental-specifier-resolution=node',
+    'loader=ts-node/esm',
+    'no-warnings'
+  ]
+}

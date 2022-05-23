@@ -17,6 +17,14 @@ export type Return<T> = T extends AnyFn
     : never
   : never
 
+export type ArgsOf<M, K extends string> = K extends keyof M
+  ? Args<M[K]>
+  : unknown[]
+
+export type ReturnOf<M, K extends string> = K extends keyof M
+  ? Return<M[K]>
+  : unknown
+
 export type FnMap = {
   [k: string]: AnyFn
 }

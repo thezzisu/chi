@@ -15,6 +15,15 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': [
       'error',
       { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }
+    ],
+    '@typescript-eslint/ban-types': [
+      'error',
+      {
+        types: {
+          '{}': false
+        },
+        extendsDefaults: true
+      }
     ]
   }
 }

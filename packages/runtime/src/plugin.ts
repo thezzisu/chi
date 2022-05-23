@@ -10,7 +10,7 @@ import {
 
 export function definePlugin<M extends SchemaMap>(options: {
   params: M
-  main: (ctx: IPluginContext, params: MapStatic<M>) => unknown
+  main: <P>(ctx: IPluginContext<P>, params: MapStatic<M>) => unknown
 }): IPluginDefn {
   return {
     ...options,
@@ -20,8 +20,7 @@ export function definePlugin<M extends SchemaMap>(options: {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export class PluginBuilder<M = {}> {
+export class PluginBuilder<P = {}, M = {}> {
   private params: Record<string, TSchema>
 
   constructor() {
@@ -29,7 +28,7 @@ export class PluginBuilder<M = {}> {
   }
 
   private clone() {
-    const builder = new PluginBuilder<M>()
+    const builder = new PluginBuilder<P, M>()
     builder.params = { ...this.params }
     return builder
   }
@@ -37,14 +36,14 @@ export class PluginBuilder<M = {}> {
   param<K extends string, T extends TSchema>(
     name: K,
     schema: T
-  ): PluginBuilder<Id<M & { [k in K]: T }>> {
+  ): PluginBuilder<P, Id<M & { [k in K]: T }>> {
     const builder = this.clone()
     builder.params[name] = Type.Strict(schema)
     return <never>builder
   }
 
   build(
-    main: (ctx: IPluginContext, params: MapStatic<M>) => unknown
+    main: (ctx: IPluginContext<P>, params: MapStatic<M>) => unknown
   ): IPluginDefn {
     return {
       params: { ...this.params },

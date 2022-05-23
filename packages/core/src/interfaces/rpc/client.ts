@@ -1,3 +1,3 @@
 export interface IClientRpcFns {
-  ['client:notify'](msg: string): void
+  ['client:agent:notify'](msg: string): void
 }

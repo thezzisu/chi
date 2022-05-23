@@ -3,11 +3,11 @@ import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
 const app = new ChiApp({
-  plugins: ['@/plugin.mjs'],
+  plugins: ['@/plugin.ts'],
   services: [
     {
       name: 'test',
-      plugin: '@/plugin.mjs',
+      plugin: '@/plugin.ts',
       params: {
         foo: 'bar'
       },

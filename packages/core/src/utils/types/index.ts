@@ -36,7 +36,7 @@ export type Spread<A extends readonly [...any]> = A extends [
   ? SpreadTwo<L, Spread<R>>
   : unknown
 
-export type RemovePrefix<S, P extends string> = S extends `${P}:${infer T}`
+export type RemovePrefix<S, P extends string> = S extends `${P}${infer T}`
   ? T
   : never
 

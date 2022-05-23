@@ -1,21 +1,12 @@
-import { basename, dirname, join, resolve } from 'node:path'
+// @ts-check
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import glob from 'glob-promise'
 import { argv, fs, chalk, cd, $ } from 'zx'
+import { targetPackages } from './common.mjs'
 
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
 
-let packages = argv.package
-  ? [join('packages', argv.package)]
-  : await glob('packages/*')
-
-packages = packages.map((x) => resolve(x))
-console.log(
-  `Build ${chalk.red(packages.length)} packages (${packages
-    .map((p) => basename(p))
-    .map((s) => chalk.green(s))
-    .join(', ')})`
-)
+const packages = await targetPackages()
 
 const success = [],
   fail = []
