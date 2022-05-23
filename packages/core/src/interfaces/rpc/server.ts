@@ -1,7 +1,8 @@
 import { IPluginInfo, IServiceInfo } from '../entities/index.js'
 
 export interface IServerBaseRpcFns {
-  ['app:versions'](): Record<string, string>
+  ['app:misc:versions'](): Record<string, string>
+
   ['app:plugin:load'](mod: string): void
   ['app:plugin:list'](): IPluginInfo[]
 
@@ -14,6 +15,7 @@ export interface IServerBaseRpcFns {
   ['app:service:remove'](name: string): void
   ['app:service:start'](name: string): void
   ['app:service:stop'](name: string): void
+  ['app:service:waitForInit'](name: string): void
   ['app:service:call'](name: string, method: string, args: unknown[]): unknown
   ['app:service:exec'](name: string, method: string, args: unknown[]): unknown
   ['app:service:list'](): IServiceInfo[]
@@ -25,5 +27,5 @@ export interface IServerWorkerRpcFns extends IServerBaseRpcFns {
 }
 
 export interface IServerClientRpcFns extends IServerBaseRpcFns {
-  ['app:util:readFile'](path: string): ArrayBuffer
+  ['app:misc:readFile'](path: string): ArrayBuffer
 }

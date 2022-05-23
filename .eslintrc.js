@@ -22,7 +22,7 @@ module.exports = {
         types: {
           '{}': false
         },
-        extendsDefaults: true
+        extendDefaults: true
       }
     ]
   }

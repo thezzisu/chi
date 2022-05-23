@@ -2,7 +2,7 @@ import { IServerWorkerRpcFns, IWorkerRpcFns, RpcHub } from '@chijs/core'
 import { deserialize } from 'node:v8'
 import { PluginContext } from './context/plugin.js'
 import { ServiceBootstrapData } from './index.js'
-import { workerBaseImpl } from './rpc.js'
+import { initialization, workerBaseImpl } from './rpc.js'
 
 const payload = process.env.CHI_WORKER_OPTIONS
 if (!payload) {
@@ -19,7 +19,8 @@ try {
   )
   process.on('message', (msg) => hub.handle(<never>msg))
   const ctx = new PluginContext(hub, data)
-  plugin.main(ctx, data.params)
+  await plugin.main(ctx, data.params)
+  initialization.resolve()
 } catch (err) {
   console.error('Bootstrap failed')
   console.error(err)

@@ -11,7 +11,7 @@ import { ChiApp } from '../index.js'
 
 export function createAppApiBaseImpls(app: ChiApp) {
   const baseImpl = new RpcImpl<IServerBaseRpcFns>()
-  baseImpl.implement('app:versions', async () => {
+  baseImpl.implement('app:misc:versions', async () => {
     const content = await fs.readFile(
       join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'package.json')
     )
@@ -61,6 +61,11 @@ export function createAppApiBaseImpls(app: ChiApp) {
     return worker.hub.exec(<never>method, <never>args)
   })
 
+  baseImpl.implement('app:service:waitForInit', (name) => {
+    const worker = app.serviceManager.getWorker(name)
+    return worker.hub.exec('worker:waitForInit', [])
+  })
+
   const workerImpl = new RpcImpl<IServerWorkerRpcFns>(baseImpl)
 
   workerImpl.implement('app:client:call', (id, method, args) => {
@@ -75,7 +80,7 @@ export function createAppApiBaseImpls(app: ChiApp) {
 
   const clientImpl = new RpcImpl<IServerClientRpcFns>(baseImpl)
 
-  clientImpl.implement('app:util:readFile', async (path) => {
+  clientImpl.implement('app:misc:readFile', async (path) => {
     const content = await fs.readFile(path)
     return content
   })

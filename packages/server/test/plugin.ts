@@ -12,7 +12,14 @@ declare module '@chijs/core' {
 
 export default new PluginBuilder<'~/plugin.ts'>()
   .param('foo', Type.String())
+  .param('wait', Type.String())
   .build(async (ctx, params) => {
+    if (params.wait) {
+      await ctx.service.waitForInit(params.wait)
+    } else {
+      // wait for 2 sec
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+    }
     const plugins = await ctx.plugin.list()
     console.table(plugins)
     console.log(params)

@@ -13,7 +13,7 @@
     "dev": "quasar dev"
   },
   "dependencies": {
-    "@chijs/client": "^0.0.3",
+    "@chijs/client": "^0.0.4",
     "@quasar/extras": "^1.0.0",
     "@vueuse/core": "^8.5.0",
     "nanoid": "^3.3.4",
@@ -26,15 +26,9 @@
   "devDependencies": {
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",
     "@quasar/app-vite": "^1.0.0",
-    "@types/node": "^12.20.21",
-    "@typescript-eslint/eslint-plugin": "^5.10.0",
-    "@typescript-eslint/parser": "^5.10.0",
     "autoprefixer": "^10.4.2",
-    "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-vue": "^8.5.0",
-    "prettier": "^2.5.1",
-    "typescript": "^4.5.4"
+    "eslint-plugin-vue": "^8.5.0"
   },
   "engines": {
     "node": "^18 || ^16",

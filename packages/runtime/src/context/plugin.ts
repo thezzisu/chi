@@ -18,6 +18,7 @@ import { ServiceBootstrapData } from '../index.js'
 
 export class PluginContext<P = {}> implements IPluginContext<P> {
   logger: Logger
+  misc: IPluginContext<P>['misc']
   service: IPluginContext<P>['service']
   plugin: IPluginContext<P>['plugin']
 
@@ -77,6 +78,7 @@ export class PluginContext<P = {}> implements IPluginContext<P> {
       }
     )
     this.plugin = createRpcWrapper(hub, 'app:plugin:')
+    this.misc = createRpcWrapper(hub, 'app:misc:')
   }
 
   registerRpc<K extends string>(

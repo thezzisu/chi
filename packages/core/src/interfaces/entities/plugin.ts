@@ -40,6 +40,7 @@ export type ServiceHandle<P> = SpreadTwo<
 
 export interface IPluginContext<P> {
   logger: Logger
+  misc: RpcWrapped<IServerWorkerRpcFns, 'app:misc:'>
   plugin: RpcWrapped<IServerWorkerRpcFns, 'app:plugin:'>
   service: SpreadTwo<
     RpcWrapped<IServerWorkerRpcFns, 'app:service:'>,
