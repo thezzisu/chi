@@ -29,3 +29,5 @@ export async function targetPackages() {
   )
   return packages
 }
+
+export const isActions = !!process.env.GITHUB_ACTIONS

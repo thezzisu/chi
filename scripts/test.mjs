@@ -2,7 +2,7 @@
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fs, chalk, cd, $ } from 'zx'
-import { targetPackages } from './common.mjs'
+import { isActions, targetPackages } from './common.mjs'
 
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
 
@@ -43,4 +43,23 @@ if (success.length) {
 }
 if (fail.length) {
   console.log(`${chalk.red('Fail')}: ${fail.join(', ')}`)
+}
+
+if (isActions) {
+  const core = await import('@actions/core')
+  core.summary
+    .addHeading('Test Results')
+    .addQuote(
+      fail.length ? `❌ ${fail.length} tests failed` : '✅ All tests passed'
+    )
+    .addTable([
+      [
+        { data: 'Package', header: true },
+        { data: 'Result', header: true }
+      ],
+      ...fail.map((name) => [name, 'Fail ❌']),
+      ...success.map((name) => [name, 'Success ✅']),
+      ...ignored.map((name) => [name, 'Ignored ➖'])
+    ])
+    .write()
 }
