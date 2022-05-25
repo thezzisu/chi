@@ -26,37 +26,37 @@ export function createBaseImpl(app: ChiApp) {
     return app.pluginRegistry.list()
   })
 
-  baseImpl.implement('app:service:add', (plugin, name, params) => {
-    app.serviceManager.addService(name, plugin, params)
+  baseImpl.implement('app:service:add', (plugin, id, params) => {
+    app.serviceManager.addService(id, plugin, params)
   })
 
-  baseImpl.implement('app:service:update', (name, params) => {
-    app.serviceManager.updateService(name, params)
+  baseImpl.implement('app:service:update', (id, params) => {
+    app.serviceManager.updateService(id, params)
   })
 
-  baseImpl.implement('app:service:remove', (name) => {
-    app.serviceManager.removeService(name)
+  baseImpl.implement('app:service:remove', (id) => {
+    app.serviceManager.removeService(id)
   })
 
-  baseImpl.implement('app:service:start', (name) => {
-    app.serviceManager.startService(name)
+  baseImpl.implement('app:service:start', (id) => {
+    app.serviceManager.startService(id)
   })
 
-  baseImpl.implement('app:service:stop', (name) => {
-    app.serviceManager.stopService(name)
+  baseImpl.implement('app:service:stop', (id) => {
+    app.serviceManager.stopService(id)
   })
 
   baseImpl.implement('app:service:list', () => {
     return app.serviceManager.listServices()
   })
 
-  baseImpl.implement('app:service:call', (name, method, ...args) => {
-    const worker = app.serviceManager.getWorker(name)
+  baseImpl.implement('app:service:call', (id, method, ...args) => {
+    const worker = app.serviceManager.getWorker(id)
     return worker.hub.client.call(<never>method, ...(args as never[]))
   })
 
-  baseImpl.implement('app:service:exec', (name, method, ...args) => {
-    const worker = app.serviceManager.getWorker(name)
+  baseImpl.implement('app:service:exec', (id, method, ...args) => {
+    const worker = app.serviceManager.getWorker(id)
     return worker.hub.client.exec(<never>method, ...(args as never[]))
   })
 

@@ -34,71 +34,71 @@ export class ServiceManager {
     this.workers = Object.create(null)
   }
 
-  getWorker(name: string) {
-    if (!(name in this.services)) {
+  getWorker(id: string) {
+    if (!(id in this.services)) {
       throw new Error('Service not found')
     }
-    if (!(name in this.workers)) {
+    if (!(id in this.workers)) {
       throw new Error('Service is not running')
     }
-    const worker = this.workers[name]
+    const worker = this.workers[id]
     return worker
   }
 
-  addService(name: string, plugin: string, params: Record<string, unknown>) {
-    if (name in this.services) {
+  addService(id: string, plugin: string, params: Record<string, unknown>) {
+    if (id in this.services) {
       throw new Error('Service already exists')
     }
     if (!this.app.pluginRegistry.verifyParams(plugin, params)) {
       throw new Error('Bad params')
     }
-    this.services[name] = { name, plugin, params, logPath: '' }
+    this.services[id] = { id, plugin, params, logPath: '' }
   }
 
-  updateService(name: string, params: Record<string, unknown>) {
-    if (!(name in this.services)) {
+  updateService(id: string, params: Record<string, unknown>) {
+    if (!(id in this.services)) {
       throw new Error('Service not found')
     }
-    if (name in this.workers) {
+    if (id in this.workers) {
       throw new Error('Service is running')
     }
-    const service = this.services[name]
+    const service = this.services[id]
     if (!this.app.pluginRegistry.verifyParams(service.plugin, params)) {
       throw new Error('Bad params')
     }
     service.params = params
   }
 
-  removeService(name: string) {
-    if (!(name in this.services)) {
+  removeService(id: string) {
+    if (!(id in this.services)) {
       throw new Error('Service not found')
     }
-    if (name in this.workers) {
+    if (id in this.workers) {
       throw new Error('Service is running')
     }
-    delete this.services[name]
+    delete this.services[id]
   }
 
-  startService(name: string) {
-    if (!(name in this.services)) {
+  startService(id: string) {
+    if (!(id in this.services)) {
       throw new Error('Service not found')
     }
-    if (name in this.workers) {
+    if (id in this.workers) {
       throw new Error('Service is running')
     }
-    const service = this.services[name]
+    const service = this.services[id]
     const plugin = this.app.pluginRegistry.get(service.plugin)
     const logPath =
       this.app.configManager.config.logDir === 'stdout'
         ? undefined
         : join(
             this.app.configManager.config.logDir,
-            service.name,
+            service.id,
             `${+new Date()}.log`
           )
     const ps = forkWorker({
       data: {
-        service: service.name,
+        service: service.id,
         plugin: service.plugin,
         params: service.params,
         resolved: plugin.resolved
@@ -116,27 +116,27 @@ export class ServiceManager {
     ps.on('message', (msg) => hub.handle(<never>msg))
     ps.on('exit', (code, signal) => {
       hub.dispose(new WorkerExitError(code, signal))
-      delete this.workers[name]
+      delete this.workers[id]
     })
-    this.workers[name] = { ps, hub, logPath: logPath ?? 'stdout' }
+    this.workers[id] = { ps, hub, logPath: logPath ?? 'stdout' }
   }
 
-  stopService(name: string) {
-    if (!(name in this.services)) {
+  stopService(id: string) {
+    if (!(id in this.services)) {
       throw new Error('Service not found')
     }
-    if (!(name in this.workers)) {
+    if (!(id in this.workers)) {
       throw new Error('Service is not running')
     }
-    const worker = this.workers[name]
+    const worker = this.workers[id]
     worker.hub.client.exec('worker:exit')
   }
 
   listServices(): IServiceInfo[] {
     return Object.values(this.services).map((service) => ({
       ...service,
-      running: service.name in this.workers,
-      logPath: this.workers[service.name]?.logPath ?? ''
+      running: service.id in this.workers,
+      logPath: this.workers[service.id]?.logPath ?? ''
     }))
   }
 }

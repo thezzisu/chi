@@ -1,14 +1,8 @@
-import { validateJsonSchema, TSchema } from '@chijs/core'
+import { validateJsonSchema, IPluginInfo } from '@chijs/core'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { ChiApp } from '../index.js'
 import { resolveImport } from '../utils/import.js'
-
-export interface IPluginInfo {
-  params: Record<string, TSchema>
-  name: string
-  resolved: string
-}
 
 export class PluginRegistry {
   private plugins: Record<string, IPluginInfo>
@@ -20,28 +14,28 @@ export class PluginRegistry {
     return Object.values(this.plugins)
   }
 
-  get(name: string): IPluginInfo {
-    if (!(name in this.plugins)) throw new Error(`Plugin not found: ${name}`)
-    return this.plugins[name]
+  get(id: string): IPluginInfo {
+    if (!(id in this.plugins)) throw new Error(`Plugin not found: ${id}`)
+    return this.plugins[id]
   }
 
-  async load(name: string) {
+  async load(id: string) {
     try {
-      let resolved = resolveImport(name, this.app.configManager.config.resolve)
+      let resolved = resolveImport(id, this.app.configManager.config.resolve)
       resolved = resolve(resolved)
       resolved = pathToFileURL(resolved).href
       const {
         default: { main: _main, ...info }
       } = await import(resolved)
-      this.plugins[name] = { ...info, name, resolved }
+      this.plugins[id] = { ...info, id, resolved }
     } catch (e) {
       this.app.logger.error(e)
     }
   }
 
-  verifyParams(name: string, params: Record<string, unknown>) {
-    if (!(name in this.plugins)) throw new Error('Plugin not found')
-    const plugin = this.plugins[name]
+  verifyParams(id: string, params: Record<string, unknown>) {
+    if (!(id in this.plugins)) throw new Error('Plugin not found')
+    const plugin = this.plugins[id]
     for (const param in plugin.params) {
       if (!validateJsonSchema(params[param], plugin.params[param])) return false
     }

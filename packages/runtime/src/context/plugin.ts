@@ -64,25 +64,25 @@ export class PluginContext<P = {}> {
         'app:service:'
       ),
       {
-        getHandle<P>(name: string): ServiceHandle<P> {
+        getHandle<P>(id: string): ServiceHandle<P> {
           return <never>new Proxy(
             {
               call: (method: string, ...args: unknown[]) =>
                 hub.client.call(
                   'app:service:call',
-                  name,
+                  id,
                   `worker:custom:${method}`,
                   ...args
                 ),
               exec: (method: string, args: unknown[]) =>
                 hub.client.exec(
                   'app:service:exec',
-                  name,
+                  id,
                   `worker:custom:${method}`,
                   ...args
                 ),
               waitReady: () =>
-                hub.client.exec('app:service:exec', name, 'worker:waitReady')
+                hub.client.exec('app:service:exec', id, 'worker:waitReady')
             },
             {
               get(target, property) {

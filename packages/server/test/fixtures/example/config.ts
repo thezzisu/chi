@@ -5,7 +5,7 @@ export default {
   plugins: ['~/plugins/foo.js'],
   services: [
     {
-      name: 'foo',
+      id: 'foo',
       plugin: '~/plugins/foo.js',
       params: {
         foo: 'bar'

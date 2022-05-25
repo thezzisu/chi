@@ -6,7 +6,7 @@ const app = new ChiApp({
   plugins: ['@/plugin.ts'],
   services: [
     {
-      name: 'test2',
+      id: 'test2',
       plugin: '@/plugin.ts',
       params: {
         foo: 'bar',
@@ -15,7 +15,7 @@ const app = new ChiApp({
       autostart: true
     },
     {
-      name: 'test',
+      id: 'test',
       plugin: '@/plugin.ts',
       params: {
         foo: 'bar',

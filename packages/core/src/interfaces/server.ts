@@ -1,7 +1,7 @@
 import { TSchema } from '../utils/index.js'
 
 export interface IServiceInfo {
-  name: string
+  id: string
   plugin: string
   params: Record<string, unknown>
   running: boolean
@@ -9,8 +9,8 @@ export interface IServiceInfo {
 }
 
 export interface IPluginInfo {
+  id: string
   params: Record<string, TSchema>
-  name: string
   resolved: string
 }
 
@@ -23,23 +23,15 @@ export interface IServerBaseRpcFns {
 
   ['app:service:add'](
     plugin: string,
-    name: string,
+    id: string,
     params: Record<string, unknown>
   ): void
-  ['app:service:update'](name: string, params: Record<string, unknown>): void
-  ['app:service:remove'](name: string): void
-  ['app:service:start'](name: string): void
-  ['app:service:stop'](name: string): void
-  ['app:service:call'](
-    name: string,
-    method: string,
-    ...args: unknown[]
-  ): unknown
-  ['app:service:exec'](
-    name: string,
-    method: string,
-    ...args: unknown[]
-  ): unknown
+  ['app:service:update'](id: string, params: Record<string, unknown>): void
+  ['app:service:remove'](id: string): void
+  ['app:service:start'](id: string): void
+  ['app:service:stop'](id: string): void
+  ['app:service:call'](id: string, method: string, ...args: unknown[]): unknown
+  ['app:service:exec'](id: string, method: string, ...args: unknown[]): unknown
   ['app:service:list'](): IServiceInfo[]
 }
 

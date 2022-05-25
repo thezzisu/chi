@@ -3,7 +3,7 @@ import { PluginContext } from './context/plugin.js'
 
 import type { TSchema, SchemaMap, MapStatic, Id } from '@chijs/core'
 
-export interface IPluginDefn extends Omit<IPluginInfo, 'resolved' | 'name'> {
+export interface IPluginDefn extends Omit<IPluginInfo, 'resolved' | 'id'> {
   main: (
     ctx: PluginContext<unknown>,
     params: Record<string, unknown>
