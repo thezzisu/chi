@@ -35,54 +35,34 @@ export type MapAsync<M> = {
     : never
 }
 
-export interface IRpcCallOptions {
-  signal?: AbortSignal
-  timeout?: number
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IRpcExecOptions {
-  //
-}
-
-export interface IRpcClient<M> {
-  call<K extends keyof M>(
-    method: K,
-    args: Args<M[K]>,
-    options?: IRpcCallOptions
-  ): Promise<Return<M[K]>>
-
-  exec<K extends keyof M>(
-    method: K,
-    args: Args<M[K]>,
-    options?: IRpcExecOptions
-  ): Promise<void>
-}
-
 export enum RpcMsgType {
-  Request = 0,
-  Response = 1
+  CallRequest,
+  CallResponse,
+  ExecRequest
+}
+
+export interface IRpcMsg {
+  t: RpcMsgType
 }
 
 export interface IRpcCallRequest {
-  t: RpcMsgType.Request
-  rpcId: string
-  method: string
-  args: unknown[]
+  t: RpcMsgType.CallRequest
+  i: string
+  m: string
+  a: unknown[]
 }
 
 export interface IRpcCallResponse {
-  t: RpcMsgType.Response
-  rpcId: string
-  resolve?: unknown
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  reject?: any
+  t: RpcMsgType.CallResponse
+  i: string
+  l?: unknown
+  j?: ReturnType<typeof encodeReject>
 }
 
 export interface IRpcExecRequest {
-  t: RpcMsgType.Request
-  method: string
-  args: unknown[]
+  t: RpcMsgType.ExecRequest
+  m: string
+  a: unknown[]
 }
 
 export type RpcRequest = IRpcCallRequest | IRpcExecRequest

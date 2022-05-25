@@ -1,10 +1,11 @@
 import { SpreadTwo, Unprefix } from '../utils/index.js'
-import { IRpcClient, MapAsync } from './base.js'
+import { MapAsync } from './base.js'
+import { RpcClient } from './client.js'
 
 export type RpcWrapped<M, P extends string> = MapAsync<Unprefix<M, P>>
 
 export function createRpcWrapper<M, P extends string>(
-  client: IRpcClient<M>,
+  client: RpcClient<M>,
   prefix: P
 ) {
   return <RpcWrapped<M, P>>new Proxy(

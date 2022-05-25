@@ -2,9 +2,6 @@ import { nanoid } from 'nanoid'
 import {
   Args,
   decodeReject,
-  IRpcCallOptions,
-  IRpcClient,
-  IRpcExecOptions,
   Return,
   RpcMsgType,
   RpcRequest,
@@ -16,10 +13,9 @@ interface RpcCall<T> {
   resolve: (value: T | PromiseLike<T>) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reject: (reason?: any) => void
-  timeout?: NodeJS.Timeout
 }
 
-export class RpcClient<M> implements IRpcClient<M> {
+export class RpcClient<M> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private calls: Record<string, RpcCall<any>>
   constructor(private send: (msg: RpcRequest) => Awaitable<void>) {
@@ -27,8 +23,8 @@ export class RpcClient<M> implements IRpcClient<M> {
   }
 
   handle(msg: RpcResponse) {
-    const { rpcId, resolve, reject } = msg
-    this.handleRemoteResponse(rpcId, resolve, reject)
+    const { i, l, j } = msg
+    this.handleRemoteResponse(i, l, j)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,7 +32,6 @@ export class RpcClient<M> implements IRpcClient<M> {
     if (cid in this.calls) {
       const call = this.calls[cid]
       delete this.calls[cid]
-      call.timeout && clearTimeout(call.timeout)
       if (rejected) return call.reject(decodeReject(rejected))
       call.resolve(resolved)
     }
@@ -44,48 +39,30 @@ export class RpcClient<M> implements IRpcClient<M> {
 
   async call<K extends keyof M>(
     method: K,
-    args: Args<M[K]>,
-    options?: IRpcCallOptions
+    ...args: Args<M[K]>
   ): Promise<Return<M[K]>> {
     const rpcId = nanoid()
     const msg: RpcRequest = {
-      t: RpcMsgType.Request,
-      rpcId,
-      method: <string>method,
-      args: args ?? []
+      t: RpcMsgType.CallRequest,
+      i: rpcId,
+      m: <string>method,
+      a: args ?? []
     }
-    await this.send(msg)
-
-    let timeout: NodeJS.Timeout
-    if (options?.timeout) {
-      timeout = setTimeout(() => {
-        this.handleRemoteResponse(rpcId, undefined, new Error('timeout'))
-      }, options.timeout)
-    }
-    if (options?.signal) {
-      options.signal.addEventListener('abort', () => {
-        this.handleRemoteResponse(rpcId, undefined, new Error('abort'))
-      })
-    }
-
-    return new Promise((resolve, reject) => {
+    const ret = new Promise<Return<M[K]>>((resolve, reject) => {
       this.calls[rpcId] = {
         resolve,
-        reject,
-        timeout
+        reject
       }
     })
+    await this.send(msg)
+    return ret
   }
 
-  async exec<K extends keyof M>(
-    method: K,
-    args: Args<M[K]>,
-    _options?: IRpcExecOptions
-  ): Promise<void> {
+  async exec<K extends keyof M>(method: K, ...args: Args<M[K]>): Promise<void> {
     const msg: RpcRequest = {
-      t: RpcMsgType.Request,
-      method: <string>method,
-      args: args ?? []
+      t: RpcMsgType.ExecRequest,
+      m: <string>method,
+      a: args ?? []
     }
     await this.send(msg)
   }

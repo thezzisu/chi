@@ -9,6 +9,7 @@ import {
   encodeReject
 } from './base.js'
 import type { Awaitable } from '../utils/index.js'
+import type { Logger } from 'pino'
 
 export type RpcImplFn<T> = T extends Fn<infer A, infer R>
   ? (...args: A) => Awaitable<R>
@@ -41,39 +42,39 @@ export class RpcImpl<M> {
   }
 }
 
-const logger = createLogger('server', 'rpc')
+const defaultLogger = createLogger('server', 'rpc')
 
 export class RpcServer<M> extends RpcImpl<M> {
   constructor(
     private send: (msg: RpcResponse) => Awaitable<void>,
-    base: RpcImpl<unknown> | null = null
+    base: RpcImpl<unknown> | null = null,
+    private logger: Logger = defaultLogger
   ) {
     super(base)
   }
 
   async handle(msg: RpcRequest) {
-    if ('rpcId' in msg) {
-      // Call
+    if (msg.t === RpcMsgType.ExecRequest) {
+      this.directCall(<never>msg.m, <never>msg.a)
+    } else {
       try {
-        const resolve = await this.directCall(
-          <never>msg.method,
-          <never>msg.args
-        )
-        await this.send({ t: RpcMsgType.Response, rpcId: msg.rpcId, resolve })
+        const resolve = await this.directCall(<never>msg.m, <never>msg.a)
+        await this.send({
+          t: RpcMsgType.CallResponse,
+          i: msg.i,
+          l: resolve
+        })
       } catch (reject) {
         try {
           await this.send({
-            t: RpcMsgType.Response,
-            rpcId: msg.rpcId,
-            reject: encodeReject(reject)
+            t: RpcMsgType.CallResponse,
+            i: msg.i,
+            j: encodeReject(reject)
           })
         } catch (e) {
-          logger.error(e)
+          this.logger.error(e)
         }
       }
-    } else {
-      // Dispatch
-      this.directCall(<never>msg.method, <never>msg.args)
     }
   }
 }
