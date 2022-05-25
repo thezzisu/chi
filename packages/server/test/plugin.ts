@@ -15,7 +15,8 @@ export default new PluginBuilder<'~/plugin.ts'>()
   .param('wait', Type.String())
   .build(async (ctx, params) => {
     if (params.wait) {
-      await ctx.service.waitForInit(params.wait)
+      const handle = ctx.service.getHandle<'~/plugin.ts'>(params.wait)
+      await handle.waitReady()
     } else {
       // wait for 2 sec
       await new Promise((resolve) => setTimeout(resolve, 2000))

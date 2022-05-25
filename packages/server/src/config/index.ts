@@ -1,6 +1,7 @@
-import { IServiceDefn } from '@chijs/core'
-import { ChiApp } from '../index.js'
 import { unifiedImport } from '../utils/index.js'
+
+import type { ChiApp } from '../index.js'
+import type { IServiceDefn } from '../service/index.js'
 
 export interface IChiServiceConfig extends IServiceDefn {
   autostart?: boolean

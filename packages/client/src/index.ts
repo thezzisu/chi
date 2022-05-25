@@ -1,12 +1,7 @@
 import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
-import {
-  RpcHub,
-  IClientRpcFns,
-  IServerClientRpcFns,
-  RpcWrapped,
-  createRpcWrapper
-} from '@chijs/core'
+import { RpcHub, RpcWrapped, createRpcWrapper } from '@chijs/core'
 
+import type { IClientRpcFns, IServerClientRpcFns } from '@chijs/core'
 export class ChiClient {
   socket: Socket
   hub: RpcHub<IServerClientRpcFns, IClientRpcFns>
@@ -23,8 +18,8 @@ export class ChiClient {
       (msg) => void this.socket.emit('rpc', msg)
     )
     this.socket.on('rpc', (msg) => this.hub.handle(msg))
-    this.service = createRpcWrapper(this.hub, 'app:service:')
-    this.plugin = createRpcWrapper(this.hub, 'app:plugin:')
-    this.misc = createRpcWrapper(this.hub, 'app:misc:')
+    this.service = createRpcWrapper(this.hub.client, 'app:service:')
+    this.plugin = createRpcWrapper(this.hub.client, 'app:plugin:')
+    this.misc = createRpcWrapper(this.hub.client, 'app:misc:')
   }
 }

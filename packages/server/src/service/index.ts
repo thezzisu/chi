@@ -1,14 +1,16 @@
-import {
-  IServerWorkerRpcFns,
-  IServiceDefn,
-  IServiceInfo,
-  IWorkerRpcFns,
-  RpcHub
-} from '@chijs/core'
+import { RpcHub } from '@chijs/core'
 import { ChildProcess } from 'node:child_process'
 import { join } from 'node:path'
 import { ChiApp } from '../index.js'
 import { forkWorker } from './fork.js'
+
+import type {
+  IWorkerRpcFns,
+  IServerWorkerRpcFns,
+  IServiceInfo
+} from '@chijs/core'
+
+export type IServiceDefn = Omit<IServiceInfo, 'running'>
 
 export interface IWorker {
   ps: ChildProcess
@@ -107,7 +109,7 @@ export class ServiceManager {
         new Promise((resolve, reject) =>
           ps.send(msg, (err) => (err ? reject(err) : resolve()))
         ),
-      this.app.apiManager.impls.workerImpl
+      this.app.rpcManager.workerImpl
     )
     ps.on('message', (msg) => hub.handle(<never>msg))
     ps.on('exit', (code, signal) => {
@@ -125,7 +127,7 @@ export class ServiceManager {
       throw new Error('Service is not running')
     }
     const worker = this.workers[name]
-    worker.hub.exec('worker:exit', [])
+    worker.hub.client.exec('worker:exit')
   }
 
   listServices(): IServiceInfo[] {

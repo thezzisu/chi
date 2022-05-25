@@ -1,2 +1,3 @@
-export * from './rpc/index.js'
-export * from './entities/index.js'
+export * from './client.js'
+export * from './server.js'
+export * from './worker.js'

@@ -1,15 +1,12 @@
-import {
-  IServerBaseRpcFns,
-  IServerClientRpcFns,
-  IServerWorkerRpcFns,
-  RpcImpl
-} from '@chijs/core'
+import { RpcImpl } from '@chijs/core'
+import { ChiApp } from '../index.js'
 import fs from 'fs-extra'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { ChiApp } from '../index.js'
 
-export function createAppApiBaseImpls(app: ChiApp) {
+import type { IServerBaseRpcFns } from '@chijs/core'
+
+export function createBaseImpl(app: ChiApp) {
   const baseImpl = new RpcImpl<IServerBaseRpcFns>()
   baseImpl.implement('app:misc:versions', async () => {
     const content = await fs.readFile(
@@ -51,39 +48,15 @@ export function createAppApiBaseImpls(app: ChiApp) {
     return app.serviceManager.listServices()
   })
 
-  baseImpl.implement('app:service:call', (name, method, args) => {
+  baseImpl.implement('app:service:call', (name, method, ...args) => {
     const worker = app.serviceManager.getWorker(name)
-    return worker.hub.call(<never>method, <never>args)
+    return worker.hub.client.call(<never>method, ...(args as never[]))
   })
 
-  baseImpl.implement('app:service:exec', (name, method, args) => {
+  baseImpl.implement('app:service:exec', (name, method, ...args) => {
     const worker = app.serviceManager.getWorker(name)
-    return worker.hub.exec(<never>method, <never>args)
+    return worker.hub.client.exec(<never>method, ...(args as never[]))
   })
 
-  baseImpl.implement('app:service:waitForInit', (name) => {
-    const worker = app.serviceManager.getWorker(name)
-    return worker.hub.exec('worker:waitForInit', [])
-  })
-
-  const workerImpl = new RpcImpl<IServerWorkerRpcFns>(baseImpl)
-
-  workerImpl.implement('app:client:call', (id, method, args) => {
-    const client = app.apiServer.getClient(id)
-    return client.hub.call(<never>method, <never>args)
-  })
-
-  workerImpl.implement('app:client:exec', (id, method, args) => {
-    const client = app.apiServer.getClient(id)
-    return client.hub.exec(<never>method, <never>args)
-  })
-
-  const clientImpl = new RpcImpl<IServerClientRpcFns>(baseImpl)
-
-  clientImpl.implement('app:misc:readFile', async (path) => {
-    const content = await fs.readFile(path)
-    return content
-  })
-
-  return { baseImpl, workerImpl, clientImpl }
+  return baseImpl
 }

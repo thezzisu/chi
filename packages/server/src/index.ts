@@ -1,32 +1,31 @@
-import './utils/preload.js'
 import { createLogger } from '@chijs/core'
 import type { Logger } from 'pino'
 import { ChiAppOptions, ConfigManager } from './config/index.js'
 import { PluginRegistry } from './plugin/index.js'
 import { ServiceManager } from './service/index.js'
-import { ApiServer } from './server/index.js'
-import { ApiManager } from './api/index.js'
+import { WebServer } from './web/index.js'
+import { RpcManager } from './rpc/index.js'
 
 export class ChiApp {
   logger: Logger
   configManager: ConfigManager
-  apiManager: ApiManager
+  rpcManager: RpcManager
   pluginRegistry: PluginRegistry
   serviceManager: ServiceManager
-  apiServer: ApiServer
+  webServer: WebServer
 
   constructor(options?: ChiAppOptions) {
     this.logger = createLogger('core', 'app')
     this.configManager = new ConfigManager(this, options)
-    this.apiManager = new ApiManager(this)
+    this.rpcManager = new RpcManager(this)
     this.pluginRegistry = new PluginRegistry(this)
     this.serviceManager = new ServiceManager(this)
-    this.apiServer = new ApiServer(this)
+    this.webServer = new WebServer(this)
   }
 
   async start() {
     this.logger.error(`Starting Chi`)
-    await this.apiServer.start()
+    await this.webServer.start()
     this.logger.info(`Loading plugins`)
     for (const plugin of this.configManager.config.plugins) {
       try {
@@ -60,3 +59,7 @@ export class ChiApp {
     this.logger.error('Chi started')
   }
 }
+
+export * from './plugin/index.js'
+export * from './rpc/index.js'
+export * from './service/index.js'

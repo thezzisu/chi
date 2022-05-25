@@ -1,18 +1,20 @@
-import {
-  TSchema,
-  SchemaMap,
-  MapStatic,
-  Id,
-  IPluginDefn,
-  IPluginContext,
-  Type
-} from '@chijs/core'
+import { IPluginInfo, Type } from '@chijs/core'
+import { PluginContext } from './context/plugin.js'
+
+import type { TSchema, SchemaMap, MapStatic, Id } from '@chijs/core'
+
+export interface IPluginDefn extends Omit<IPluginInfo, 'resolved' | 'name'> {
+  main: (
+    ctx: PluginContext<unknown>,
+    params: Record<string, unknown>
+  ) => unknown
+}
 
 export function definePlugin<M extends SchemaMap>(options: {
   params: M
-  main: <P>(ctx: IPluginContext<P>, params: MapStatic<M>) => unknown
+  main: (ctx: PluginContext<unknown>, params: MapStatic<M>) => unknown
 }): IPluginDefn {
-  return {
+  return <never>{
     ...options,
     params: Object.fromEntries(
       Object.entries(options.params).map(([k, v]) => [k, Type.Strict(v)])
@@ -43,11 +45,11 @@ export class PluginBuilder<P = {}, M = {}> {
   }
 
   build(
-    main: (ctx: IPluginContext<P>, params: MapStatic<M>) => unknown
+    main: (ctx: PluginContext<P>, params: MapStatic<M>) => unknown
   ): IPluginDefn {
     return {
       params: { ...this.params },
-      main: main
+      main: <never>main
     }
   }
 }

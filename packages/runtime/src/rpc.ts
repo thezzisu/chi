@@ -1,9 +1,12 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-import { IWorkerRpcFns, RpcImpl } from '@chijs/core'
+import { RpcImpl } from '@chijs/core'
+
+import type { IWorkerRpcFns } from '@chijs/core'
 
 export const workerBaseImpl = new RpcImpl<IWorkerRpcFns>()
 export const initialization = {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   resolve: () => {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   reject: () => {},
   promise: <Promise<void>>(<unknown>null)
 }
@@ -20,4 +23,4 @@ workerBaseImpl.implement('worker:print', async (msg) => {
   console.log(msg)
 })
 
-workerBaseImpl.implement('worker:waitForInit', () => initialization.promise)
+workerBaseImpl.implement('worker:waitReady', () => initialization.promise)

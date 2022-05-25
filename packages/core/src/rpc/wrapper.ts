@@ -14,7 +14,7 @@ export function createRpcWrapper<M, P extends string>(
       get(target, property) {
         if (typeof property !== 'string') throw new Error('Invalid property')
         return (...args: unknown[]) =>
-          client.call(<never>`${prefix}${property}`, <never>args)
+          client.call(<never>`${prefix}${property}`, ...(<never>args))
       }
     }
   )

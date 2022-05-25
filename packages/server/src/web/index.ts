@@ -1,10 +1,12 @@
+import { RpcHub } from '@chijs/core'
 import type { Socket } from 'socket.io'
 import fastify, { FastifyInstance } from 'fastify'
 import cors from '@fastify/cors'
 import fastifySocketIo from 'fastify-socket.io'
 import { Logger } from 'pino'
-import { ChiApp } from '../index.js'
-import { IClientRpcFns, IServerClientRpcFns, RpcHub } from '@chijs/core'
+
+import type { ChiApp } from '../index.js'
+import type { IClientRpcFns, IServerClientRpcFns } from '@chijs/core'
 
 export interface IClient {
   socket: Socket
@@ -18,7 +20,7 @@ export class ClientDisconnectedError extends Error {
   }
 }
 
-export class ApiServer {
+export class WebServer {
   private server: FastifyInstance
   private clients: Record<string, IClient>
   private logger: Logger
@@ -47,7 +49,7 @@ export class ApiServer {
     this.logger.info(`Client ${socket.id} connected`)
     const hub = new RpcHub<IClientRpcFns, IServerClientRpcFns>(
       (msg) => void socket.emit('rpc', msg),
-      this.app.apiManager.impls.clientImpl
+      this.app.rpcManager.clientImpl
     )
     socket.on('rpc', (msg) => hub.handle(msg))
     socket.on('disconnect', (reason) => {
