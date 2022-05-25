@@ -23,3 +23,5 @@ export class ChiClient {
     this.misc = createRpcWrapper(this.hub.client, 'app:misc:')
   }
 }
+
+export * from '@chijs/core'

@@ -15,6 +15,7 @@ export type IServiceDefn = Omit<IServiceInfo, 'running'>
 export interface IWorker {
   ps: ChildProcess
   hub: RpcHub<IWorkerRpcFns, IServerWorkerRpcFns>
+  logPath: string
 }
 
 export class WorkerExitError extends Error {
@@ -51,7 +52,7 @@ export class ServiceManager {
     if (!this.app.pluginRegistry.verifyParams(plugin, params)) {
       throw new Error('Bad params')
     }
-    this.services[name] = { name, plugin, params }
+    this.services[name] = { name, plugin, params, logPath: '' }
   }
 
   updateService(name: string, params: Record<string, unknown>) {
@@ -87,6 +88,14 @@ export class ServiceManager {
     }
     const service = this.services[name]
     const plugin = this.app.pluginRegistry.get(service.plugin)
+    const logPath =
+      this.app.configManager.config.logDir === 'stdout'
+        ? undefined
+        : join(
+            this.app.configManager.config.logDir,
+            service.name,
+            `${+new Date()}.log`
+          )
     const ps = forkWorker({
       data: {
         service: service.name,
@@ -95,14 +104,7 @@ export class ServiceManager {
         resolved: plugin.resolved
       },
       logger: this.app.logger,
-      logPath:
-        this.app.configManager.config.logDir === 'stdout'
-          ? undefined
-          : join(
-              this.app.configManager.config.logDir,
-              service.name,
-              `${+new Date()}.log`
-            )
+      logPath
     })
     const hub = new RpcHub<IWorkerRpcFns, IServerWorkerRpcFns>(
       (msg) =>
@@ -116,7 +118,7 @@ export class ServiceManager {
       hub.dispose(new WorkerExitError(code, signal))
       delete this.workers[name]
     })
-    this.workers[name] = { ps, hub }
+    this.workers[name] = { ps, hub, logPath: logPath ?? 'stdout' }
   }
 
   stopService(name: string) {
@@ -133,7 +135,8 @@ export class ServiceManager {
   listServices(): IServiceInfo[] {
     return Object.values(this.services).map((service) => ({
       ...service,
-      running: service.name in this.workers
+      running: service.name in this.workers,
+      logPath: this.workers[service.name]?.logPath ?? ''
     }))
   }
 }

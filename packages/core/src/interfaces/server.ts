@@ -5,6 +5,7 @@ export interface IServiceInfo {
   plugin: string
   params: Record<string, unknown>
   running: boolean
+  logPath: string
 }
 
 export interface IPluginInfo {
@@ -15,6 +16,7 @@ export interface IPluginInfo {
 
 export interface IServerBaseRpcFns {
   ['app:misc:versions'](): Record<string, string>
+  ['app:misc:startTime'](): number
 
   ['app:plugin:load'](mod: string): void
   ['app:plugin:list'](): IPluginInfo[]

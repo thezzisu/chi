@@ -1,4 +1,4 @@
-import { RpcImpl } from '@chijs/core'
+import { RpcImpl, STARTUP_TIMESTAMP } from '@chijs/core'
 import { ChiApp } from '../index.js'
 import fs from 'fs-extra'
 import { dirname, join } from 'node:path'
@@ -15,6 +15,8 @@ export function createBaseImpl(app: ChiApp) {
     const json = JSON.parse(content.toString())
     return { server: json.version }
   })
+
+  baseImpl.implement('app:misc:startTime', () => STARTUP_TIMESTAMP)
 
   baseImpl.implement('app:plugin:load', async (mod) => {
     await app.pluginRegistry.load(mod)

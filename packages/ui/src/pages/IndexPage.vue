@@ -34,10 +34,27 @@ const infos = ref<Info[]>([])
 const client = inject(clientKey)!
 
 async function load() {
-  const versions = await client.hub.call('app:versions', [])
+  const versions = await client.misc.versions()
   infos.value.push({
-    label: 'Server version',
+    label: 'Server Version',
     content: versions.server
+  })
+  const startTime = await client.misc.startTime()
+  infos.value.push({
+    label: 'Start Time',
+    content: new Date(startTime).toLocaleString()
+  })
+  const plugins = await client.plugin.list()
+  infos.value.push({
+    label: 'Loaded Plugins',
+    content: '' + plugins.length
+  })
+  const services = await client.service.list()
+  infos.value.push({
+    label: 'All Services',
+    content: `Running: ${services.filter((s) => s.running).length} Total: ${
+      services.length
+    }`
   })
 }
 

@@ -1,10 +1,8 @@
 <template>
   <q-layout view="hHh Lpr fFf">
     <q-header elevated class="row no-wrap">
-      <q-toolbar class="col-auto bg-purple">
-        <q-btn stretch flat no-caps to="/">
-          <q-toolbar-title>ChiUI</q-toolbar-title>
-        </q-btn>
+      <q-toolbar class="col-auto bg-brand q-px-none">
+        <q-btn stretch flat no-caps to="/" :icon="`img:${logoWhite}`" />
       </q-toolbar>
       <q-toolbar>
         <q-toolbar-title>Instance Manager</q-toolbar-title>
@@ -17,4 +15,6 @@
   </q-layout>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import logoWhite from 'assets/logo-white.svg'
+</script>

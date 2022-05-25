@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh LpR lFf">
     <q-header elevated class="row no-wrap">
-      <q-toolbar class="col-auto bg-purple q-px-none">
+      <q-toolbar class="col-auto bg-brand q-px-none">
         <q-btn
           flat
           round
@@ -11,9 +11,7 @@
           @click="navOpen = !navOpen"
         />
         <q-separator dark vertical inset />
-        <q-btn stretch flat no-caps :to="base">
-          <q-toolbar-title>ChiUI</q-toolbar-title>
-        </q-btn>
+        <q-btn stretch flat no-caps :to="base" :icon="`img:${logoWhite}`" />
       </q-toolbar>
       <q-toolbar>
         <q-toolbar-title>Dashboard</q-toolbar-title>
@@ -53,6 +51,7 @@
 </template>
 
 <script lang="ts" setup>
+import logoWhite from 'assets/logo-white.svg'
 import { ChiClient } from '@chijs/client'
 import { clientKey } from 'src/shared/injections'
 import { getInstance } from 'src/shared/instance'
