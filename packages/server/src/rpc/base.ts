@@ -22,33 +22,29 @@ export function createBaseImpl(app: ChiApp) {
     await app.pluginRegistry.load(mod)
   })
 
-  baseImpl.implement('app:plugin:list', () => {
-    return app.pluginRegistry.list()
-  })
+  baseImpl.implement('app:plugin:list', () => app.pluginRegistry.list())
 
-  baseImpl.implement('app:service:add', (plugin, id, params) => {
-    app.serviceManager.addService(id, plugin, params)
-  })
+  baseImpl.implement('app:plugin:get', (id) => app.pluginRegistry.get(id))
 
-  baseImpl.implement('app:service:update', (id, params) => {
-    app.serviceManager.updateService(id, params)
-  })
+  baseImpl.implement('app:service:add', (plugin, id, params) =>
+    app.serviceManager.add(id, plugin, params)
+  )
 
-  baseImpl.implement('app:service:remove', (id) => {
-    app.serviceManager.removeService(id)
-  })
+  baseImpl.implement('app:service:update', (id, params) =>
+    app.serviceManager.update(id, params)
+  )
 
-  baseImpl.implement('app:service:start', (id) => {
-    app.serviceManager.startService(id)
-  })
+  baseImpl.implement('app:service:remove', (id) =>
+    app.serviceManager.remove(id)
+  )
 
-  baseImpl.implement('app:service:stop', (id) => {
-    app.serviceManager.stopService(id)
-  })
+  baseImpl.implement('app:service:start', (id) => app.serviceManager.start(id))
 
-  baseImpl.implement('app:service:list', () => {
-    return app.serviceManager.listServices()
-  })
+  baseImpl.implement('app:service:stop', (id) => app.serviceManager.stop(id))
+
+  baseImpl.implement('app:service:list', () => app.serviceManager.list())
+
+  baseImpl.implement('app:service:get', (id) => app.serviceManager.get(id))
 
   baseImpl.implement('app:service:call', (id, method, ...args) => {
     const worker = app.serviceManager.getWorker(id)

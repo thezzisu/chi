@@ -20,6 +20,7 @@ export interface IServerBaseRpcFns {
 
   ['app:plugin:load'](mod: string): void
   ['app:plugin:list'](): IPluginInfo[]
+  ['app:plugin:get'](id: string): IPluginInfo
 
   ['app:service:add'](
     plugin: string,
@@ -33,6 +34,7 @@ export interface IServerBaseRpcFns {
   ['app:service:call'](id: string, method: string, ...args: unknown[]): unknown
   ['app:service:exec'](id: string, method: string, ...args: unknown[]): unknown
   ['app:service:list'](): IServiceInfo[]
+  ['app:service:get'](id: string): IServiceInfo
 }
 
 export interface IServerClientRpcFns extends IServerBaseRpcFns {

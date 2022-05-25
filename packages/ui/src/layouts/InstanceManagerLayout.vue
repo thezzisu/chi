@@ -17,4 +17,9 @@
 
 <script lang="ts" setup>
 import logoWhite from 'assets/logo-white.svg'
+import { baseKey } from 'src/shared/injections'
+import { provide } from 'vue'
+
+const base = '/'
+provide(baseKey, base)
 </script>

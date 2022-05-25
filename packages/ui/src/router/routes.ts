@@ -27,8 +27,19 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'plugin', component: () => import('pages/PluginPage.vue') },
-      { path: 'service', component: () => import('pages/ServicePage.vue') },
+      { path: 'plugin', component: () => import('src/pages/PluginsPage.vue') },
+      {
+        path: 'plugin/:pluginId',
+        component: () => import('src/pages/PluginPage.vue')
+      },
+      {
+        path: 'service',
+        component: () => import('src/pages/ServicesPage.vue')
+      },
+      {
+        path: 'service/:serviceId',
+        component: () => import('src/pages/ServicePage.vue')
+      },
       {
         path: ':catchAll(.+)',
         component: () => import('pages/ErrorNotFound.vue')

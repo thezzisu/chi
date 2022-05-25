@@ -53,7 +53,7 @@
 <script lang="ts" setup>
 import logoWhite from 'assets/logo-white.svg'
 import { ChiClient } from '@chijs/client'
-import { clientKey } from 'src/shared/injections'
+import { baseKey, clientKey } from 'src/shared/injections'
 import { getInstance } from 'src/shared/instance'
 import { provide, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -62,6 +62,7 @@ const navOpen = ref(false)
 
 const route = useRoute()
 const base = `/instance/${route.params.instanceId}`
+provide(baseKey, base)
 
 const menuItems = [
   { icon: 'mdi-clipboard-text-outline', label: 'Overview', to: '/' },

@@ -45,7 +45,7 @@ export class ServiceManager {
     return worker
   }
 
-  addService(id: string, plugin: string, params: Record<string, unknown>) {
+  add(id: string, plugin: string, params: Record<string, unknown>) {
     if (id in this.services) {
       throw new Error('Service already exists')
     }
@@ -55,7 +55,7 @@ export class ServiceManager {
     this.services[id] = { id, plugin, params, logPath: '' }
   }
 
-  updateService(id: string, params: Record<string, unknown>) {
+  update(id: string, params: Record<string, unknown>) {
     if (!(id in this.services)) {
       throw new Error('Service not found')
     }
@@ -69,7 +69,7 @@ export class ServiceManager {
     service.params = params
   }
 
-  removeService(id: string) {
+  remove(id: string) {
     if (!(id in this.services)) {
       throw new Error('Service not found')
     }
@@ -79,7 +79,7 @@ export class ServiceManager {
     delete this.services[id]
   }
 
-  startService(id: string) {
+  start(id: string) {
     if (!(id in this.services)) {
       throw new Error('Service not found')
     }
@@ -121,7 +121,7 @@ export class ServiceManager {
     this.workers[id] = { ps, hub, logPath: logPath ?? 'stdout' }
   }
 
-  stopService(id: string) {
+  stop(id: string) {
     if (!(id in this.services)) {
       throw new Error('Service not found')
     }
@@ -132,11 +132,23 @@ export class ServiceManager {
     worker.hub.client.exec('worker:exit')
   }
 
-  listServices(): IServiceInfo[] {
+  list(): IServiceInfo[] {
     return Object.values(this.services).map((service) => ({
       ...service,
       running: service.id in this.workers,
       logPath: this.workers[service.id]?.logPath ?? ''
     }))
+  }
+
+  get(id: string): IServiceInfo {
+    if (!(id in this.services)) {
+      throw new Error('Service not found')
+    }
+    const service = this.services[id]
+    return {
+      ...service,
+      running: service.id in this.workers,
+      logPath: this.workers[service.id]?.logPath ?? ''
+    }
   }
 }
