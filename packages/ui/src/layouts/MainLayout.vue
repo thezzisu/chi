@@ -15,14 +15,6 @@
       </q-toolbar>
       <q-toolbar>
         <q-toolbar-title>Dashboard</q-toolbar-title>
-        <q-btn
-          flat
-          round
-          dense
-          :icon="`mdi-${
-            connected ? 'check-network-outline' : 'close-network-outline'
-          }`"
-        />
       </q-toolbar>
     </q-header>
 
@@ -45,8 +37,24 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="router" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </q-page-container>
+
+    <q-footer
+      elevated
+      class="text-white"
+      :class="[connected ? 'bg-grey-8' : 'bg-red-8']"
+    >
+      <div class="row justify-center">
+        <div>
+          <code>{{ statusText }}</code>
+        </div>
+      </div>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -57,6 +65,7 @@ import { baseKey, clientKey } from 'src/shared/injections'
 import { getInstance } from 'src/shared/instance'
 import { provide, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { computed } from '@vue/reactivity'
 
 const navOpen = ref(false)
 
@@ -80,5 +89,11 @@ client.socket.on('connect', () => {
 })
 client.socket.on('disconnect', () => {
   connected.value = false
+})
+const statusText = computed(() => {
+  if (connected.value) {
+    return `Connected ${client.socket.id}`
+  }
+  return 'Disconnected'
 })
 </script>

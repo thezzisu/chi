@@ -6,33 +6,33 @@
           <div class="q-pr-sm">
             <q-btn flat padding="xs" icon="mdi-arrow-left" to="/" />
           </div>
-          <div class="text-h6 col-grow" v-if="isNew">New Instance</div>
-          <div class="text-h6 col-grow" v-else>Edit Instance</div>
+          <div v-if="isNew" class="text-h6 col-grow">New Instance</div>
+          <div v-else class="text-h6 col-grow">Edit Instance</div>
           <div>
             <q-btn
+              v-if="!isNew"
               padding="xs"
               color="negative"
               icon="mdi-delete"
               @click="remove"
-              v-if="!isNew"
             />
           </div>
         </div>
       </q-card-section>
       <q-separator />
       <q-card-section>
-        <q-input label="Name" v-model="current.name" />
+        <q-input v-model="current.name" label="Name" />
         <div class="q-pt-sm">
           <div class="text-grey-7 text-caption">Type</div>
           <q-option-group
-            name="preferred_genre"
             v-model="current.type"
+            name="preferred_genre"
             :options="instanceTypes"
             color="primary"
             inline
           />
         </div>
-        <q-input label="URL" v-model="current.url" />
+        <q-input v-model="current.url" label="URL" />
       </q-card-section>
       <q-separator />
       <q-card-actions align="right">

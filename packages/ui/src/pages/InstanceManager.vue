@@ -18,9 +18,10 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>{{ instance.name }}</q-item-label>
+            <q-item-label overline>{{ instance.type }}</q-item-label>
             <q-item-label caption>{{ instance.url }}</q-item-label>
           </q-item-section>
-          <q-item-section top side>
+          <q-item-section side>
             <div class="text-grey-8 q-gutter-xs">
               <q-btn
                 flat
