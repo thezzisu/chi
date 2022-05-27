@@ -1,4 +1,3 @@
-import { RpcHub } from '@chijs/core'
 import type { Socket } from 'socket.io'
 import fastify, { FastifyInstance } from 'fastify'
 import cors from '@fastify/cors'
@@ -6,11 +5,10 @@ import fastifySocketIo from 'fastify-socket.io'
 import { Logger } from 'pino'
 
 import type { ChiApp } from '../index.js'
-import type { IClientRpcFns, IServerClientRpcFns } from '@chijs/core'
+import { RpcId } from '@chijs/core'
 
 export interface IClient {
   socket: Socket
-  hub: RpcHub<IClientRpcFns, IServerClientRpcFns>
 }
 
 export class ClientDisconnectedError extends Error {
@@ -47,17 +45,17 @@ export class WebServer {
 
   private onConnection(socket: Socket) {
     this.logger.info(`Client ${socket.id} connected`)
-    const hub = new RpcHub<IClientRpcFns, IServerClientRpcFns>(
-      (msg) => void socket.emit('rpc', msg),
-      this.app.rpcManager.clientImpl
+    const adapter = this.app.rpcManager.router.createAdapter(
+      RpcId.client(socket.id),
+      (msg) => socket.send('rpc', msg)
     )
-    socket.on('rpc', (msg) => hub.handle(msg))
+    socket.on('rpc', (msg) => adapter.recv(msg))
     socket.on('disconnect', (reason) => {
       this.logger.info(`Client ${socket.id} disconnected`)
-      hub.dispose(new ClientDisconnectedError(reason))
+      adapter.dispose(new ClientDisconnectedError(reason))
       delete this.clients[socket.id]
     })
-    this.clients[socket.id] = { socket, hub }
+    this.clients[socket.id] = { socket }
   }
 
   getClient(id: string) {

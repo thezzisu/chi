@@ -14,6 +14,7 @@ import {
 } from './base.js'
 import type { Logger } from 'pino'
 import type { Awaitable } from '../utils/index.js'
+import { createLogger } from '../logger/index.js'
 
 export interface RpcTypeDescriptor<A extends {}, B extends {}> {
   provide: A
@@ -84,15 +85,26 @@ export type PublishCb<
 
 export type Descriptor = RpcTypeDescriptor<{}, {}>
 
+export type InternalDescriptor = RpcTypeDescriptor<
+  {
+    ['$ping'](): void
+  },
+  {}
+>
+
+const defaultLogger = createLogger('core', 'rpc')
+
 export class RpcEndpoint<D extends Descriptor> {
+  /** @internal */
   handles
-  provides
-  publishes
+  private provides
+  private publishes
+  private internal
 
   constructor(
     public localId: RpcId,
     public send: (msg: IRpcMsg) => unknown,
-    public logger: Logger
+    public logger: Logger = defaultLogger
   ) {
     this.handles = new Map<RpcId, RpcHandle<RpcTypeDescriptor<{}, {}>>>()
     this.provides = new Map<string, (...args: unknown[]) => unknown>()
@@ -100,6 +112,9 @@ export class RpcEndpoint<D extends Descriptor> {
       string,
       (cb: (data: unknown) => void, ...args: unknown[]) => () => unknown
     >()
+    this.internal = <RpcEndpoint<InternalDescriptor>>this
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    this.internal.provide('$ping', () => {})
   }
 
   getHandle<D extends Descriptor>(remoteId: RpcId): RpcHandle<D> {
@@ -137,13 +152,21 @@ export interface IRpcInvocation {
 }
 
 export class RpcHandle<D extends Descriptor> {
-  invocations
+  private internal
+  private invocations
+  private disposed
 
   constructor(
     private endpoint: RpcEndpoint<Descriptor>,
     public remoteId: RpcId
   ) {
     this.invocations = new Map<CallId, IRpcInvocation>()
+    this.internal = <RpcHandle<InternalDescriptor>>this
+    this.disposed = false
+  }
+
+  async connect() {
+    await this.internal.call('$ping')
   }
 
   private handleDie(msg: IRpcDieMsg) {
@@ -222,6 +245,7 @@ export class RpcHandle<D extends Descriptor> {
   }
 
   async dispose(reason: unknown) {
+    this.disposed = true
     if (this.endpoint.handles.delete(this.remoteId)) {
       this.invocations.forEach(({ reject }) => reject(reason))
       this.invocations.clear()
@@ -232,6 +256,7 @@ export class RpcHandle<D extends Descriptor> {
     name: K,
     ...args: ProvideArgs<D, K>
   ): Promise<ProvideReturn<D, K>> {
+    if (this.disposed) throw new Error('RpcHandle is disposed')
     const callId = nanoid()
     const msg: IRpcCallRequest = {
       t: RpcMsgType.CALL_REQUEST,
@@ -258,6 +283,7 @@ export class RpcHandle<D extends Descriptor> {
     name: K,
     ...args: ProvideArgs<D, K>
   ): Promise<void> {
+    if (this.disposed) throw new Error('RpcHandle is disposed')
     const msg: IRpcExecRequest = {
       t: RpcMsgType.EXEC_REQUEST,
       s: this.endpoint.localId,

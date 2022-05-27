@@ -1,20 +1,20 @@
+import { RpcEndpoint, RpcId, RpcRouter, ServerDescriptor } from '@chijs/core'
 import { ChiApp } from '../index.js'
-import { createBaseImpl } from './base.js'
-import { createClientImpl } from './client.js'
-import { createWorkerImpl } from './worker.js'
+import { applyServerImpl } from './base.js'
 
 export class RpcManager {
-  baseImpl
-  clientImpl
-  workerImpl
+  router
+  private adapter
+  endpoint
 
   constructor(private app: ChiApp) {
-    this.baseImpl = createBaseImpl(app)
-    this.clientImpl = createClientImpl(app, this.baseImpl)
-    this.workerImpl = createWorkerImpl(app, this.baseImpl)
+    this.router = new RpcRouter()
+    this.adapter = this.router.createAdapter(RpcId.server(), (msg) =>
+      this.endpoint.recv(msg)
+    )
+    this.endpoint = new RpcEndpoint<ServerDescriptor>(RpcId.server(), (msg) =>
+      this.adapter.recv(msg)
+    )
+    applyServerImpl(this.endpoint, this.app)
   }
 }
-
-export * from './base.js'
-export * from './client.js'
-export * from './worker.js'

@@ -1,26 +1,30 @@
-import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
-import { RpcHub, RpcWrapped, createRpcWrapper } from '@chijs/core'
+import type { Socket } from 'socket.io-client'
+import { RpcEndpoint, createRpcWrapper, RpcId } from '@chijs/core'
 
-import type { IClientRpcFns, IServerClientRpcFns } from '@chijs/core'
+import type { ClientDescriptor, ServerDescriptor } from '@chijs/core'
 export class ChiClient {
-  socket: Socket
-  hub: RpcHub<IServerClientRpcFns, IClientRpcFns>
-  service: RpcWrapped<IServerClientRpcFns, 'app:service:'>
-  plugin: RpcWrapped<IServerClientRpcFns, 'app:plugin:'>
-  misc: RpcWrapped<IServerClientRpcFns, 'app:misc:'>
+  private internalEndpoint
+  server
+  service
+  plugin
+  misc
 
-  constructor(
-    uri: string | Partial<ManagerOptions & SocketOptions>,
-    opts?: Partial<ManagerOptions & SocketOptions>
-  ) {
-    this.socket = io(uri, opts)
-    this.hub = new RpcHub<IServerClientRpcFns, IClientRpcFns>(
-      (msg) => void this.socket.emit('rpc', msg)
+  constructor(public socket: Socket) {
+    this.internalEndpoint = new RpcEndpoint<ClientDescriptor>(
+      RpcId.client(socket.id),
+      (msg) => socket.send('rpc', msg)
     )
-    this.socket.on('rpc', (msg) => this.hub.handle(msg))
-    this.service = createRpcWrapper(this.hub.client, 'app:service:')
-    this.plugin = createRpcWrapper(this.hub.client, 'app:plugin:')
-    this.misc = createRpcWrapper(this.hub.client, 'app:misc:')
+    this.socket.on('rpc', (msg) => this.internalEndpoint.recv(msg))
+    this.server = this.internalEndpoint.getHandle<ServerDescriptor>(
+      RpcId.server()
+    )
+    this.service = createRpcWrapper(this.server, '$s:service:')
+    this.plugin = createRpcWrapper(this.server, '$s:plugin:')
+    this.misc = createRpcWrapper(this.server, '$s:misc:')
+  }
+
+  get endpoint() {
+    return this.internalEndpoint
   }
 }
 

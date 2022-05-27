@@ -14,7 +14,7 @@ interface ITestFns {
   bad(): void
 }
 
-function setupRpc() {
+async function setupRpc() {
   const router = new RpcRouter()
   const adapter1 = router.createAdapter('1', (msg) => {
     endpoint1.recv(msg)
@@ -37,23 +37,37 @@ function setupRpc() {
     logger
   )
   const handle = endpoint2.getHandle<RpcTypeDescriptor<ITestFns, {}>>('1')
-  return handle
+  await handle.connect()
+  return { router, adapter1, endpoint1, adapter2, endpoint2, handle }
 }
 
 describe('RPC', () => {
   it('call ok', async () => {
-    const handle = setupRpc()
+    const { handle } = await setupRpc()
     await expect(handle.call('foo', '123')).eventually.eq(123)
   })
 
   it('call remote error', async () => {
-    const handle = setupRpc()
+    const { handle } = await setupRpc()
     await expect(handle.call('bad')).rejectedWith('BAD!!')
   })
 
   it('call not found', async () => {
-    const handle = setupRpc()
+    const { handle } = await setupRpc()
     // @ts-ignore
     await expect(handle.call('not-found')).rejectedWith('No implementation')
+  })
+
+  it('handle disposed', async () => {
+    const { adapter1, handle } = await setupRpc()
+    adapter1.dispose(new Error('Manually closed'))
+    await expect(handle.call('foo', '123')).rejectedWith('disposed')
+  })
+
+  it('handle remote close', async () => {
+    const { adapter1, handle } = await setupRpc()
+    const promise = handle.call('foo', '123')
+    adapter1.dispose(new Error('Manually closed'))
+    await expect(promise).rejectedWith('Manually closed')
   })
 })

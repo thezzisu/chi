@@ -53,6 +53,7 @@ export class RpcRouter {
   }
 
   createAdapter(id: RpcId, send: (msg: IRpcMsg) => unknown) {
+    if (this.adapters.has(id)) throw new Error('Adapter already exists')
     const adapter = new RpcAdapter(this, id, send)
     this.adapters.set(id, adapter)
     return adapter

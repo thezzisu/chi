@@ -1,20 +1,28 @@
-import { SpreadTwo, Unprefix } from '../utils/index.js'
-import { MapAsync } from './base.js'
-import { RpcClient } from './client.js'
+import type { SpreadTwo, Unprefix } from '../utils/index.js'
+import type { Fn } from './base.js'
+import type { Descriptor, RpcHandle } from './endpoint.js'
 
+export type MapAsync<M> = {
+  [K in keyof M]: M[K] extends Fn<infer A, infer R>
+    ? (...args: A) => Promise<R>
+    : never
+}
 export type RpcWrapped<M, P extends string> = MapAsync<Unprefix<M, P>>
+type GetProvide<H> = H extends RpcHandle<infer D> ? D['provide'] : never
 
-export function createRpcWrapper<M, P extends string>(
-  client: RpcClient<M>,
-  prefix: P
-) {
-  return <RpcWrapped<M, P>>new Proxy(
+export function createRpcWrapper<
+  H extends RpcHandle<Descriptor>,
+  P extends string
+>(handle: H, prefix: P) {
+  return <RpcWrapped<GetProvide<H>, P>>new Proxy(
     {},
     {
-      get(target, property) {
-        if (typeof property !== 'string') throw new Error('Invalid property')
+      get(target, prop) {
+        // Magic: make proxy not a Thenable
+        if (prop === 'then') return null
+        if (typeof prop !== 'string') throw new Error('Invalid property')
         return (...args: unknown[]) =>
-          client.call(<never>`${prefix}${property}`, ...(<never>args))
+          handle.call(<never>`${prefix}${prop}`, ...args)
       }
     }
   )

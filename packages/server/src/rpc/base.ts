@@ -1,14 +1,14 @@
-import { RpcImpl, STARTUP_TIMESTAMP } from '@chijs/core'
+import { RpcEndpoint, ServerDescriptor, STARTUP_TIMESTAMP } from '@chijs/core'
 import { ChiApp } from '../index.js'
 import fs from 'fs-extra'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import type { IServerBaseRpcFns } from '@chijs/core'
-
-export function createBaseImpl(app: ChiApp) {
-  const baseImpl = new RpcImpl<IServerBaseRpcFns>()
-  baseImpl.implement('app:misc:versions', async () => {
+export function applyServerImpl(
+  endpoint: RpcEndpoint<ServerDescriptor>,
+  app: ChiApp
+) {
+  endpoint.provide('$s:misc:versions', async () => {
     const content = await fs.readFile(
       join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'package.json')
     )
@@ -16,45 +16,31 @@ export function createBaseImpl(app: ChiApp) {
     return { server: json.version }
   })
 
-  baseImpl.implement('app:misc:startTime', () => STARTUP_TIMESTAMP)
+  endpoint.provide('$s:misc:startTime', () => STARTUP_TIMESTAMP)
 
-  baseImpl.implement('app:plugin:load', async (mod) => {
+  endpoint.provide('$s:plugin:load', async (mod) => {
     await app.pluginRegistry.load(mod)
   })
 
-  baseImpl.implement('app:plugin:list', () => app.pluginRegistry.list())
+  endpoint.provide('$s:plugin:list', () => app.pluginRegistry.list())
 
-  baseImpl.implement('app:plugin:get', (id) => app.pluginRegistry.get(id))
+  endpoint.provide('$s:plugin:get', (id) => app.pluginRegistry.get(id))
 
-  baseImpl.implement('app:service:add', (plugin, id, params) =>
+  endpoint.provide('$s:service:add', (plugin, id, params) =>
     app.serviceManager.add(id, plugin, params)
   )
 
-  baseImpl.implement('app:service:update', (id, params) =>
+  endpoint.provide('$s:service:update', (id, params) =>
     app.serviceManager.update(id, params)
   )
 
-  baseImpl.implement('app:service:remove', (id) =>
-    app.serviceManager.remove(id)
-  )
+  endpoint.provide('$s:service:remove', (id) => app.serviceManager.remove(id))
 
-  baseImpl.implement('app:service:start', (id) => app.serviceManager.start(id))
+  endpoint.provide('$s:service:start', (id) => app.serviceManager.start(id))
 
-  baseImpl.implement('app:service:stop', (id) => app.serviceManager.stop(id))
+  endpoint.provide('$s:service:stop', (id) => app.serviceManager.stop(id))
 
-  baseImpl.implement('app:service:list', () => app.serviceManager.list())
+  endpoint.provide('$s:service:list', () => app.serviceManager.list())
 
-  baseImpl.implement('app:service:get', (id) => app.serviceManager.get(id))
-
-  baseImpl.implement('app:service:call', (id, method, ...args) => {
-    const worker = app.serviceManager.getWorker(id)
-    return worker.hub.client.call(<never>method, ...(args as never[]))
-  })
-
-  baseImpl.implement('app:service:exec', (id, method, ...args) => {
-    const worker = app.serviceManager.getWorker(id)
-    return worker.hub.client.exec(<never>method, ...(args as never[]))
-  })
-
-  return baseImpl
+  endpoint.provide('$s:service:get', (id) => app.serviceManager.get(id))
 }

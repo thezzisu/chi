@@ -1,8 +1,14 @@
-import { IServerWorkerRpcFns, IWorkerRpcFns, RpcHub } from '@chijs/core'
+import {
+  RpcId,
+  RpcEndpoint,
+  WorkerDescriptor,
+  createLogger,
+  IRpcMsg
+} from '@chijs/core'
 import { deserialize } from 'node:v8'
 import { PluginContext } from './context/plugin.js'
 import { ServiceBootstrapData } from './index.js'
-import { initialization, workerBaseImpl } from './rpc.js'
+import { initialization, applyWorkerImpl } from './rpc.js'
 
 const payload = process.env.CHI_WORKER_OPTIONS
 if (!payload) {
@@ -13,12 +19,14 @@ const data: ServiceBootstrapData = deserialize(Buffer.from(payload, 'base64'))
 
 try {
   const { default: plugin } = await import(data.resolved)
-  const hub = new RpcHub<IServerWorkerRpcFns, IWorkerRpcFns>(
-    (msg) => void process.send?.(msg),
-    workerBaseImpl
+  const endpoint = new RpcEndpoint<WorkerDescriptor>(
+    RpcId.worker(data.workerId),
+    (msg) => process.send?.(msg),
+    createLogger('runtime', 'rpc')
   )
-  process.on('message', (msg) => hub.handle(<never>msg))
-  const ctx = new PluginContext(hub, data)
+  process.on('message', (msg) => endpoint.recv(<IRpcMsg>msg))
+  applyWorkerImpl(endpoint)
+  const ctx = new PluginContext(data, endpoint)
   await plugin.main(ctx, data.params)
   initialization.resolve()
 } catch (err) {

@@ -1,19 +1,22 @@
-import { IPluginInfo, Type } from '@chijs/core'
+import { Descriptor, IPluginInfo, Type } from '@chijs/core'
 import { PluginContext } from './context/plugin.js'
 
 import type { TSchema, SchemaMap, MapStatic, Id } from '@chijs/core'
 
-export interface IPluginDefn extends Omit<IPluginInfo, 'resolved' | 'id'> {
-  main: (
-    ctx: PluginContext<unknown>,
-    params: Record<string, unknown>
-  ) => unknown
+export interface IPluginDefn<D extends Descriptor>
+  extends Omit<IPluginInfo, 'resolved' | 'id'> {
+  main: (ctx: PluginContext<D>, params: Record<string, unknown>) => unknown
 }
 
+/**
+ * Define a Chi plugin
+ * note: the context of main function is not typed
+ * @param options Plugin definition
+ */
 export function definePlugin<M extends SchemaMap>(options: {
   params: M
-  main: (ctx: PluginContext<unknown>, params: MapStatic<M>) => unknown
-}): IPluginDefn {
+  main: (ctx: PluginContext<Descriptor>, params: MapStatic<M>) => unknown
+}): IPluginDefn<Descriptor> {
   return <never>{
     ...options,
     params: Object.fromEntries(
@@ -22,7 +25,7 @@ export function definePlugin<M extends SchemaMap>(options: {
   }
 }
 
-export class PluginBuilder<P = {}, M = {}> {
+export class PluginBuilder<P extends Descriptor, M = {}> {
   private params: Record<string, TSchema>
 
   constructor() {
@@ -46,7 +49,7 @@ export class PluginBuilder<P = {}, M = {}> {
 
   build(
     main: (ctx: PluginContext<P>, params: MapStatic<M>) => unknown
-  ): IPluginDefn {
+  ): IPluginDefn<P> {
     return {
       params: { ...this.params },
       main: <never>main
