@@ -1,83 +1,64 @@
-import type { Awaitable } from '../utils'
-
-export type Fn<A extends unknown[], R> = (...args: A) => Awaitable<R>
-export type AnyFn = Fn<never[], unknown>
-
-export type Args<T> = T extends AnyFn
-  ? T extends Fn<infer A, unknown>
-    ? never[] extends A
-      ? unknown[]
-      : A
-    : never
-  : never
-
-export type Return<T> = T extends AnyFn
-  ? T extends Fn<never[], infer R>
-    ? R
-    : never
-  : never
-
-export type ArgsOf<M, K extends string> = K extends keyof M
-  ? Args<M[K]>
-  : unknown[]
-
-export type ReturnOf<M, K extends string> = K extends keyof M
-  ? Return<M[K]>
-  : unknown
-
-export type FnMap = {
-  [k: string]: AnyFn
+export interface IRejection {
+  e: number
+  m: unknown
 }
 
-export type MapAsync<M> = {
-  [K in keyof M]: M[K] extends Fn<infer A, infer R>
-    ? (...args: A) => Promise<R>
-    : never
+export function encodeReject(reject: unknown): IRejection {
+  if (reject instanceof Error) {
+    return { e: 1, m: reject.message }
+  }
+  return { e: 0, m: reject }
 }
+
+export function decodeReject(reject: IRejection) {
+  if (reject.e) {
+    return new Error(<string>reject.m)
+  }
+  return reject.m
+}
+
+export type RpcId = string
+export type CallId = string
 
 export enum RpcMsgType {
-  CallRequest,
-  CallResponse,
-  ExecRequest
+  CALL_REQUEST,
+  CALL_RESPONSE,
+  EXEC_REQUEST,
+  DIE
 }
 
 export interface IRpcMsg {
+  /** The type of message */
   t: RpcMsgType
+  /** Source */
+  s: RpcId
+  /** Destination */
+  d: RpcId
 }
 
-export interface IRpcCallRequest {
-  t: RpcMsgType.CallRequest
-  i: string
+export interface IRpcCallRequest extends IRpcMsg {
+  t: RpcMsgType.CALL_REQUEST
+  i: CallId
   m: string
   a: unknown[]
 }
 
-export interface IRpcCallResponse {
-  t: RpcMsgType.CallResponse
-  i: string
+export interface IRpcCallResponse extends IRpcMsg {
+  t: RpcMsgType.CALL_RESPONSE
+  i: CallId
   l?: unknown
-  j?: ReturnType<typeof encodeReject>
+  j?: IRejection
 }
 
-export interface IRpcExecRequest {
-  t: RpcMsgType.ExecRequest
+export interface IRpcExecRequest extends IRpcMsg {
+  t: RpcMsgType.EXEC_REQUEST
   m: string
   a: unknown[]
 }
 
-export type RpcRequest = IRpcCallRequest | IRpcExecRequest
-export type RpcResponse = IRpcCallResponse
-
-export function encodeReject(reject: unknown) {
-  if (reject instanceof Error) {
-    return { e: 1, msg: reject.message }
-  }
-  return { e: 0, reject }
+export interface IRpcDieMsg extends IRpcMsg {
+  t: RpcMsgType.DIE
+  j: IRejection
 }
 
-export function decodeReject(reject: ReturnType<typeof encodeReject>) {
-  if (reject.e) {
-    return new Error(reject.msg)
-  }
-  return reject.reject
-}
+export type Fn<A extends unknown[], R> = (...args: A) => R
