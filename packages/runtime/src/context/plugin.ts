@@ -1,112 +1,63 @@
 import {
   createLogger,
-  RpcHub,
   createRpcWrapper,
-  withOverride
+  IPluginDescriptors,
+  RpcEndpoint,
+  RpcHandle,
+  RpcId,
+  RpcTypeDescriptor,
+  ServerDescriptor,
+  withOverride,
+  WorkerDescriptor
 } from '@chijs/core'
 
 import type { ServiceBootstrapData } from '../index.js'
-import type {
-  ArgsOf,
-  Awaitable,
-  ReturnOf,
-  IServerWorkerRpcFns,
-  IWorkerRpcFns,
-  IPluginInjections,
-  SpreadTwo,
-  RpcWrapped
-} from '@chijs/core'
 
-export type PluginInjected<P> = P extends string
-  ? P extends keyof IPluginInjections
-    ? IPluginInjections[P]
+export type PluginTypeDescriptor<A, B> = RpcTypeDescriptor<A, B>
+export type Descriptor = PluginTypeDescriptor<{}, {}>
+
+export type DescriptorOf<P> = P extends string
+  ? P extends keyof IPluginDescriptors
+    ? IPluginDescriptors[P]
     : {}
   : P
 
-export type RpcInjected<P> = 'rpc' extends keyof PluginInjected<P>
-  ? PluginInjected<P>['rpc']
-  : {}
-
-export type ServiceHandle<P> = SpreadTwo<
-  RpcWrapped<RpcInjected<P>, ''>,
-  {
-    call<K extends string>(
-      method: K,
-      args: ArgsOf<RpcInjected<P>, K>
-    ): Promise<ReturnOf<RpcInjected<P>, K>>
-
-    exec<K extends string>(
-      method: K,
-      args: ArgsOf<RpcInjected<P>, K>
-    ): Promise<void>
-
-    waitReady(): Promise<void>
-  }
->
-
-export class PluginContext<P = {}> {
+export class PluginContext<D extends Descriptor> {
   logger
-  misc
-  service
   plugin
+  service
+  /** @internal */
+  server
 
   constructor(
-    public hub: RpcHub<IServerWorkerRpcFns, IWorkerRpcFns>,
-    private bootstrapData: ServiceBootstrapData
+    private bootstrapData: ServiceBootstrapData,
+    private internalEndpoint: RpcEndpoint<WorkerDescriptor>
   ) {
     this.logger = createLogger('runtime', 'plugin', {
       service: bootstrapData.service,
       plugin: bootstrapData.plugin
     })
-    this.service = withOverride(
-      createRpcWrapper<IServerWorkerRpcFns, 'app:service:'>(
-        hub.client,
-        'app:service:'
-      ),
-      {
-        getHandle<P>(id: string): ServiceHandle<P> {
-          return <never>new Proxy(
-            {
-              call: (method: string, ...args: unknown[]) =>
-                hub.client.call(
-                  'app:service:call',
-                  id,
-                  `worker:custom:${method}`,
-                  ...args
-                ),
-              exec: (method: string, args: unknown[]) =>
-                hub.client.exec(
-                  'app:service:exec',
-                  id,
-                  `worker:custom:${method}`,
-                  ...args
-                ),
-              waitReady: () =>
-                hub.client.exec('app:service:exec', id, 'worker:waitReady')
-            },
-            {
-              get(target, property) {
-                if (Object.hasOwn(target, property))
-                  return (<never>target)[property]
-                if (typeof property !== 'string')
-                  throw new Error('Invalid property')
-                return (...args: unknown[]) => target.call(property, ...args)
-              }
-            }
-          )
-        }
-      }
-    )
-    this.plugin = createRpcWrapper(hub.client, 'app:plugin:')
-    this.misc = createRpcWrapper(hub.client, 'app:misc:')
+    this.server = internalEndpoint.getHandle<ServerDescriptor>(RpcId.server())
+    this.plugin = createRpcWrapper(this.server, '$s:plugin:')
+    this.service = createRpcWrapper(this.server, '$s:service:')
   }
 
-  registerRpc<K extends string>(
-    method: K,
-    handler: (
-      ...args: ArgsOf<RpcInjected<P>, K>
-    ) => Awaitable<ReturnOf<RpcInjected<P>, K>>
-  ) {
-    this.hub.server.implement(<never>`worker:custom:${method}`, <never>handler)
+  get endpoint() {
+    return <RpcEndpoint<D>>this.internalEndpoint
+  }
+
+  async getServiceProxy<D extends Descriptor>(id: string) {
+    const service = await this.service.get(id)
+    if (!service.workerId) throw new Error(`Service ${id} is not running`)
+    const handle = this.endpoint.getHandle<D>(RpcId.worker(service.workerId))
+    const internalHandle = <RpcHandle<WorkerDescriptor>>handle
+    const wrapper = createRpcWrapper(handle, '')
+    const internalWrapper = createRpcWrapper(internalHandle, '$w:')
+    return withOverride(wrapper, {
+      handle,
+      internal: withOverride(internalWrapper, {
+        handle: internalHandle
+      })
+    })
   }
 }

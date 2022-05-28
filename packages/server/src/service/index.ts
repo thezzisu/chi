@@ -1,21 +1,17 @@
-import { RpcHub } from '@chijs/core'
 import { ChildProcess } from 'node:child_process'
 import { join } from 'node:path'
+import {
+  nanoid,
+  IRpcMsg,
+  IServiceInfo,
+  WorkerDescriptor,
+  RpcId
+} from '@chijs/core'
 import { ChiApp } from '../index.js'
 import { forkWorker } from './fork.js'
 
-import type {
-  IWorkerRpcFns,
-  IServerWorkerRpcFns,
-  IServiceInfo
-} from '@chijs/core'
-
-export type IServiceDefn = Omit<IServiceInfo, 'running'>
-
-export interface IWorker {
-  ps: ChildProcess
-  hub: RpcHub<IWorkerRpcFns, IServerWorkerRpcFns>
-  logPath: string
+export interface IService extends Omit<IServiceInfo, 'running'> {
+  workerProcess?: ChildProcess
 }
 
 export class WorkerExitError extends Error {
@@ -26,43 +22,26 @@ export class WorkerExitError extends Error {
 }
 
 export class ServiceManager {
-  private services: Record<string, IServiceDefn>
-  private workers: Record<string, IWorker>
+  private services
 
   constructor(private app: ChiApp) {
-    this.services = Object.create(null)
-    this.workers = Object.create(null)
-  }
-
-  getWorker(id: string) {
-    if (!(id in this.services)) {
-      throw new Error('Service not found')
-    }
-    if (!(id in this.workers)) {
-      throw new Error('Service is not running')
-    }
-    const worker = this.workers[id]
-    return worker
+    this.services = new Map<string, IService>()
   }
 
   add(id: string, plugin: string, params: Record<string, unknown>) {
-    if (id in this.services) {
+    if (this.services.has(id)) {
       throw new Error('Service already exists')
     }
     if (!this.app.pluginRegistry.verifyParams(plugin, params)) {
       throw new Error('Bad params')
     }
-    this.services[id] = { id, plugin, params, logPath: '' }
+    this.services.set(id, { id, plugin, params, logPath: '' })
   }
 
   update(id: string, params: Record<string, unknown>) {
-    if (!(id in this.services)) {
-      throw new Error('Service not found')
-    }
-    if (id in this.workers) {
-      throw new Error('Service is running')
-    }
-    const service = this.services[id]
+    const service = this.services.get(id)
+    if (!service) throw new Error('Service not found')
+    if (service.workerId) throw new Error('Service is running')
     if (!this.app.pluginRegistry.verifyParams(service.plugin, params)) {
       throw new Error('Bad params')
     }
@@ -70,23 +49,17 @@ export class ServiceManager {
   }
 
   remove(id: string) {
-    if (!(id in this.services)) {
-      throw new Error('Service not found')
-    }
-    if (id in this.workers) {
-      throw new Error('Service is running')
-    }
-    delete this.services[id]
+    const service = this.services.get(id)
+    if (!service) throw new Error('Service not found')
+    if (service.workerId) throw new Error('Service is running')
+    this.services.delete(id)
   }
 
   start(id: string) {
-    if (!(id in this.services)) {
-      throw new Error('Service not found')
-    }
-    if (id in this.workers) {
-      throw new Error('Service is running')
-    }
-    const service = this.services[id]
+    const service = this.services.get(id)
+    if (!service) throw new Error('Service not found')
+    if (service.workerId) throw new Error('Service is running')
+    const workerId = nanoid()
     const plugin = this.app.pluginRegistry.get(service.plugin)
     const logPath =
       this.app.configManager.config.logDir === 'stdout'
@@ -96,8 +69,9 @@ export class ServiceManager {
             service.id,
             `${+new Date()}.log`
           )
-    const ps = forkWorker({
+    const worker = forkWorker({
       data: {
+        workerId,
         service: service.id,
         plugin: service.plugin,
         params: service.params,
@@ -106,49 +80,47 @@ export class ServiceManager {
       logger: this.app.logger,
       logPath
     })
-    const hub = new RpcHub<IWorkerRpcFns, IServerWorkerRpcFns>(
-      (msg) =>
-        new Promise((resolve, reject) =>
-          ps.send(msg, (err) => (err ? reject(err) : resolve()))
-        ),
-      this.app.rpcManager.workerImpl
+    const adapter = this.app.rpcManager.router.createAdapter(
+      RpcId.worker(workerId),
+      (msg) => worker.send(msg)
     )
-    ps.on('message', (msg) => hub.handle(<never>msg))
-    ps.on('exit', (code, signal) => {
-      hub.dispose(new WorkerExitError(code, signal))
-      delete this.workers[id]
+    worker.on('message', (msg) => adapter.recv(<IRpcMsg>msg))
+    worker.on('exit', (code, signal) => {
+      adapter.dispose(new WorkerExitError(code, signal))
+      service.workerId = undefined
+      service.workerProcess = undefined
     })
-    this.workers[id] = { ps, hub, logPath: logPath ?? 'stdout' }
+    service.workerId = workerId
+    service.workerProcess = worker
+    service.logPath = logPath ?? 'stdout'
   }
 
   stop(id: string) {
-    if (!(id in this.services)) {
-      throw new Error('Service not found')
-    }
-    if (!(id in this.workers)) {
-      throw new Error('Service is not running')
-    }
-    const worker = this.workers[id]
-    worker.hub.client.exec('worker:exit')
+    const service = this.services.get(id)
+    if (!service) throw new Error('Service not found')
+    if (!service.workerId) throw new Error('Service is not running')
+    const handle = this.app.rpcManager.endpoint.getHandle<WorkerDescriptor>(
+      RpcId.worker(service.workerId)
+    )
+    handle.exec('$w:exit')
   }
 
   list(): IServiceInfo[] {
-    return Object.values(this.services).map((service) => ({
-      ...service,
-      running: service.id in this.workers,
-      logPath: this.workers[service.id]?.logPath ?? ''
-    }))
+    return [...this.services.values()].map(
+      ({ workerProcess: _, ...service }) => ({
+        ...service,
+        running: !!service.workerId
+      })
+    )
   }
 
   get(id: string): IServiceInfo {
-    if (!(id in this.services)) {
-      throw new Error('Service not found')
-    }
-    const service = this.services[id]
+    const service = this.services.get(id)
+    if (!service) throw new Error('Service not found')
+    const { workerProcess: _, ...rest } = service
     return {
-      ...service,
-      running: service.id in this.workers,
-      logPath: this.workers[service.id]?.logPath ?? ''
+      ...rest,
+      running: !!service.workerId
     }
   }
 }

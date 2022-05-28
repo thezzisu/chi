@@ -10,7 +10,8 @@
     "esModuleInterop": true,
     "incremental": true,
     "composite": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "stripInternal": true
   },
   "ts-node": {
     "transpileOnly": true

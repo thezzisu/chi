@@ -1,8 +1,6 @@
-import { RpcImpl } from '@chijs/core'
+import { RpcEndpoint, WorkerDescriptor } from '@chijs/core'
 
-import type { IWorkerRpcFns } from '@chijs/core'
-
-export const workerBaseImpl = new RpcImpl<IWorkerRpcFns>()
+/** @internal */
 export const initialization = {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   resolve: () => {},
@@ -15,12 +13,8 @@ initialization.promise = new Promise<void>((resolve, reject) => {
   initialization.reject = reject
 })
 
-workerBaseImpl.implement('worker:exit', async () => {
-  process.exit(0)
-})
-
-workerBaseImpl.implement('worker:print', async (msg) => {
-  console.log(msg)
-})
-
-workerBaseImpl.implement('worker:waitReady', () => initialization.promise)
+/** @internal */
+export function applyWorkerImpl(endpoint: RpcEndpoint<WorkerDescriptor>) {
+  endpoint.provide('$w:exit', () => process.exit(0))
+  endpoint.provide('$w:waitReady', () => initialization.promise)
+}

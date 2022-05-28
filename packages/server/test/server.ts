@@ -1,3 +1,4 @@
+// @ts-check
 import { ChiApp } from '@chijs/server'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'

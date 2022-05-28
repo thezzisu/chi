@@ -1,3 +1,4 @@
+import { RpcTypeDescriptor } from '../rpc/index.js'
 import { TSchema } from '../utils/index.js'
 
 export interface IServiceInfo {
@@ -6,6 +7,7 @@ export interface IServiceInfo {
   params: Record<string, unknown>
   running: boolean
   logPath: string
+  workerId?: string
 }
 
 export interface IPluginInfo {
@@ -14,34 +16,26 @@ export interface IPluginInfo {
   resolved: string
 }
 
-export interface IServerBaseRpcFns {
-  ['app:misc:versions'](): Record<string, string>
-  ['app:misc:startTime'](): number
+export type ServerDescriptor = RpcTypeDescriptor<
+  {
+    ['$s:misc:versions'](): Record<string, string>
+    ['$s:misc:startTime'](): number
 
-  ['app:plugin:load'](mod: string): void
-  ['app:plugin:list'](): IPluginInfo[]
-  ['app:plugin:get'](id: string): IPluginInfo
+    ['$s:plugin:load'](mod: string): void
+    ['$s:plugin:list'](): IPluginInfo[]
+    ['$s:plugin:get'](id: string): IPluginInfo
 
-  ['app:service:add'](
-    plugin: string,
-    id: string,
-    params: Record<string, unknown>
-  ): void
-  ['app:service:update'](id: string, params: Record<string, unknown>): void
-  ['app:service:remove'](id: string): void
-  ['app:service:start'](id: string): void
-  ['app:service:stop'](id: string): void
-  ['app:service:call'](id: string, method: string, ...args: unknown[]): unknown
-  ['app:service:exec'](id: string, method: string, ...args: unknown[]): unknown
-  ['app:service:list'](): IServiceInfo[]
-  ['app:service:get'](id: string): IServiceInfo
-}
-
-export interface IServerClientRpcFns extends IServerBaseRpcFns {
-  ['app:misc:readFile'](path: string): ArrayBuffer
-}
-
-export interface IServerWorkerRpcFns extends IServerBaseRpcFns {
-  ['app:client:call'](id: string, method: string, ...args: unknown[]): unknown
-  ['app:client:exec'](id: string, method: string, ...args: unknown[]): unknown
-}
+    ['$s:service:add'](
+      plugin: string,
+      id: string,
+      params: Record<string, unknown>
+    ): void
+    ['$s:service:update'](id: string, params: Record<string, unknown>): void
+    ['$s:service:remove'](id: string): void
+    ['$s:service:start'](id: string): void
+    ['$s:service:stop'](id: string): void
+    ['$s:service:list'](): IServiceInfo[]
+    ['$s:service:get'](id: string): IServiceInfo
+  },
+  {}
+>
