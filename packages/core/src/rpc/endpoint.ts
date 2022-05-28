@@ -7,14 +7,20 @@ import {
   IRpcCallRequest,
   IRpcCallResponse,
   IRpcDieMsg,
+  IRpcEventMsg,
   IRpcExecRequest,
   IRpcMsg,
   RpcId,
-  RpcMsgType
+  RpcMsgType,
+  SubscriptionId
 } from './base.js'
 import type { Logger } from 'pino'
 import type { Awaitable } from '../utils/index.js'
 import { createLogger } from '../logger/index.js'
+
+export type WithThis<T, F> = F extends Fn<infer A, infer R>
+  ? (this: T, ...args: A) => R
+  : never
 
 export interface RpcTypeDescriptor<A extends {}, B extends {}> {
   provide: A
@@ -61,7 +67,10 @@ export type PublishImpl<
   K extends PublishKeys<T>
 > = T extends RpcTypeDescriptor<infer _, infer B>
   ? B[K] extends Fn<infer A, infer R>
-    ? (cb: (data: R) => void, ...args: A) => () => unknown
+    ? (
+        cb: (data: R, err?: unknown) => void,
+        ...args: A
+      ) => Awaitable<() => Awaitable<void>>
     : never
   : never
 
@@ -79,7 +88,7 @@ export type PublishCb<
   K extends PublishKeys<T>
 > = T extends RpcTypeDescriptor<infer _, infer B>
   ? B[K] extends Fn<infer _, infer R>
-    ? (data: R) => unknown
+    ? (data: R, err?: unknown) => void
     : never
   : never
 
@@ -87,34 +96,68 @@ export type Descriptor = RpcTypeDescriptor<{}, {}>
 
 export type InternalDescriptor = RpcTypeDescriptor<
   {
-    ['$ping'](): void
+    ['$:ping'](): void
+    ['$:subscribe'](type: string, ...args: unknown[]): SubscriptionId
+    ['$:unsubscribe'](id: SubscriptionId): void
   },
   {}
 >
 
+function applyInternalImpl(endpoint: RpcEndpoint<InternalDescriptor>) {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  endpoint.provide('$:ping', () => {})
+  endpoint.provide('$:subscribe', async function (type, ...args) {
+    const impl = this.endpoint.published(<never>type)
+    const subscriptionId = nanoid()
+    const cb = (data: unknown) =>
+      this.endpoint.send(<IRpcEventMsg>{
+        t: RpcMsgType.EVENT,
+        s: this.endpoint.localId,
+        d: this.remoteId,
+        i: subscriptionId,
+        p: data
+      })
+    const unpub = await impl.call(this, cb, ...args)
+    this.publications.set(subscriptionId, { unpub })
+    return subscriptionId
+  })
+  endpoint.provide('$:unsubscribe', async function (id) {
+    const publication = this.publications.get(id)
+    if (publication) {
+      await publication.unpub()
+      this.publications.delete(id)
+    }
+  })
+}
+
 const defaultLogger = createLogger('core', 'rpc')
+
+type ProvidedFn = (...args: unknown[]) => unknown
+type PublishedFn = (
+  cb: (data: unknown, err?: unknown) => void,
+  ...args: unknown[]
+) => Awaitable<() => Awaitable<void>>
 
 export class RpcEndpoint<D extends Descriptor> {
   /** @internal */
   handles
-  private provides
-  private publishes
-  private internal
+  /** @internal */
+  provides
+  /** @internal */
+  publishes
+
+  disposed
 
   constructor(
     public localId: RpcId,
     public send: (msg: IRpcMsg) => unknown,
     public logger: Logger = defaultLogger
   ) {
+    this.disposed = false
     this.handles = new Map<RpcId, RpcHandle<RpcTypeDescriptor<{}, {}>>>()
-    this.provides = new Map<string, (...args: unknown[]) => unknown>()
-    this.publishes = new Map<
-      string,
-      (cb: (data: unknown) => void, ...args: unknown[]) => () => unknown
-    >()
-    this.internal = <RpcEndpoint<InternalDescriptor>>this
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    this.internal.provide('$ping', () => {})
+    this.provides = new Map<string, ProvidedFn>()
+    this.publishes = new Map<string, PublishedFn>()
+    applyInternalImpl(<never>this)
   }
 
   getHandle<D extends Descriptor>(remoteId: RpcId): RpcHandle<D> {
@@ -131,18 +174,37 @@ export class RpcEndpoint<D extends Descriptor> {
     handle.recv(msg)
   }
 
-  provide<K extends ProvideKeys<D>>(name: K, fn: ProvideImpl<D, K>) {
+  provide<K extends ProvideKeys<D>>(
+    name: K,
+    fn: WithThis<RpcHandle<D>, ProvideImpl<D, K>>
+  ) {
     this.provides.set(name, fn)
   }
 
-  invoke<K extends ProvideKeys<D>>(name: K, ...args: ProvideArgs<D, K>) {
+  provided<K extends ProvideKeys<D>>(name: K) {
     const impl = this.provides.get(name)
     if (!impl) throw new Error(`No implementation for ${name}`)
-    return impl(...args)
+    return <ProvideImpl<D, K>>impl
   }
 
-  publish<K extends PublishKeys<D>>(name: K, fn: PublishImpl<D, K>) {
+  publish<K extends PublishKeys<D>>(
+    name: K,
+    fn: WithThis<RpcHandle<D>, PublishImpl<D, K>>
+  ) {
     this.publishes.set(name, fn)
+  }
+
+  published<K extends PublishKeys<D>>(name: K) {
+    const impl = this.publishes.get(name)
+    if (!impl) throw new Error(`No implementation for ${name}`)
+    return <PublishImpl<D, K>>impl
+  }
+
+  async dispose(reason: unknown) {
+    this.disposed = true
+    for (const [, handle] of this.handles) {
+      await handle.dispose(reason)
+    }
   }
 }
 
@@ -151,22 +213,36 @@ export interface IRpcInvocation {
   reject: (reason: unknown) => void
 }
 
+export interface ISubscription {
+  cb: (data: unknown, err?: unknown) => void
+}
+
+export interface IPublication {
+  unpub: () => Awaitable<void>
+}
+
 export class RpcHandle<D extends Descriptor> {
-  private internal
-  private invocations
-  private disposed
+  /** @internal */
+  invocations
+  /** @internal */
+  subscriptions
+  /** @internal */
+  publications
+
+  disposed
 
   constructor(
-    private endpoint: RpcEndpoint<Descriptor>,
+    public endpoint: RpcEndpoint<Descriptor>,
     public remoteId: RpcId
   ) {
     this.invocations = new Map<CallId, IRpcInvocation>()
-    this.internal = <RpcHandle<InternalDescriptor>>this
+    this.subscriptions = new Map<SubscriptionId, ISubscription>()
+    this.publications = new Map<SubscriptionId, IPublication>()
     this.disposed = false
   }
 
   async connect() {
-    await this.internal.call('$ping')
+    await (this as RpcHandle<InternalDescriptor>).call('$:ping')
   }
 
   private handleDie(msg: IRpcDieMsg) {
@@ -176,7 +252,7 @@ export class RpcHandle<D extends Descriptor> {
   private async handleCallRequest(msg: IRpcCallRequest) {
     const { i, m, a } = msg
     try {
-      const resolve = await this.endpoint.invoke(<never>m, ...a)
+      const resolve = await this.endpoint.provided(<never>m).call(this, ...a)
       const msg: IRpcCallResponse = {
         t: RpcMsgType.CALL_RESPONSE,
         s: this.endpoint.localId,
@@ -221,9 +297,20 @@ export class RpcHandle<D extends Descriptor> {
   private async handleExecRequest(msg: IRpcExecRequest) {
     const { m, a } = msg
     try {
-      await this.endpoint.invoke(<never>m, ...a)
+      await this.endpoint.provided(<never>m).call(this, ...a)
     } catch (e) {
       this.endpoint.logger.error(e)
+    }
+  }
+
+  private async handleEvent(msg: IRpcEventMsg) {
+    const { i, p } = msg
+    const subscription = this.subscriptions.get(i)
+    if (!subscription) return
+    try {
+      await subscription.cb(p)
+    } catch (err) {
+      this.endpoint.logger.error(err, 'Error occurred in subscription callback')
     }
   }
 
@@ -238,6 +325,9 @@ export class RpcHandle<D extends Descriptor> {
       case RpcMsgType.EXEC_REQUEST:
         this.handleExecRequest(<IRpcExecRequest>msg)
         break
+      case RpcMsgType.EVENT:
+        this.handleEvent(<IRpcEventMsg>msg)
+        break
       case RpcMsgType.DIE:
         this.handleDie(<IRpcDieMsg>msg)
         break
@@ -247,8 +337,18 @@ export class RpcHandle<D extends Descriptor> {
   async dispose(reason: unknown) {
     this.disposed = true
     if (this.endpoint.handles.delete(this.remoteId)) {
-      this.invocations.forEach(({ reject }) => reject(reason))
+      for (const [, { reject }] of this.invocations) {
+        reject(reason)
+      }
       this.invocations.clear()
+      for (const [, { unpub }] of this.publications) {
+        await unpub()
+      }
+      this.publications.clear()
+      for (const [, { cb }] of this.subscriptions) {
+        cb(undefined, reason)
+      }
+      this.subscriptions.clear()
     }
   }
 
@@ -294,15 +394,23 @@ export class RpcHandle<D extends Descriptor> {
     await this.endpoint.send(msg)
   }
 
-  // subscribe<K extends PublishKeys<D>>(
-  //   name: K,
-  //   cb: PublishCb<D, K>,
-  //   ...args: PublishArgs<D, K>
-  // ): Promise<string> {
-  //   //
-  // }
+  async subscribe<K extends PublishKeys<D>>(
+    name: K,
+    cb: PublishCb<D, K>,
+    ...args: PublishArgs<D, K>
+  ): Promise<SubscriptionId> {
+    const subscription = await (this as RpcHandle<InternalDescriptor>).call(
+      '$:subscribe',
+      name,
+      ...args
+    )
+    this.subscriptions.set(subscription, { cb })
+    return subscription
+  }
 
-  // unsubscribe(subscription: string): Promise<void> {
-  //   //
-  // }
+  async unsubscribe(id: SubscriptionId): Promise<void> {
+    if (this.subscriptions.delete(id)) {
+      await (this as RpcHandle<InternalDescriptor>).call('$:unsubscribe', id)
+    }
+  }
 }
