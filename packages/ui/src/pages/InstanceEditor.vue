@@ -14,6 +14,7 @@
               padding="xs"
               color="negative"
               icon="mdi-delete"
+              to="/"
               @click="remove"
             />
           </div>

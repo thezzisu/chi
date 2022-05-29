@@ -3,7 +3,7 @@
     <div class="q-pa-sm col-12">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Services ({{ services.length }})</div>
+          <div class="text-h6">Services ( length = {{ services.length }} )</div>
         </q-card-section>
         <q-separator />
         <q-card-section v-if="services.length" class="row">
