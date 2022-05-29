@@ -2,8 +2,14 @@
   <q-page padding class="row">
     <div class="q-pa-sm col-12">
       <q-card>
-        <q-card-section>
-          {{ plugin }}
+        <q-card-section class="flex-break">
+          id: {{ plugin?.id }}
+        </q-card-section>
+        <q-card-section class="flex-break">
+          params: {{ plugin?.params }}
+        </q-card-section>
+        <q-card-section class="flex-break">
+          {{ plugin?.resolved }}
         </q-card-section>
       </q-card>
     </div>

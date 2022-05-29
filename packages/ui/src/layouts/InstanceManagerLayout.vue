@@ -1,7 +1,10 @@
 <template>
-  <q-layout view="hHh Lpr fFf">
-    <q-header elevated class="row no-wrap">
-      <q-toolbar class="col-auto bg-brand q-px-none">
+  <q-layout view="hHh Lpr lff">
+    <q-header
+    id="my_header"
+    elevated
+    class="row no-wrap">
+      <q-toolbar class="col-auto q-px-none">
         <q-btn stretch flat no-caps to="/" :icon="`img:${logoWhite}`" />
       </q-toolbar>
       <q-toolbar>
@@ -27,3 +30,9 @@ import { provide } from 'vue'
 const base = '/'
 provide(baseKey, base)
 </script>
+
+<style lang="scss">
+#my_header{
+  background-color: rgb(49, 47, 47);
+}
+</style>

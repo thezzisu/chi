@@ -1,7 +1,7 @@
 <template>
-  <q-layout view="lHh LpR lFf">
-    <q-header elevated class="row no-wrap">
-      <q-toolbar class="col-auto bg-brand q-px-none">
+  <q-layout view="hHh Lpr lff">
+    <q-header id="my_header" elevated class="row no-wrap">
+      <q-toolbar class="col-auto q-px-none">
         <q-btn
           flat
           round
@@ -18,7 +18,14 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="navOpen" side="left" show-if-above bordered>
+    <q-drawer
+      id="leftDrawer"
+      v-model="navOpen"
+      side="left"
+      show-if-above
+      :width="170"
+      :breakpoint="500"
+    >
       <q-list>
         <q-item
           v-for="(item, i) of menuItems"
@@ -97,3 +104,13 @@ const statusText = computed(() => {
   return 'Disconnected'
 })
 </script>
+
+<style lang="scss">
+#my_header {
+  background-color: rgb(49, 47, 47);
+  height: 60px;
+}
+#leftDrawer {
+  background-color: rgb(223, 226, 232);
+}
+</style>
