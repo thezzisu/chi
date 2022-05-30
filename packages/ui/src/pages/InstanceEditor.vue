@@ -14,7 +14,6 @@
               padding="xs"
               color="negative"
               icon="mdi-delete"
-              to="/"
               @click="remove"
             />
           </div>
@@ -81,7 +80,7 @@ const router = useRouter()
 function remove() {
   $q.dialog({
     title: 'Confirm',
-    message: 'Real delete?',
+    message: `Are you sure to delete ${current.value.name}`,
     cancel: true,
     persistent: true
   }).onOk(() => {
@@ -90,6 +89,7 @@ function remove() {
       message: 'Instance Deleted',
       color: 'positive'
     })
+    router.replace('/')
   })
 }
 
