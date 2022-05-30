@@ -1,13 +1,10 @@
 <template>
   <q-layout view="hHh Lpr lff">
-    <q-header
-    id="my_header"
-    elevated
-    class="row no-wrap">
-      <q-toolbar class="col-auto q-px-none">
+    <q-header elevated class="row no-wrap">
+      <q-toolbar class="col-auto bg-brand q-px-none">
         <q-btn stretch flat no-caps to="/" :icon="`img:${logoWhite}`" />
       </q-toolbar>
-      <q-toolbar>
+      <q-toolbar class="bg-blue-grey-10">
         <q-toolbar-title>Instance Manager</q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -32,7 +29,7 @@ provide(baseKey, base)
 </script>
 
 <style lang="scss">
-#my_header{
+#my_header {
   background-color: rgb(49, 47, 47);
 }
 </style>

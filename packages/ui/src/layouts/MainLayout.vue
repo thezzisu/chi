@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh Lpr lff">
-    <q-header id="my_header" elevated class="row no-wrap">
-      <q-toolbar class="col-auto q-px-none">
+    <q-header elevated class="row no-wrap">
+      <q-toolbar class="col-auto bg-brand q-px-none">
         <q-btn
           flat
           round
@@ -13,14 +13,14 @@
         <q-separator dark vertical inset />
         <q-btn stretch flat no-caps :to="base" :icon="`img:${logoWhite}`" />
       </q-toolbar>
-      <q-toolbar>
+      <q-toolbar class="bg-blue-grey-10">
         <q-toolbar-title>Dashboard</q-toolbar-title>
       </q-toolbar>
     </q-header>
 
     <q-drawer
-      id="leftDrawer"
       v-model="navOpen"
+      class="bg-grey-3"
       side="left"
       show-if-above
       :width="170"
@@ -104,13 +104,3 @@ const statusText = computed(() => {
   return 'Disconnected'
 })
 </script>
-
-<style lang="scss">
-#my_header {
-  background-color: rgb(49, 47, 47);
-  height: 60px;
-}
-#leftDrawer {
-  background-color: rgb(223, 226, 232);
-}
-</style>
