@@ -44,11 +44,12 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view v-slot="{ Component }">
+      <router-view v-if="connected" v-slot="{ Component }">
         <transition name="router" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>
+      <disconnected-page v-else />
     </q-page-container>
 
     <q-footer
@@ -67,12 +68,12 @@
 
 <script lang="ts" setup>
 import logoWhite from 'assets/logo-white.svg'
-import { ChiClient } from '@chijs/client'
-import { baseKey, clientKey } from 'src/shared/injections'
+import { baseKey } from 'src/shared/injections'
 import { getInstance } from 'src/shared/instance'
-import { provide, ref } from 'vue'
+import { provide, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { computed } from '@vue/reactivity'
+import DisconnectedPage from 'src/pages/DisconnectedPage.vue'
+import { useClient } from 'src/shared/client'
 
 const navOpen = ref(false)
 
@@ -87,19 +88,10 @@ const menuItems = [
 ]
 
 const instance = getInstance(<string>route.params.instanceId)
-
-const client = new ChiClient(instance.value.url)
-const connected = ref(false)
-provide(clientKey, client)
-client.socket.on('connect', () => {
-  connected.value = true
-})
-client.socket.on('disconnect', () => {
-  connected.value = false
-})
+const { connected, socket } = useClient(instance.value.url)
 const statusText = computed(() => {
   if (connected.value) {
-    return `Connected ${client.socket.id}`
+    return `Connected ${socket.id}`
   }
   return 'Disconnected'
 })

@@ -47,7 +47,7 @@ export class WebServer {
     this.logger.info(`Client ${socket.id} connected`)
     const adapter = this.app.rpcManager.router.createAdapter(
       RpcId.client(socket.id),
-      (msg) => socket.send('rpc', msg)
+      (msg) => socket.emit('rpc', msg)
     )
     socket.on('rpc', (msg) => adapter.recv(msg))
     socket.on('disconnect', (reason) => {

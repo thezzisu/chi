@@ -11,14 +11,14 @@
 </template>
 
 <script lang="ts" setup>
-import { clientKey } from 'src/shared/injections'
-import { inject, ref } from 'vue'
+import { ref } from 'vue'
 import { IServiceInfo } from '@chijs/client'
 import { useRoute } from 'vue-router'
+import { getClient } from 'src/shared/client'
 
 const route = useRoute()
 const serviceId = <string>route.params.serviceId
-const client = inject(clientKey)!
+const client = getClient()
 const service = ref<IServiceInfo>()
 
 async function load() {

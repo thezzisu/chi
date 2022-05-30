@@ -12,7 +12,7 @@ export class ChiClient {
   constructor(public socket: Socket) {
     this.internalEndpoint = new RpcEndpoint<ClientDescriptor>(
       RpcId.client(socket.id),
-      (msg) => socket.send('rpc', msg)
+      (msg) => socket.emit('rpc', msg)
     )
     this.socket.on('rpc', (msg) => this.internalEndpoint.recv(msg))
     this.server = this.internalEndpoint.getHandle<ServerDescriptor>(
@@ -29,3 +29,4 @@ export class ChiClient {
 }
 
 export * from '@chijs/core'
+export * from 'socket.io-client'

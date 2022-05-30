@@ -17,14 +17,14 @@
 </template>
 
 <script lang="ts" setup>
-import { clientKey } from 'src/shared/injections'
-import { inject, ref } from 'vue'
+import { ref } from 'vue'
 import { IPluginInfo } from '@chijs/client'
 import { useRoute } from 'vue-router'
+import { getClient } from 'src/shared/client'
 
 const route = useRoute()
 const pluginId = <string>route.params.pluginId
-const client = inject(clientKey)!
+const client = getClient()
 const plugin = ref<IPluginInfo>()
 
 async function load() {

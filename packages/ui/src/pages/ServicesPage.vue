@@ -42,12 +42,12 @@
 </template>
 
 <script lang="ts" setup>
-import { baseKey, clientKey } from 'src/shared/injections'
+import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
 import { IServiceInfo } from '@chijs/client'
+import { getClient } from 'src/shared/client'
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const client = inject(clientKey)!
+const client = getClient()
 const base = inject(baseKey)
 
 const services = ref<IServiceInfo[]>([])
