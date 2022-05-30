@@ -1,34 +1,52 @@
 <template>
-  <q-page class="page">
-    <div class="q-pa-sm bg-white text-h5 text-center">
-      Plugins ( length = {{ plugins.length }} )
+  <q-page padding class="row">
+    <div class="q-pa-sm col-12">
+      <q-card>
+        <q-card-section>
+          <div class="row justify-between items-center">
+            <div class="text-h6">Plugins ( length = {{ plugins.length }} )</div>
+            <div>
+              <q-btn
+                padding="xs"
+                color="primary"
+                icon="mdi-plus"
+                :to="`${base}/load-plugin`"
+              />
+            </div>
+          </div>
+        </q-card-section>
+        <q-list class="list bg-white" separator bordered>
+          <q-item v-for="plugin of plugins" :key="plugin.id">
+            <q-item-section>
+              <q-item-label>{{ plugin.id }}</q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn icon="mdi-upload" round flat dense color="black" />
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                :to="`${base}/plugin/${encodeURIComponent(plugin.id)}`"
+                icon="mdi-eye"
+                round
+                flat
+                dense
+                color="black"
+              />
+            </q-item-section>
+          </q-item>
+        </q-list>
+        <q-item v-if="!plugins.length" class="column items-center">
+          <div>
+            <q-icon
+              name="mdi-power-plug-off-outline"
+              size="xl"
+              color="primary"
+            />
+          </div>
+          <div class="text-subtitle2">No plugins</div>
+        </q-item>
+      </q-card>
     </div>
-    <q-list class="list bg-white" separator bordered>
-      <q-item v-for="plugin of plugins" :key="plugin.id">
-        <q-item-section>
-          <q-item-label>{{ plugin.id }}</q-item-label>
-        </q-item-section>
-        <q-item-section side>
-          <q-btn icon="mdi-upload" round flat dense color="black" />
-        </q-item-section>
-        <q-item-section side>
-          <q-btn
-            :to="`${base}/plugin/${encodeURIComponent(plugin.id)}`"
-            icon="mdi-eye"
-            round
-            flat
-            dense
-            color="black"
-          />
-        </q-item-section>
-      </q-item>
-    </q-list>
-    <q-item v-if="!plugins.length" class="column items-center">
-      <div>
-        <q-icon name="mdi-power-plug-off-outline" size="xl" color="primary" />
-      </div>
-      <div class="text-subtitle2">No plugins</div>
-    </q-item>
   </q-page>
 </template>
 
