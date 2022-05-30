@@ -4,7 +4,7 @@
       <q-card>
         <q-card-section>
           <div class="row justify-between items-center">
-            <div class="text-h6">Plugins ( length = {{ plugins.length }} )</div>
+            <div class="text-h6">Plugins ({{ plugins.length }})</div>
             <div>
               <q-btn
                 padding="xs"
