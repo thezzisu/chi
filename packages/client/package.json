@@ -1,6 +1,6 @@
 {
   "name": "@chijs/client",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Client for Chi framwork",
@@ -16,7 +16,7 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/core": "^0.0.5",
+    "@chijs/core": "^0.0.6",
     "socket.io-client": "^4.5.1"
   },
   "scripts": {
