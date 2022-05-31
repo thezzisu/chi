@@ -20,8 +20,8 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from 'vue'
-import { clientKey } from 'src/shared/injections'
+import { ref } from 'vue'
+import { getClient } from 'src/shared/client'
 
 interface Info {
   label: string
@@ -30,8 +30,7 @@ interface Info {
 
 const infos = ref<Info[]>([])
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const client = inject(clientKey)!
+const client = getClient()
 
 async function load() {
   const versions = await client.misc.versions()
@@ -58,5 +57,5 @@ async function load() {
   })
 }
 
-load()
+load().catch(console.error)
 </script>

@@ -74,12 +74,24 @@ function reset() {
   current.value = easyDeepClone(isNew ? newInstance : getInstance(id).value)
 }
 
-function remove() {
-  delete instanceMap.value[id]
-}
-
 const $q = useQuasar()
 const router = useRouter()
+
+function remove() {
+  $q.dialog({
+    title: 'Confirm',
+    message: `Are you sure to delete ${current.value.name}`,
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    delete instanceMap.value[id]
+    $q.notify({
+      message: 'Instance Deleted',
+      color: 'positive'
+    })
+    router.replace('/')
+  })
+}
 
 function save() {
   const copy = easyDeepClone(current.value)

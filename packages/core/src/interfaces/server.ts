@@ -21,7 +21,7 @@ export type ServerDescriptor = RpcTypeDescriptor<
     ['$s:misc:versions'](): Record<string, string>
     ['$s:misc:startTime'](): number
 
-    ['$s:plugin:load'](mod: string): void
+    ['$s:plugin:load'](mod: string): [ok: boolean, reason?: string]
     ['$s:plugin:list'](): IPluginInfo[]
     ['$s:plugin:get'](id: string): IPluginInfo
 

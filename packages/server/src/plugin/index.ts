@@ -19,7 +19,7 @@ export class PluginRegistry {
     return this.plugins[id]
   }
 
-  async load(id: string) {
+  async load(id: string): Promise<[ok: boolean, reason?: string]> {
     try {
       let resolved = resolveImport(id, this.app.configManager.config.resolve)
       resolved = resolve(resolved)
@@ -28,8 +28,10 @@ export class PluginRegistry {
         default: { main: _main, ...info }
       } = await import(resolved)
       this.plugins[id] = { ...info, id, resolved }
+      return [true]
     } catch (e) {
       this.app.logger.error(e)
+      return [false, '' + e]
     }
   }
 

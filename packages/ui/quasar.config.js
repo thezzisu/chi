@@ -36,7 +36,7 @@ module.exports = configure(function () {
     framework: {
       config: {},
       iconSet: 'mdi-v6',
-      plugins: ['Notify']
+      plugins: ['Notify', 'Dialog']
     },
     animations: 'all',
     electron: {

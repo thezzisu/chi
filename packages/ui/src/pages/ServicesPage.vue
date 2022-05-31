@@ -3,7 +3,17 @@
     <div class="q-pa-sm col-12">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Services ({{ services.length }})</div>
+          <div class="row justify-between items-center">
+            <div class="text-h6">Services ({{ services.length }})</div>
+            <div>
+              <q-btn
+                padding="xs"
+                color="primary"
+                icon="mdi-plus"
+                :to="`${base}/create-service`"
+              />
+            </div>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section v-if="services.length" class="row">
@@ -42,12 +52,12 @@
 </template>
 
 <script lang="ts" setup>
-import { baseKey, clientKey } from 'src/shared/injections'
+import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
 import { IServiceInfo } from '@chijs/client'
+import { getClient } from 'src/shared/client'
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const client = inject(clientKey)!
+const client = getClient()
 const base = inject(baseKey)
 
 const services = ref<IServiceInfo[]>([])

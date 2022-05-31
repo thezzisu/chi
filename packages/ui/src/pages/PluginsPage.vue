@@ -3,34 +3,39 @@
     <div class="q-pa-sm col-12">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Plugins ({{ plugins.length }})</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section v-if="plugins.length" class="row">
-          <div
-            v-for="plugin of plugins"
-            :key="plugin.id"
-            class="q-pa-xs col-6 col-xl-1"
-          >
-            <q-card>
-              <q-card-section>{{ plugin.id }}</q-card-section>
-              <q-list>
-                <q-item>
-                  <q-item-section>
-                    <q-item-label>{{ plugin.resolved }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-              <q-card-actions align="right">
-                <q-btn
-                  :to="`${base}/plugin/${encodeURIComponent(plugin.id)}`"
-                  label="View"
-                />
-              </q-card-actions>
-            </q-card>
+          <div class="row justify-between items-center">
+            <div class="text-h6">Plugins ({{ plugins.length }})</div>
+            <div>
+              <q-btn
+                padding="xs"
+                color="primary"
+                icon="mdi-plus"
+                :to="`${base}/load-plugin`"
+              />
+            </div>
           </div>
         </q-card-section>
-        <q-card-section v-else class="column items-center">
+        <q-list class="list bg-white" separator bordered>
+          <q-item v-for="plugin of plugins" :key="plugin.id">
+            <q-item-section>
+              <q-item-label>{{ plugin.id }}</q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn icon="mdi-upload" round flat dense color="black" />
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                :to="`${base}/plugin/${encodeURIComponent(plugin.id)}`"
+                icon="mdi-eye"
+                round
+                flat
+                dense
+                color="black"
+              />
+            </q-item-section>
+          </q-item>
+        </q-list>
+        <q-item v-if="!plugins.length" class="column items-center">
           <div>
             <q-icon
               name="mdi-power-plug-off-outline"
@@ -39,19 +44,19 @@
             />
           </div>
           <div class="text-subtitle2">No plugins</div>
-        </q-card-section>
+        </q-item>
       </q-card>
     </div>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import { baseKey, clientKey } from 'src/shared/injections'
+import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
 import { IPluginInfo } from '@chijs/client'
+import { getClient } from 'src/shared/client'
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const client = inject(clientKey)!
+const client = getClient()
 const base = inject(baseKey)
 
 const plugins = ref<IPluginInfo[]>([])
@@ -62,3 +67,9 @@ async function load() {
 
 load()
 </script>
+
+<style>
+.page {
+  background-color: gainsboro;
+}
+</style>
