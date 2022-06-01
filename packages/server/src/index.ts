@@ -37,7 +37,7 @@ export class ChiApp {
     this.logger.info(`Loading services`)
     for (const service of this.configManager.config.services) {
       try {
-        this.serviceManager.add(service.id, service.plugin, service.params)
+        this.serviceManager.add(service)
       } catch (e) {
         this.logger.error(e)
       }

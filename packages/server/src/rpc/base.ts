@@ -24,12 +24,10 @@ export function applyServerImpl(
 
   endpoint.provide('$s:plugin:get', (id) => app.pluginRegistry.get(id))
 
-  endpoint.provide('$s:service:add', (plugin, id, params) =>
-    app.serviceManager.add(id, plugin, params)
-  )
+  endpoint.provide('$s:service:add', (defn) => app.serviceManager.add(defn))
 
-  endpoint.provide('$s:service:update', (id, params) =>
-    app.serviceManager.update(id, params)
+  endpoint.provide('$s:service:update', (id, attr) =>
+    app.serviceManager.update(id, attr)
   )
 
   endpoint.provide('$s:service:remove', (id) => app.serviceManager.remove(id))

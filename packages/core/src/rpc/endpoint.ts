@@ -94,11 +94,17 @@ export type PublishCb<
 
 export type Descriptor = RpcTypeDescriptor<{}, {}>
 
+export interface IRpcEndpointInfo {
+  provides: string[]
+  publishes: string[]
+}
+
 export type InternalDescriptor = RpcTypeDescriptor<
   {
     ['$:ping'](): void
     ['$:subscribe'](type: string, ...args: unknown[]): SubscriptionId
     ['$:unsubscribe'](id: SubscriptionId): void
+    ['$:info'](): IRpcEndpointInfo
   },
   {}
 >
@@ -126,6 +132,12 @@ function applyInternalImpl(endpoint: RpcEndpoint<InternalDescriptor>) {
     if (publication) {
       await publication.unpub()
       this.publications.delete(id)
+    }
+  })
+  endpoint.provide('$:info', function () {
+    return {
+      provides: [...this.endpoint.provides.keys()],
+      publishes: [...this.endpoint.publishes.keys()]
     }
   })
 }

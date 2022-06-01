@@ -1,15 +1,10 @@
-import { IServiceInfo } from '@chijs/core'
+import { IServiceDefn } from '@chijs/core'
 import { unifiedImport } from '../utils/index.js'
 import type { ChiApp } from '../index.js'
 
-export interface IChiServiceConfig
-  extends Omit<IServiceInfo, 'running' | 'logPath'> {
-  autostart?: boolean
-}
-
 export interface IChiConfig {
   plugins: string[]
-  services: IChiServiceConfig[]
+  services: IServiceDefn[]
   resolve: Record<string, string>
   logDir: string
 }

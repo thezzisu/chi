@@ -1,6 +1,8 @@
+import { Logger } from 'pino'
 import { encodeReject, RpcMsgType } from './base.js'
 
 import type { RpcId, IRpcMsg, IRpcDieMsg } from './base.js'
+import { createLogger } from '../logger/index.js'
 
 function createRpcDieMsg(src: RpcId, dst: RpcId, reason: unknown): IRpcDieMsg {
   return {
@@ -22,33 +24,49 @@ export class RpcAdapter {
     this.connections = new Set<RpcId>()
   }
 
-  recv(msg: IRpcMsg) {
+  async recv(msg: IRpcMsg) {
     const remote = this.router.adapters.get(msg.d)
     if (remote) {
       this.connections.add(msg.d)
-      remote.send(msg)
+      remote.connections.add(msg.s)
+      try {
+        await remote.send(msg)
+      } catch (e) {
+        this.router.logger.error(
+          e,
+          `Error sending message from ${msg.s} to ${msg.d}`
+        )
+      }
     }
   }
 
-  disconnect(remote: RpcId, reason: unknown) {
+  async disconnect(remote: RpcId, reason: unknown) {
     if (this.connections.delete(remote)) {
-      this.send(createRpcDieMsg(remote, this.id, reason))
+      try {
+        await this.send(createRpcDieMsg(remote, this.id, reason))
+      } catch (e) {
+        this.router.logger.error(e, `Error sending message to ${this.id}`)
+      }
     }
   }
 
   dispose(reason: unknown) {
-    this.connections.forEach((dst) =>
-      this.router.adapters.get(dst)?.disconnect(this.id, reason)
-    )
+    this.connections.forEach((dst) => {
+      if (dst !== this.id) {
+        this.router.adapters.get(dst)?.disconnect(this.id, reason)
+      }
+    })
     this.connections.clear()
     this.router.adapters.delete(this.id)
   }
 }
 
+const defaultLogger = createLogger('core', 'rpc')
+
 export class RpcRouter {
   adapters
 
-  constructor() {
+  constructor(public logger: Logger = defaultLogger) {
     this.adapters = new Map<RpcId, RpcAdapter>()
   }
 

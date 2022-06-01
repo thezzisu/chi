@@ -1,4 +1,5 @@
 // @ts-check
+import { ServiceRestartPolicy } from '@chijs/core'
 import { ChiApp } from '@chijs/server'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
@@ -8,12 +9,15 @@ const app = new ChiApp({
   services: [
     {
       id: 'test2',
+      name: 'Some name',
+      desc: 'Some description',
       plugin: '@/plugin.ts',
       params: {
         foo: 'bar',
         wait: ''
       },
-      autostart: true
+      autostart: true,
+      restartPolicy: ServiceRestartPolicy.NEVER
     },
     {
       id: 'test',
@@ -22,7 +26,8 @@ const app = new ChiApp({
         foo: 'bar',
         wait: 'test2'
       },
-      autostart: true
+      autostart: true,
+      restartPolicy: ServiceRestartPolicy.NEVER
     }
   ],
   resolve: {

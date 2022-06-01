@@ -27,7 +27,7 @@
               <q-list>
                 <q-item>
                   <q-item-section>
-                    <q-item-label>{{ service.running }}</q-item-label>
+                    <q-item-label>{{ service.state }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
