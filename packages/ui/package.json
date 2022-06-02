@@ -28,7 +28,7 @@
     "@quasar/app-vite": "^1.0.0",
     "autoprefixer": "^10.4.2",
     "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-vue": "^8.5.0"
+    "eslint-plugin-vue": "^9.1.0"
   },
   "engines": {
     "node": "^18 || ^16",

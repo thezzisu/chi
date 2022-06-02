@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { ChiApp } from '../index.js'
 import { resolveImport } from '../utils/import.js'
+import { loadPlugin } from './loader.js'
 
 export class PluginRegistry {
   private plugins: Record<string, IPluginInfo>
@@ -24,9 +25,7 @@ export class PluginRegistry {
       let resolved = resolveImport(id, this.app.configManager.config.resolve)
       resolved = resolve(resolved)
       resolved = pathToFileURL(resolved).href
-      const {
-        default: { main: _main, ...info }
-      } = await import(resolved)
+      const info = await loadPlugin(resolved)
       this.plugins[id] = { ...info, id, resolved }
       return [true]
     } catch (e) {
