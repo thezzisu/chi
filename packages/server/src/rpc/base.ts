@@ -18,7 +18,9 @@ export function applyServerImpl(
 
   endpoint.provide('$s:misc:startTime', () => STARTUP_TIMESTAMP)
 
-  endpoint.provide('$s:plugin:load', (mod) => app.pluginRegistry.load(mod))
+  endpoint.provide('$s:plugin:load', (id) => app.pluginRegistry.load(id))
+
+  endpoint.provide('$s:plugin:unload', (id) => app.pluginRegistry.unload(id))
 
   endpoint.provide('$s:plugin:list', () => app.pluginRegistry.list())
 

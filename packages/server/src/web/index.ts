@@ -1,8 +1,7 @@
 import type { Socket } from 'socket.io'
-import fastify, { FastifyInstance } from 'fastify'
+import fastify from 'fastify'
 import cors from '@fastify/cors'
 import fastifySocketIo from 'fastify-socket.io'
-import { Logger } from 'pino'
 
 import type { ChiApp } from '../index.js'
 import { RpcId } from '@chijs/core'
@@ -19,14 +18,14 @@ export class ClientDisconnectedError extends Error {
 }
 
 export class WebServer {
-  private server: FastifyInstance
-  private clients: Record<string, IClient>
-  private logger: Logger
+  private server
+  private logger
+  private clients
 
   constructor(private app: ChiApp) {
-    this.clients = Object.create(null)
     this.logger = app.logger.child({ subcomponent: 'webserver' })
     this.server = fastify({ logger: this.logger })
+    this.clients = new Map<string, IClient>()
   }
 
   async start() {
@@ -53,15 +52,14 @@ export class WebServer {
     socket.on('disconnect', (reason) => {
       this.logger.info(`Client ${socket.id} disconnected`)
       adapter.dispose(new ClientDisconnectedError(reason))
-      delete this.clients[socket.id]
+      this.clients.delete(socket.id)
     })
-    this.clients[socket.id] = { socket }
+    this.clients.set(socket.id, { socket })
   }
 
   getClient(id: string) {
-    if (!(id in this.clients)) {
-      throw new Error('Client not found')
-    }
-    return this.clients[id]
+    const client = this.clients.get(id)
+    if (!client) throw new Error('Client not found')
+    return client
   }
 }

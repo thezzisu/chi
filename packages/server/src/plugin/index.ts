@@ -6,18 +6,20 @@ import { resolveImport } from '../utils/import.js'
 import { loadPlugin } from './loader.js'
 
 export class PluginRegistry {
-  private plugins: Record<string, IPluginInfo>
+  private plugins
+
   constructor(private app: ChiApp) {
-    this.plugins = Object.create(null)
+    this.plugins = new Map<string, IPluginInfo>()
   }
 
   list(): IPluginInfo[] {
-    return Object.values(this.plugins)
+    return [...this.plugins.values()]
   }
 
   get(id: string): IPluginInfo {
-    if (!(id in this.plugins)) throw new Error(`Plugin not found: ${id}`)
-    return this.plugins[id]
+    const plugin = this.plugins.get(id)
+    if (!plugin) throw new Error(`Plugin not found: ${id}`)
+    return plugin
   }
 
   async load(id: string): Promise<[ok: boolean, reason?: string]> {
@@ -26,7 +28,7 @@ export class PluginRegistry {
       resolved = resolve(resolved)
       resolved = pathToFileURL(resolved).href
       const info = await loadPlugin(resolved)
-      this.plugins[id] = { ...info, id, resolved }
+      this.plugins.set(id, { ...info, id, resolved })
       return [true]
     } catch (e) {
       this.app.logger.error(e)
@@ -34,9 +36,23 @@ export class PluginRegistry {
     }
   }
 
+  unload(id: string) {
+    const plugin = this.plugins.get(id)
+    if (!plugin) throw new Error(`Plugin not found: ${id}`)
+    const service = this.app.serviceManager
+      .list()
+      .find((service) => service.plugin === id)
+    if (service) {
+      throw new Error(
+        `Plugin ${id} is currently in use by service ${service.id}`
+      )
+    }
+    this.plugins.delete(id)
+  }
+
   verifyParams(id: string, params: Record<string, unknown>) {
-    if (!(id in this.plugins)) throw new Error('Plugin not found')
-    const plugin = this.plugins[id]
+    const plugin = this.plugins.get(id)
+    if (!plugin) throw new Error(`Plugin not found: ${id}`)
     for (const param in plugin.params) {
       if (!validateJsonSchema(params[param], plugin.params[param])) return false
     }
