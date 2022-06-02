@@ -13,7 +13,7 @@
     "dev": "quasar dev"
   },
   "dependencies": {
-    "@chijs/client": "^0.0.6",
+    "@chijs/client": "^0.0.7",
     "@quasar/extras": "^1.0.0",
     "@vueuse/core": "^8.5.0",
     "nanoid": "^3.3.4",
