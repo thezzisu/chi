@@ -20,7 +20,9 @@
     "@chijs/server": "^0.0.6",
     "yargs": "^17.5.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/yargs": "^17.0.10"
+  },
   "scripts": {
     "build": "node ../../scripts/build.mjs --package cli",
     "prepare": "node ../../scripts/build.mjs --package cli --rebuild",

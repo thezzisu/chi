@@ -37,7 +37,7 @@ export function loadPlugin(resolved: string) {
     worker.on('exit', (code, signal) => {
       reject(
         new Error(
-          `Worker exited with ` + (code ? `code ${code}` : `signal ${signal}`)
+          `Worker exited with ` + (signal ? `signal ${signal}` : `code ${code}`)
         )
       )
     })

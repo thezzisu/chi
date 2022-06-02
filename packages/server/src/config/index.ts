@@ -11,6 +11,10 @@ export interface IChiConfig {
 
 export type ChiAppOptions = Partial<IChiConfig>
 
+export function defineConfig(config: ChiAppOptions) {
+  return config
+}
+
 const defaultConfig: IChiConfig = {
   plugins: [],
   services: [],
@@ -34,6 +38,7 @@ export class ConfigManager {
   }
 
   async loadConfig(path: string) {
-    this.replaceConfig(await unifiedImport(path, true))
+    const { default: config } = await unifiedImport(path, true)
+    this.replaceConfig(config)
   }
 }

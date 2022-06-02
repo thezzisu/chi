@@ -1,6 +1,31 @@
 #!/usr/bin/env node
-import { ChiApp } from '@chijs/server'
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
+import { readFileSync } from 'fs'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
+import { startServer } from './server.js'
 
-const app = new ChiApp()
+const dir = dirname(fileURLToPath(import.meta.url))
+const { version } = JSON.parse(
+  readFileSync(join(dir, '..', './package.json'), 'utf8')
+)
 
-await app.start()
+yargs(hideBin(process.argv))
+  .version(version)
+  .scriptName('chi')
+  .command(
+    'serve <config>',
+    'Start Chi Server',
+    (yargs) =>
+      yargs.positional('config', {
+        type: 'string',
+        describe: 'the path to the config file',
+        demandOption: true
+      }),
+    (argv) => startServer(argv.config)
+  )
+  .demandCommand()
+  .recommendCommands()
+  .strict()
+  .parse()

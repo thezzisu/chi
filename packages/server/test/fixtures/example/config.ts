@@ -1,19 +1,36 @@
+import { ServiceRestartPolicy } from '@chijs/core'
+import { defineConfig } from '@chijs/server'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
-export default {
-  plugins: ['~/plugins/foo.js'],
+export default defineConfig({
+  plugins: ['@/plugins/foo.ts'],
   services: [
     {
-      id: 'foo',
-      plugin: '~/plugins/foo.js',
+      id: 'test2',
+      name: 'Some name',
+      desc: 'Some description',
+      plugin: '@/plugins/foo.ts',
       params: {
-        foo: 'bar'
+        foo: 'bar',
+        wait: ''
       },
-      autostart: true
+      autostart: true,
+      restartPolicy: ServiceRestartPolicy.NEVER
+    },
+    {
+      id: 'test',
+      plugin: '@/plugins/foo.ts',
+      params: {
+        foo: 'bar',
+        wait: 'test2'
+      },
+      autostart: true,
+      restartPolicy: ServiceRestartPolicy.NEVER
     }
   ],
   resolve: {
-    '~': resolve(dirname(fileURLToPath(import.meta.url)))
-  }
-}
+    '@': resolve(dirname(fileURLToPath(import.meta.url)))
+  },
+  logDir: 'stdout'
+})

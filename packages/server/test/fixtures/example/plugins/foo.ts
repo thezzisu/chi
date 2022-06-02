@@ -23,6 +23,7 @@ export default new PluginBuilder<SelfDescriptor>()
   .param('foo', Type.String())
   .param('wait', Type.String())
   .build(async (ctx, params) => {
+    console.log('Service started')
     ctx.endpoint.provide('foo', (bar) => +bar)
     ctx.endpoint.provide('fucker', (a, b) => `${a} fucks ${b}!`)
     if (params.wait) {

@@ -29,6 +29,7 @@ export class ChiApp {
     this.logger.info(`Loading plugins`)
     for (const plugin of this.configManager.config.plugins) {
       try {
+        this.logger.info(`Loading plugin ${plugin}`)
         await this.pluginRegistry.load(plugin)
       } catch (e) {
         this.logger.error(e)
@@ -37,6 +38,7 @@ export class ChiApp {
     this.logger.info(`Loading services`)
     for (const service of this.configManager.config.services) {
       try {
+        this.logger.info(`Loading service ${service.id}`)
         this.serviceManager.add(service)
       } catch (e) {
         this.logger.error(e)
@@ -56,6 +58,7 @@ export class ChiApp {
   }
 }
 
+export * from './config/index.js'
 export * from './plugin/index.js'
 export * from './rpc/index.js'
 export * from './service/index.js'
