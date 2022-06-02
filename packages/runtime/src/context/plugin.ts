@@ -4,7 +4,7 @@ import {
   IPluginDescriptors,
   RpcEndpoint,
   RpcHandle,
-  RpcId,
+  RPC,
   RpcTypeDescriptor,
   ServerDescriptor,
   withOverride,
@@ -37,7 +37,7 @@ export class PluginContext<D extends Descriptor> {
       service: bootstrapData.service,
       plugin: bootstrapData.plugin
     })
-    this.server = internalEndpoint.getHandle<ServerDescriptor>(RpcId.server())
+    this.server = internalEndpoint.getHandle<ServerDescriptor>(RPC.server())
     this.plugin = createRpcWrapper(this.server, '$s:plugin:')
     this.service = createRpcWrapper(this.server, '$s:service:')
   }
@@ -49,7 +49,7 @@ export class PluginContext<D extends Descriptor> {
   async getServiceProxy<D extends Descriptor>(id: string) {
     const service = await this.service.get(id)
     if (!service.workerId) throw new Error(`Service ${id} is not running`)
-    const handle = this.endpoint.getHandle<D>(RpcId.worker(service.workerId))
+    const handle = this.endpoint.getHandle<D>(RPC.worker(service.workerId))
     const internalHandle = <RpcHandle<WorkerDescriptor>>handle
     const wrapper = createRpcWrapper(handle, '')
     const internalWrapper = createRpcWrapper(internalHandle, '$w:')

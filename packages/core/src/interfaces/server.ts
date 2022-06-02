@@ -60,6 +60,19 @@ export type ServerDescriptor = RpcTypeDescriptor<
     ['$s:service:stop'](id: string): void
     ['$s:service:list'](): IServiceInfo[]
     ['$s:service:get'](id: string): IServiceInfo
+
+    ['$s:action:dispatch'](
+      serviceId: string,
+      actionId: string,
+      params: Record<string, unknown>
+    ): string
+    ['$s:action:run'](
+      taskId: string,
+      parent: string,
+      serviceId: string,
+      actionId: string,
+      params: Record<string, unknown>
+    ): unknown
   },
   {}
 >

@@ -1,5 +1,5 @@
 import {
-  RpcId,
+  RPC,
   RpcEndpoint,
   WorkerDescriptor,
   createLogger,
@@ -20,7 +20,7 @@ const data: ServiceBootstrapData = deserialize(Buffer.from(payload, 'base64'))
 try {
   const { default: plugin } = await import(data.resolved)
   const endpoint = new RpcEndpoint<WorkerDescriptor>(
-    RpcId.worker(data.workerId),
+    RPC.worker(data.workerId),
     (msg) => process.send?.(msg),
     createLogger('runtime', 'rpc')
   )
