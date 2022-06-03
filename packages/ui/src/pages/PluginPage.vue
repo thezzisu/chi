@@ -25,7 +25,7 @@
               <q-icon name="mdi-text-box" />
             </q-item-section>
             <q-item-section>
-              <q-item-label caption>desc?</q-item-label>
+              <q-item-label caption>Desc</q-item-label>
               <q-item-label>{{ plugin?.desc }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -34,7 +34,7 @@
               <q-icon name="mdi-text-box" />
             </q-item-section>
             <q-item-section>
-              <q-item-label caption>Log path</q-item-label>
+              <q-item-label caption>Resolved</q-item-label>
               <q-item-label>{{ plugin?.resolved }}</q-item-label>
             </q-item-section>
           </q-item>
