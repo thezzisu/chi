@@ -2,14 +2,47 @@
   <q-page padding class="row">
     <div class="q-pa-sm col-12">
       <q-card>
-        <q-card-section class="flex-break">
-          id: {{ plugin?.id }}
+        <q-card-section>
+          <div class="row justify-between items-center">
+            <div>
+              <div class="text-h6">Plugin {{ plugin?.id }}</div>
+            </div>
+          </div>
+          <q-separator />
         </q-card-section>
-        <q-card-section class="flex-break">
-          params: {{ plugin?.params }}
-        </q-card-section>
-        <q-card-section class="flex-break">
-          {{ plugin?.resolved }}
+        <q-list>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="mdi-text-box" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label caption>Name</q-item-label>
+              <q-item-label>{{ plugin?.name }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="mdi-text-box" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label caption>desc?</q-item-label>
+              <q-item-label>{{ plugin?.desc }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="mdi-text-box" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label caption>Log path</q-item-label>
+              <q-item-label>{{ plugin?.resolved }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+        <q-separator />
+        <q-card-section>
+          <div class="text-subtitle-1">Parameters</div>
+          <pre>{{ JSON.stringify(plugin?.params, null, '  ') }}</pre>
         </q-card-section>
       </q-card>
     </div>
