@@ -5,7 +5,7 @@ import {
   IRpcMsg,
   IServiceInfo,
   WorkerDescriptor,
-  RpcId,
+  RPC,
   ServiceRestartPolicy,
   ServiceState,
   IServiceDefn,
@@ -36,7 +36,7 @@ export class ServiceManager {
     if (this.services.has(defn.id)) {
       throw new Error('Service already exists')
     }
-    if (!this.app.pluginRegistry.verifyParams(defn.plugin, defn.params)) {
+    if (!this.app.plugins.verifyParams(defn.plugin, defn.params)) {
       throw new Error('Bad params')
     }
     this.services.set(defn.id, {
@@ -52,7 +52,7 @@ export class ServiceManager {
     if (service.workerId) throw new Error('Service is running')
     if (
       attr.params &&
-      !this.app.pluginRegistry.verifyParams(service.plugin, attr.params)
+      !this.app.plugins.verifyParams(service.plugin, attr.params)
     ) {
       throw new Error('Bad params')
     }
@@ -76,15 +76,11 @@ export class ServiceManager {
       throw new Error('Service is running')
 
     const workerId = nanoid()
-    const plugin = this.app.pluginRegistry.get(service.plugin)
+    const plugin = this.app.plugins.get(service.plugin)
     const logPath =
-      this.app.configManager.config.logDir === 'stdout'
+      this.app.config.logDir === 'stdout'
         ? undefined
-        : join(
-            this.app.configManager.config.logDir,
-            service.id,
-            `${+new Date()}.log`
-          )
+        : join(this.app.config.logDir, service.id, `${+new Date()}.log`)
 
     const worker = forkWorker({
       data: {
@@ -98,8 +94,8 @@ export class ServiceManager {
       logPath
     })
 
-    const adapter = this.app.rpcManager.router.createAdapter(
-      RpcId.worker(workerId),
+    const adapter = this.app.rpc.router.createAdapter(
+      RPC.worker(workerId),
       (msg) =>
         new Promise<void>((resolve, reject) =>
           worker.send(msg, (err) => (err ? reject(err) : resolve()))
@@ -131,8 +127,8 @@ export class ServiceManager {
     service.logPath = logPath ?? 'stdout'
     service.state = ServiceState.STARTING
     service.error = undefined
-    this.app.rpcManager.endpoint
-      .getHandle<WorkerDescriptor>(RpcId.worker(workerId))
+    this.app.rpc.endpoint
+      .getHandle<WorkerDescriptor>(RPC.worker(workerId))
       .call('$w:waitReady')
       .then(() => {
         service.state = ServiceState.RUNNING
@@ -148,8 +144,8 @@ export class ServiceManager {
     if (!service.workerId) throw new Error('Service is not running')
 
     service.state = ServiceState.STOPPING
-    const handle = this.app.rpcManager.endpoint.getHandle<WorkerDescriptor>(
-      RpcId.worker(service.workerId)
+    const handle = this.app.rpc.endpoint.getHandle<WorkerDescriptor>(
+      RPC.worker(service.workerId)
     )
     try {
       await handle.call('$w:exit')

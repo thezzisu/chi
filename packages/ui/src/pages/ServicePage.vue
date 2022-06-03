@@ -127,7 +127,7 @@ import { computed, ref } from 'vue'
 import {
   InternalDescriptor,
   IServiceInfo,
-  RpcId,
+  RPC,
   ServiceState
 } from '@chijs/client'
 import { useRoute } from 'vue-router'
@@ -156,10 +156,9 @@ async function load() {
   service.value = await client.service.get(serviceId)
   if (service.value.workerId) {
     const handle = client.endpoint.getHandle<InternalDescriptor>(
-      RpcId.worker(service.value.workerId)
+      RPC.worker(service.value.workerId)
     )
     const info = await handle.call('$:info')
-    console.log(info)
     provides.value = info.provides.filter((x) => !x.startsWith('$'))
     publishes.value = info.publishes.filter((x) => !x.startsWith('$'))
   }

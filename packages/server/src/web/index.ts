@@ -1,10 +1,9 @@
 import type { Socket } from 'socket.io'
+import type { ChiApp } from '../index.js'
+import { RPC } from '@chijs/core'
 import fastify from 'fastify'
 import cors from '@fastify/cors'
 import fastifySocketIo from 'fastify-socket.io'
-
-import type { ChiApp } from '../index.js'
-import { RpcId } from '@chijs/core'
 
 export interface IClient {
   socket: Socket
@@ -44,8 +43,8 @@ export class WebServer {
 
   private onConnection(socket: Socket) {
     this.logger.info(`Client ${socket.id} connected`)
-    const adapter = this.app.rpcManager.router.createAdapter(
-      RpcId.client(socket.id),
+    const adapter = this.app.rpc.router.createAdapter(
+      RPC.client(socket.id),
       (msg) => socket.emit('rpc', msg)
     )
     socket.on('rpc', (msg) => adapter.recv(msg))
