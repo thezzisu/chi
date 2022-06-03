@@ -10,7 +10,7 @@
                 padding="xs"
                 color="primary"
                 icon="mdi-plus"
-                :to="`${base}/load-plugin`"
+                :to="`${base}/plugin/load`"
               />
             </div>
           </div>
@@ -20,12 +20,9 @@
             <q-item-section>
               <q-item-label>{{ plugin.id }}</q-item-label>
             </q-item-section>
-            <!-- <q-item-section side>
-              <q-btn icon="mdi-upload" round flat dense color="black" />
-            </q-item-section> -->
             <q-item-section side>
               <q-btn
-                :to="`${base}/plugin/${encodeURIComponent(plugin.id)}`"
+                :to="`${base}/plugin/view/${encodeURIComponent(plugin.id)}`"
                 icon="mdi-eye"
                 round
                 flat

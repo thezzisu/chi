@@ -24,7 +24,7 @@
                 </q-item>
               </q-list>
               <q-card-actions align="right">
-                <q-btn :to="`${base}/task/${task.id}`" label="View" />
+                <q-btn :to="`${base}/task/view/${task.id}`" label="View" />
               </q-card-actions>
             </q-card>
           </div>

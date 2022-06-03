@@ -36,7 +36,7 @@ export class ServiceManager {
     if (this.services.has(defn.id)) {
       throw new Error('Service already exists')
     }
-    if (!this.app.plugins.verifyParams(defn.plugin, defn.params)) {
+    if (!this.app.plugins.verifyParams(defn.pluginId, defn.params)) {
       throw new Error('Bad params')
     }
     this.services.set(defn.id, {
@@ -52,7 +52,7 @@ export class ServiceManager {
     if (service.workerId) throw new Error('Service is running')
     if (
       attr.params &&
-      !this.app.plugins.verifyParams(service.plugin, attr.params)
+      !this.app.plugins.verifyParams(service.pluginId, attr.params)
     ) {
       throw new Error('Bad params')
     }
@@ -76,7 +76,7 @@ export class ServiceManager {
       throw new Error('Service is running')
 
     const workerId = nanoid()
-    const plugin = this.app.plugins.get(service.plugin)
+    const plugin = this.app.plugins.get(service.pluginId)
     const logPath =
       this.app.config.logDir === 'stdout'
         ? undefined
@@ -86,7 +86,7 @@ export class ServiceManager {
       data: {
         workerId,
         service: service.id,
-        plugin: service.plugin,
+        plugin: service.pluginId,
         params: service.params,
         resolved: plugin.resolved
       },

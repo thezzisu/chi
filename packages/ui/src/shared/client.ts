@@ -11,6 +11,7 @@ export function useClient(url: string) {
     connected.value = true
   })
   socket.on('disconnect', () => {
+    client.endpoint.dispose(new Error('Socket disconnected'))
     connected.value = false
   })
   return { socket, connected }

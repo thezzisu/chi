@@ -1,4 +1,4 @@
-import type { Static, TSchema } from './types/index.js'
+import type { TSchema } from './types/index.js'
 import addFormats from 'ajv-formats'
 import Ajv from 'ajv/dist/2019.js'
 
@@ -24,7 +24,8 @@ const ajv = addFormats(new Ajv({}), [
 export function validateJsonSchema<S extends TSchema>(
   object: unknown,
   schema: S
-): object is Static<S> {
-  const ok = ajv.validate(schema, object)
-  return ok
+) {
+  const validate = ajv.compile(schema)
+  const ok = validate(object)
+  return ok ? [] : validate.errors ?? []
 }

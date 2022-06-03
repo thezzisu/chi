@@ -10,25 +10,22 @@
                 padding="xs"
                 color="primary"
                 icon="mdi-plus"
-                :to="`${base}/create-service`"
+                :to="`${base}/service/add`"
               />
             </div>
           </div>
         </q-card-section>
-        <q-separator />
-        <q-list class="list bg-white" separator bordered>
+        <q-list class="list bg-white" separator bordered dense>
           <q-item v-for="service of services" :key="service.id">
             <q-item-section>
               <q-item-section>{{ service.id }}</q-item-section>
             </q-item-section>
             <q-item>
-              <q-item-section>
-                <q-item-label>{{ service.state }}</q-item-label>
-              </q-item-section>
+              <service-status :state="service.state" />
             </q-item>
             <q-item-section side>
               <q-btn
-                :to="`${base}/service/${encodeURIComponent(service.id)}`"
+                :to="`${base}/service/view/${encodeURIComponent(service.id)}`"
                 icon="mdi-eye"
                 round
                 flat
@@ -54,6 +51,7 @@ import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
 import { IServiceInfo } from '@chijs/client'
 import { getClient } from 'src/shared/client'
+import ServiceStatus from 'src/components/ServiceStatus.vue'
 
 const client = getClient()
 const base = inject(baseKey)

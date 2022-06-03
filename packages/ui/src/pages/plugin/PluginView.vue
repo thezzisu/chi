@@ -8,8 +8,8 @@
               <div class="text-h6">Plugin {{ plugin?.id }}</div>
             </div>
           </div>
-          <q-separator />
         </q-card-section>
+        <q-separator />
         <q-list>
           <q-item>
             <q-item-section avatar>
@@ -48,17 +48,27 @@
           <div class="text-subtitle-1">Parameters</div>
           <pre>{{ JSON.stringify(plugin?.params, null, '  ') }}</pre>
         </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            color="primary"
+            label="Add service"
+            icon="mdi-cog"
+            :to="`${base}/service/add?pluginId=${encodeURIComponent(pluginId)}`"
+          />
+        </q-card-actions>
       </q-card>
     </div>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import { IPluginInfo } from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
+import { baseKey } from 'src/shared/injections'
 
+const base = inject(baseKey)
 const route = useRoute()
 const pluginId = <string>route.params.pluginId
 const client = getClient()

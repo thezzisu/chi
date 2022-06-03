@@ -6,14 +6,7 @@
           <div class="row justify-between items-center">
             <div>
               <div class="text-h6">Service {{ service?.id }}</div>
-              <q-chip
-                text-color="white"
-                :color="status[0]"
-                :icon="status[1]"
-                :label="status[2]"
-                :clickable="false"
-                square
-              />
+              <service-status :state="service?.state" />
             </div>
 
             <div class="row q-gutter-sm">
@@ -123,16 +116,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
-import {
-  InternalDescriptor,
-  IServiceInfo,
-  RPC,
-  ServiceState
-} from '@chijs/client'
+import { ref } from 'vue'
+import { InternalDescriptor, IServiceInfo, RPC } from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import AsyncBtn from 'src/components/AsyncBtn.vue'
+import ServiceStatus from 'src/components/ServiceStatus.vue'
 
 const route = useRoute()
 const serviceId = <string>route.params.serviceId
@@ -140,17 +129,6 @@ const client = getClient()
 const service = ref<IServiceInfo>()
 const provides = ref<string[]>([])
 const publishes = ref<string[]>([])
-const status = computed(() => {
-  if (service.value) {
-    if (service.value.state === ServiceState.RUNNING) {
-      return ['positive', 'mdi-play', 'Running']
-    } else {
-      return ['dark', 'mdi-stop', 'Stopped']
-    }
-  } else {
-    return [undefined, 'mdi-timer-sand-empty', 'Loading']
-  }
-})
 
 async function load() {
   service.value = await client.service.get(serviceId)

@@ -2,9 +2,13 @@ import { IServiceDefn } from '@chijs/core'
 import { DataSourceOptions } from 'typeorm'
 import { unifiedImport } from '../utils/index.js'
 
+export interface IServiceDefnWithAutostart extends IServiceDefn {
+  autostart?: boolean
+}
+
 export interface IChiConfig {
   plugins: string[]
-  services: IServiceDefn[]
+  services: IServiceDefnWithAutostart[]
   resolve: Record<string, string>
   logDir: string
   db: Omit<DataSourceOptions, 'entities'>

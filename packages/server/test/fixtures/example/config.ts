@@ -10,7 +10,7 @@ export default defineConfig({
       id: 'test2',
       name: 'Some name',
       desc: 'Some description',
-      plugin: '@/plugins/foo.ts',
+      pluginId: '@/plugins/foo.ts',
       params: {
         foo: 'bar',
         wait: ''
@@ -20,7 +20,7 @@ export default defineConfig({
     },
     {
       id: 'test',
-      plugin: '@/plugins/foo.ts',
+      pluginId: '@/plugins/foo.ts',
       params: {
         foo: 'bar',
         wait: 'test2'
@@ -30,7 +30,7 @@ export default defineConfig({
     },
     {
       id: 'action',
-      plugin: '@/plugins/action.ts',
+      pluginId: '@/plugins/action.ts',
       params: {
         hello: 'Hello!'
       },

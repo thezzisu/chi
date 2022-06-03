@@ -25,12 +25,11 @@ export interface IServiceAttr {
   desc?: string
   params: Record<string, unknown>
   restartPolicy: ServiceRestartPolicy
-  autostart: boolean
 }
 
 export interface IServiceDefn extends IServiceAttr {
   id: string
-  plugin: string
+  pluginId: string
 }
 
 export interface IServiceInfo extends IServiceDefn {

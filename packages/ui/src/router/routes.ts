@@ -27,38 +27,45 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'plugin', component: () => import('src/pages/PluginsPage.vue') },
       {
-        path: 'load-plugin',
-        component: () => import('src/pages/LoadPlugin.vue')
+        path: 'plugin',
+        component: () => import('src/pages/plugin/PluginList.vue')
       },
       {
-        path: 'plugin/:pluginId',
-        component: () => import('src/pages/PluginPage.vue')
+        path: 'plugin/load',
+        component: () => import('src/pages/plugin/PluginLoad.vue')
+      },
+      {
+        path: 'plugin/view/:pluginId',
+        component: () => import('src/pages/plugin/PluginView.vue')
       },
       {
         path: 'service',
-        component: () => import('src/pages/ServicesPage.vue')
+        component: () => import('src/pages/service/ServiceList.vue')
       },
       {
-        path: 'service/:serviceId',
-        component: () => import('src/pages/ServicePage.vue')
+        path: 'service/add',
+        component: () => import('src/pages/service/ServiceAdd.vue')
+      },
+      {
+        path: 'service/view/:serviceId',
+        component: () => import('src/pages/service/ServiceView.vue')
       },
       {
         path: 'action',
         component: () => import('src/pages/action/ActionList.vue')
       },
       {
-        path: 'action/:serviceId/:actionId',
-        component: () => import('src/pages/action/ActionDetails.vue')
+        path: 'action/view/:serviceId/:actionId',
+        component: () => import('src/pages/action/ActionView.vue')
       },
       {
         path: 'task',
         component: () => import('src/pages/task/TaskList.vue')
       },
       {
-        path: 'task/:taskId',
-        component: () => import('src/pages/task/TaskDetails.vue')
+        path: 'task/view/:taskId',
+        component: () => import('src/pages/task/TaskView.vue')
       },
       {
         path: ':catchAll(.+)',

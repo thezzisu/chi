@@ -26,7 +26,7 @@
               <q-card-actions align="right">
                 <q-btn
                   :to="
-                    `${base}/action` +
+                    `${base}/action/view` +
                     `/${encodeURIComponent(action.serviceId)}` +
                     `/${encodeURIComponent(action.id)}`
                   "

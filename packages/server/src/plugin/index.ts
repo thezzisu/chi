@@ -41,7 +41,7 @@ export class PluginRegistry {
     if (!plugin) throw new Error(`Plugin not found: ${id}`)
     const service = this.app.services
       .list()
-      .find((service) => service.plugin === id)
+      .find((service) => service.pluginId === id)
     if (service) {
       throw new Error(
         `Plugin ${id} is currently in use by service ${service.id}`
@@ -54,7 +54,8 @@ export class PluginRegistry {
     const plugin = this.plugins.get(id)
     if (!plugin) throw new Error(`Plugin not found: ${id}`)
     for (const param in plugin.params) {
-      if (!validateJsonSchema(params[param], plugin.params[param])) return false
+      const result = validateJsonSchema(params[param], plugin.params[param])
+      if (result.length) return false
     }
     return true
   }
