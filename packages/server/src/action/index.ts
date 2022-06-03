@@ -6,16 +6,19 @@ import {
   WorkerDescriptor,
   RpcId
 } from '@chijs/core'
+import { EventEmitter } from 'node:events'
 import { ActionTask } from '../db/task.js'
 import { ChiApp } from '../index.js'
 
 export class ActionManager {
   manager
   running
+  emitter
 
   constructor(private app: ChiApp) {
     this.manager = app.db.ds.manager
     this.running = new Map<string, [RpcId, ActionTask]>()
+    this.emitter = new EventEmitter()
   }
 
   async dispatch(
@@ -62,6 +65,7 @@ export class ActionManager {
     }
     task.jobs.push(job)
     await this.manager.save(task)
+    this.emitter.emit(taskId, task)
     let toThrow
     try {
       const service = this.app.services.get(serviceId)
@@ -88,6 +92,7 @@ export class ActionManager {
     }
     job.finished = Date.now()
     await this.manager.save(task)
+    this.emitter.emit(taskId, task)
     if (!parent) {
       this.running.delete(taskId)
     }

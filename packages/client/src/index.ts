@@ -7,6 +7,7 @@ export class ChiClient {
   server
   service
   plugin
+  action
   misc
 
   constructor(public socket: Socket) {
@@ -19,6 +20,7 @@ export class ChiClient {
     this.service = createRpcWrapper(this.server, '$s:service:')
     this.plugin = createRpcWrapper(this.server, '$s:plugin:')
     this.misc = createRpcWrapper(this.server, '$s:misc:')
+    this.action = createRpcWrapper(this.server, '$s:action:')
   }
 }
 

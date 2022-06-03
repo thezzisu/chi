@@ -1,5 +1,10 @@
 import { RpcTypeDescriptor } from '../rpc/index.js'
 import { TSchema } from '../utils/index.js'
+import { IActionInfo, ITaskInfo } from './action.js'
+
+export interface IActionInfoWithService extends IActionInfo {
+  serviceId: string
+}
 
 export enum ServiceState {
   STARTING,
@@ -43,6 +48,11 @@ export interface IPluginInfo {
   resolved: string
 }
 
+export interface IPaginationOptions {
+  skip: number
+  take: number
+}
+
 export type ServerDescriptor = RpcTypeDescriptor<
   {
     ['$s:misc:versions'](): Record<string, string>
@@ -73,6 +83,16 @@ export type ServerDescriptor = RpcTypeDescriptor<
       actionId: string,
       params: Record<string, unknown>
     ): unknown
+    ['$s:action:list'](): IActionInfoWithService[]
+    ['$s:action:getTask'](id: string): ITaskInfo
+    ['$s:action:listTask'](): ITaskInfo[]
+    ['$s:action:listTaskByService'](serviceId: string): ITaskInfo[]
+    ['$s:action:listTaskByAction'](
+      serviceId: string,
+      actionId: string
+    ): ITaskInfo[]
   },
-  {}
+  {
+    ['$s:action:taskUpdate'](taskId: string): ITaskInfo
+  }
 >
