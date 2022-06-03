@@ -10,25 +10,27 @@
     "lint": "eslint --ext .js,.ts,.vue ./",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
-    "dev": "quasar dev"
+    "dev": "quasar dev",
+    "build": "quasar build"
   },
-  "dependencies": {
-    "@chijs/client": "^0.0.7",
+  "dependencies": {},
+  "devDependencies": {
+    "@chijs/client": "^0.0.8",
+    "@intlify/vite-plugin-vue-i18n": "^3.3.1",
+    "@quasar/app-vite": "^1.0.0",
     "@quasar/extras": "^1.0.0",
     "@vueuse/core": "^8.5.0",
+    "autoprefixer": "^10.4.2",
+    "electron": "^19.0.3",
+    "electron-builder": "^22.4.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^9.1.0",
     "nanoid": "^3.3.4",
     "pinia": "^2.0.11",
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
     "vue-i18n": "^9.0.0",
     "vue-router": "^4.0.0"
-  },
-  "devDependencies": {
-    "@intlify/vite-plugin-vue-i18n": "^3.3.1",
-    "@quasar/app-vite": "^1.0.0",
-    "autoprefixer": "^10.4.2",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-vue": "^9.1.0"
   },
   "engines": {
     "node": "^18 || ^16",

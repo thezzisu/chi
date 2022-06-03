@@ -9,6 +9,7 @@
       "packages/*"
     ],
     "nohoist": [
+      "electron",
       "**/typeorm",
       "**/typeorm/**"
     ]
