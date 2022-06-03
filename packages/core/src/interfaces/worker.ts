@@ -7,6 +7,7 @@ export type WorkerDescriptor = RpcTypeDescriptor<
     ['$w:exit'](): void
     ['$w:waitReady'](): void
 
+    ['$w:action:get'](id: string): IActionInfo
     ['$w:action:list'](): IActionInfo[]
     ['$w:action:run'](
       initiator: RpcId,

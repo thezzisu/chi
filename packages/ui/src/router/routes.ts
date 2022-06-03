@@ -45,6 +45,22 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/ServicePage.vue')
       },
       {
+        path: 'action',
+        component: () => import('src/pages/action/ActionList.vue')
+      },
+      {
+        path: 'action/:serviceId/:actionId',
+        component: () => import('src/pages/action/ActionDetails.vue')
+      },
+      {
+        path: 'task',
+        component: () => import('src/pages/task/TaskList.vue')
+      },
+      {
+        path: 'task/:taskId',
+        component: () => import('src/pages/task/TaskDetails.vue')
+      },
+      {
         path: ':catchAll(.+)',
         component: () => import('pages/ErrorNotFound.vue')
       }

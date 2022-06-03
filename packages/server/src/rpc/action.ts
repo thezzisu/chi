@@ -29,6 +29,18 @@ export function applyActionImpl(
     }
   )
 
+  endpoint.provide('$s:action:get', async (serviceId, actionId) => {
+    const service = app.services.get(serviceId)
+    if (!service) throw new Error(`service ${serviceId} not found`)
+    if (service.state !== ServiceState.RUNNING || !service.workerId)
+      throw new Error(`service ${serviceId} not running`)
+    const handle = app.rpc.endpoint.getHandle<WorkerDescriptor>(
+      RPC.worker(service.workerId)
+    )
+    const action = await handle.call('$w:action:get', actionId)
+    return { serviceId, ...action }
+  })
+
   endpoint.provide('$s:action:list', async () => {
     const services = app.services
       .list()
@@ -47,6 +59,18 @@ export function applyActionImpl(
       }
     }
     return result
+  })
+
+  endpoint.provide('$s:action:listByService', async (serviceId) => {
+    const service = app.services.get(serviceId)
+    if (!service) throw new Error(`service ${serviceId} not found`)
+    if (service.state !== ServiceState.RUNNING || !service.workerId)
+      throw new Error(`service ${serviceId} not running`)
+    const handle = app.rpc.endpoint.getHandle<WorkerDescriptor>(
+      RPC.worker(service.workerId)
+    )
+    const actions = await handle.call('$w:action:list')
+    return actions.map((item) => ({ ...item, serviceId }))
   })
 
   endpoint.provide('$s:action:getTask', async (id) => {

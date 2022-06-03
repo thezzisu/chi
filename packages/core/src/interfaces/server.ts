@@ -83,7 +83,12 @@ export type ServerDescriptor = RpcTypeDescriptor<
       actionId: string,
       params: Record<string, unknown>
     ): unknown
+    ['$s:action:get'](
+      serviceId: string,
+      actionId: string
+    ): IActionInfoWithService
     ['$s:action:list'](): IActionInfoWithService[]
+    ['$s:action:listByService'](serviceId: string): IActionInfoWithService[]
     ['$s:action:getTask'](id: string): ITaskInfo
     ['$s:action:listTask'](): ITaskInfo[]
     ['$s:action:listTaskByService'](serviceId: string): ITaskInfo[]

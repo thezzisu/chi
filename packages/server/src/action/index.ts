@@ -91,6 +91,10 @@ export class ActionManager {
       toThrow = err
     }
     job.finished = Date.now()
+    if (!parent) {
+      task.state = job.state
+      task.finished = job.finished
+    }
     await this.manager.save(task)
     this.emitter.emit(taskId, task)
     if (!parent) {

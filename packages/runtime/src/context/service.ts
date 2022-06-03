@@ -35,6 +35,12 @@ export class ServiceContext<D extends Descriptor> {
     this.service = createRpcWrapper(this.server, '$s:service:')
     this.action = createRpcWrapper(this.server, '$s:action:')
     this.actions = new Map<string, IActionDefn>()
+    this._endpoint.provide('$w:action:get', (id) => {
+      const action = this.actions.get(id)
+      if (!action) throw new Error(`Action ${id} not found`)
+      const { main: _, ...info } = action
+      return { ...info, id }
+    })
     this._endpoint.provide('$w:action:list', () =>
       [...this.actions.entries()].map(([id, { main: _, ...info }]) => ({
         ...info,
