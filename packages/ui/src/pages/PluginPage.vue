@@ -13,7 +13,7 @@
         <q-list>
           <q-item>
             <q-item-section avatar>
-              <q-icon name="mdi-text-box" />
+              <q-icon name="mdi-cog" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Name</q-item-label>
