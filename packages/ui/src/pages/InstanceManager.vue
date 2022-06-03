@@ -52,7 +52,7 @@
     </q-card>
   </q-page>
 </template>
-
+yar
 <script lang="ts" setup>
 import { instances } from 'src/shared/instance'
 </script>
