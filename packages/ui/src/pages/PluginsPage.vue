@@ -20,9 +20,9 @@
             <q-item-section>
               <q-item-label>{{ plugin.id }}</q-item-label>
             </q-item-section>
-            <q-item-section side>
+            <!-- <q-item-section side>
               <q-btn icon="mdi-upload" round flat dense color="black" />
-            </q-item-section>
+            </q-item-section> -->
             <q-item-section side>
               <q-btn
                 :to="`${base}/plugin/${encodeURIComponent(plugin.id)}`"
