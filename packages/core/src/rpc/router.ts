@@ -37,6 +37,8 @@ export class RpcAdapter {
           `Error sending message from ${msg.s} to ${msg.d}`
         )
       }
+    } else {
+      this.disconnect(msg.d, new Error(`Remote ${msg.d} not found`))
     }
   }
 

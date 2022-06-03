@@ -8,4 +8,5 @@ export interface ServiceBootstrapData {
 
 export * from '@chijs/core/lib/utils/index.js'
 export * from './plugin.js'
+export * from './action.js'
 export * from './context/index.js'

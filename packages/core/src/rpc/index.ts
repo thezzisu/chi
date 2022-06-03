@@ -3,7 +3,7 @@ export * from './endpoint.js'
 export * from './router.js'
 export * from './wrapper.js'
 
-export const RpcId = {
+export const RPC = {
   server: () => 's',
   worker: (workerId: string) => `w${workerId}`,
   client: (clientId: string) => `c${clientId}`
