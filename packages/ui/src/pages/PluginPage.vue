@@ -17,7 +17,9 @@
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Name</q-item-label>
-              <q-item-label>{{ plugin?.name }}</q-item-label>
+              <q-item-label>{{
+                plugin?.name === undefined ? plugin?.id : plugin.name
+              }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-item>
@@ -26,7 +28,9 @@
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Desc</q-item-label>
-              <q-item-label>{{ plugin?.desc }}</q-item-label>
+              <q-item-label>{{
+                plugin?.desc === undefined ? no_desc : plugin.desc
+              }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-item>
@@ -59,6 +63,7 @@ const route = useRoute()
 const pluginId = <string>route.params.pluginId
 const client = getClient()
 const plugin = ref<IPluginInfo>()
+const no_desc = ref('No description')
 
 async function load() {
   plugin.value = await client.plugin.get(pluginId)
