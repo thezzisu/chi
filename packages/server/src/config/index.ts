@@ -28,6 +28,7 @@ export const defaultConfig: IChiConfig = {
   logDir: 'logs',
   db: {
     type: 'sqlite',
-    database: ':memory:'
+    database: ':memory:',
+    synchronize: true
   }
 }

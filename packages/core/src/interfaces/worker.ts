@@ -10,9 +10,9 @@ export type WorkerDescriptor = RpcTypeDescriptor<
     ['$w:action:list'](): IActionInfo[]
     ['$w:action:run'](
       initiator: RpcId,
-      task: string,
-      job: string,
-      action: string,
+      taskId: string,
+      jobId: string,
+      actionId: string,
       params: Record<string, unknown>
     ): unknown
   },

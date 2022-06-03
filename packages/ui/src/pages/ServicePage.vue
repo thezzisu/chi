@@ -159,7 +159,6 @@ async function load() {
       RPC.worker(service.value.workerId)
     )
     const info = await handle.call('$:info')
-    console.log(info)
     provides.value = info.provides.filter((x) => !x.startsWith('$'))
     publishes.value = info.publishes.filter((x) => !x.startsWith('$'))
   }

@@ -31,6 +31,7 @@ export class ChiApp {
 
   async start() {
     this.logger.error(`Starting Chi`)
+    await this.db.init()
     await this.web.start()
     this.logger.info(`Loading plugins`)
     for (const plugin of this.config.plugins) {

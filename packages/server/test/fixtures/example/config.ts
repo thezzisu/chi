@@ -4,7 +4,7 @@ import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
 export default defineConfig({
-  plugins: ['@/plugins/foo.ts'],
+  plugins: ['@/plugins/foo.ts', '@/plugins/action.ts'],
   services: [
     {
       id: 'test2',
@@ -27,6 +27,15 @@ export default defineConfig({
       },
       autostart: true,
       restartPolicy: ServiceRestartPolicy.NEVER
+    },
+    {
+      id: 'action',
+      plugin: '@/plugins/action.ts',
+      params: {
+        hello: 'Hello!'
+      },
+      autostart: true,
+      restartPolicy: ServiceRestartPolicy.ON_FAILURE
     }
   ],
   resolve: {

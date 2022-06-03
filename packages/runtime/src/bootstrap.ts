@@ -6,7 +6,7 @@ import {
   IRpcMsg
 } from '@chijs/core'
 import { deserialize } from 'node:v8'
-import { PluginContext } from './context/plugin.js'
+import { ServiceContext } from './context/service.js'
 import { ServiceBootstrapData } from './index.js'
 import { initialization, applyWorkerImpl } from './rpc.js'
 
@@ -26,7 +26,7 @@ try {
   )
   process.on('message', (msg) => endpoint.recv(<IRpcMsg>msg))
   applyWorkerImpl(endpoint)
-  const ctx = new PluginContext(data, endpoint)
+  const ctx = new ServiceContext(data, endpoint)
   await plugin.main(ctx, data.params)
   initialization.resolve()
 } catch (err) {

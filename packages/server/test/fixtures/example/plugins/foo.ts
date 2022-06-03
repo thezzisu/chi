@@ -8,7 +8,7 @@ import {
 type SelfDescriptor = PluginTypeDescriptor<
   {
     foo(bar: string): number
-    fucker(a: string, b: string): string
+    bar(a: string, b: string): string
   },
   {}
 >
@@ -25,7 +25,7 @@ export default new PluginBuilder<SelfDescriptor>()
   .build(async (ctx, params) => {
     console.log('Service started')
     ctx.endpoint.provide('foo', (bar) => +bar)
-    ctx.endpoint.provide('fucker', (a, b) => `${a} fucks ${b}!`)
+    ctx.endpoint.provide('bar', (a, b) => `${a} + ${b}!`)
     if (params.wait) {
       const proxy = await ctx.getServiceProxy<DescriptorOf<'~/plugin.ts'>>(
         params.wait
@@ -35,10 +35,8 @@ export default new PluginBuilder<SelfDescriptor>()
       // wait for 2 sec
       await new Promise((resolve) => setTimeout(resolve, 2000))
     }
-    const plugins = await ctx.plugin.list()
-    console.table(plugins)
     console.log(params)
     const proxy = await ctx.getServiceProxy<DescriptorOf<'~/plugin.ts'>>('test')
     console.log(await proxy.foo('123'))
-    console.log(await proxy.fucker('hello', 'world'))
+    console.log(await proxy.bar('hello', 'world'))
   })
