@@ -14,10 +14,10 @@ export async function targetPackages() {
     packages = await glob('packages/*')
   }
 
-  if (argv.exlude) {
+  if (argv.exclude) {
     /** @type {string[]} */
-    let exlude = argv.exlude instanceof Array ? argv.exlude : [argv.exlude]
-    packages = packages.filter((x) => !exlude.includes(basename(x)))
+    let exclude = argv.exclude instanceof Array ? argv.exclude : [argv.exclude]
+    packages = packages.filter((x) => !exclude.includes(basename(x)))
   }
 
   packages = packages.map((x) => resolve(x))

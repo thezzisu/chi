@@ -1,6 +1,6 @@
 import { fork } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { ChiApp } from '@chijs/server'
+import { ChiApp, loadConfig } from '@chijs/server'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
@@ -22,12 +22,12 @@ export function startServer(config: string) {
 
 if (process.argv[1] === filepath) {
   try {
-    let config = process.env.CHI_CONFIG_PATH
-    if (!config) throw new Error(`CHI_CONFIG_PATH not set`)
-    config = resolve(config)
-    if (!existsSync(config)) throw new Error(`Config file not found: ${config}`)
-    const app = new ChiApp()
-    await app.configManager.loadConfig(config)
+    let path = process.env.CHI_CONFIG_PATH
+    if (!path) throw new Error(`CHI_CONFIG_PATH not set`)
+    path = resolve(path)
+    if (!existsSync(path)) throw new Error(`Config file not found: ${path}`)
+    const config = await loadConfig(path)
+    const app = new ChiApp(config)
     await app.start()
   } catch (e) {
     console.error('Server failed to start')

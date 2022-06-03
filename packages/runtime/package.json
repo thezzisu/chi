@@ -1,6 +1,6 @@
 {
   "name": "@chijs/runtime",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Module for Chi plugins",
@@ -16,7 +16,7 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/core": "^0.0.7"
+    "@chijs/core": "^0.0.8"
   },
   "devDependencies": {},
   "scripts": {

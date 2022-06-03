@@ -24,7 +24,7 @@ export class PluginRegistry {
 
   async load(id: string): Promise<[ok: boolean, reason?: string]> {
     try {
-      let resolved = resolveImport(id, this.app.configManager.config.resolve)
+      let resolved = resolveImport(id, this.app.config.resolve)
       resolved = resolve(resolved)
       resolved = pathToFileURL(resolved).href
       const info = await loadPlugin(resolved)
@@ -39,7 +39,7 @@ export class PluginRegistry {
   unload(id: string) {
     const plugin = this.plugins.get(id)
     if (!plugin) throw new Error(`Plugin not found: ${id}`)
-    const service = this.app.serviceManager
+    const service = this.app.services
       .list()
       .find((service) => service.plugin === id)
     if (service) {
