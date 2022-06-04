@@ -35,6 +35,12 @@ export class WebServer {
       }
     })
     this.server.io.use((socket, next) => {
+      if (
+        this.app.config.web.token &&
+        socket.handshake.auth.token !== this.app.config.web.token
+      ) {
+        return next(new Error('Unauthorized'))
+      }
       return next()
     })
     this.server.io.on('connection', this.onConnection.bind(this))

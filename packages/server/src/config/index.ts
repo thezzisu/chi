@@ -6,12 +6,17 @@ export interface IServiceDefnWithAutostart extends IServiceDefn {
   autostart?: boolean
 }
 
+export interface IWebConfig {
+  token?: string
+}
+
 export interface IChiConfig {
   plugins: string[]
   services: IServiceDefnWithAutostart[]
   resolve: Record<string, string>
   logDir: string
   db: Omit<DataSourceOptions, 'entities'>
+  web: IWebConfig
 }
 
 export type ChiAppOptions = Partial<IChiConfig>
@@ -34,5 +39,6 @@ export const defaultConfig: IChiConfig = {
     type: 'sqlite',
     database: ':memory:',
     synchronize: true
-  }
+  },
+  web: {}
 }
