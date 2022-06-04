@@ -2,6 +2,10 @@
   background: #ff6d91 !important;
 }
 
+.text-mono {
+  font-family: 'Cascadia Code', 'Consolas', Courier, monospace;
+}
+
 .router-enter-active,
 .router-leave-active {
   transition: opacity 0.1s ease;

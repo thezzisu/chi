@@ -64,6 +64,10 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/task/TaskList.vue')
       },
       {
+        path: 'task/add',
+        component: () => import('src/pages/task/TaskAdd.vue')
+      },
+      {
         path: 'task/view/:taskId',
         component: () => import('src/pages/task/TaskView.vue')
       },

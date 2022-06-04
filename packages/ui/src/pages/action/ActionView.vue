@@ -13,7 +13,7 @@
         <q-list>
           <q-item>
             <q-item-section avatar>
-              <q-icon name="mdi-power-plug" />
+              <q-icon name="mdi-cog" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Service</q-item-label>
@@ -25,6 +25,16 @@
             </q-item-section>
           </q-item>
         </q-list>
+        <q-separator />
+        <q-card-section>
+          <div class="text-subtitle-1">Parameters</div>
+        </q-card-section>
+        <params-list :params="action?.params ?? {}" />
+        <q-separator />
+        <q-card-section>
+          <div class="text-subtitle-1">Returns</div>
+          <pre>{{ JSON.stringify(action?.return, null, '  ') }}</pre>
+        </q-card-section>
       </q-card>
     </div>
   </q-page>
@@ -36,6 +46,7 @@ import { IActionInfoWithService } from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
+import ParamsList from 'src/components/ParamsList.vue'
 
 const base = inject(baseKey)
 const route = useRoute()

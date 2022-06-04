@@ -17,9 +17,9 @@
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Name</q-item-label>
-              <q-item-label>{{
-                plugin?.name === undefined ? plugin?.id : plugin.name
-              }}</q-item-label>
+              <q-item-label>
+                {{ plugin?.name === undefined ? plugin?.id : plugin.name }}
+              </q-item-label>
             </q-item-section>
           </q-item>
           <q-item>
@@ -28,9 +28,9 @@
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Desc</q-item-label>
-              <q-item-label>{{
-                plugin?.desc === undefined ? no_desc : plugin.desc
-              }}</q-item-label>
+              <q-item-label>
+                {{ plugin?.desc === undefined ? no_desc : plugin.desc }}
+              </q-item-label>
             </q-item-section>
           </q-item>
           <q-item>
@@ -46,8 +46,8 @@
         <q-separator />
         <q-card-section>
           <div class="text-subtitle-1">Parameters</div>
-          <pre>{{ JSON.stringify(plugin?.params, null, '  ') }}</pre>
         </q-card-section>
+        <params-list :params="plugin?.params ?? {}" />
         <q-card-actions align="right">
           <q-btn
             color="primary"
@@ -67,6 +67,7 @@ import { IPluginInfo } from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
+import ParamsList from 'src/components/ParamsList.vue'
 
 const base = inject(baseKey)
 const route = useRoute()
