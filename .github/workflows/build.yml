@@ -47,6 +47,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: build-result
+          name: build-result-${{ runner.os }}
           path: |
             packages/ui/dist/
