@@ -1,6 +1,6 @@
 {
   "name": "@chijs/server",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Server for Chi framework",
@@ -16,8 +16,8 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/core": "^0.0.9",
-    "@chijs/runtime": "^0.0.9",
+    "@chijs/core": "^0.0.10",
+    "@chijs/runtime": "^0.0.10",
     "@fastify/cors": "^7.0.0",
     "fastify": "^3.29.0",
     "fastify-socket.io": "^3.0.0",
