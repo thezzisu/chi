@@ -1,6 +1,5 @@
 import { IServiceDefn } from '@chijs/core'
 import { DataSourceOptions } from 'typeorm'
-import { unifiedImport } from '../utils/index.js'
 
 export interface IServiceDefnWithAutostart extends IServiceDefn {
   autostart?: boolean
@@ -23,11 +22,6 @@ export type ChiAppOptions = Partial<IChiConfig>
 
 export function defineConfig(config: ChiAppOptions) {
   return config
-}
-
-export async function loadConfig(path: string) {
-  const { default: config } = await unifiedImport(path, true)
-  return <ChiAppOptions>config
 }
 
 export const defaultConfig: IChiConfig = {

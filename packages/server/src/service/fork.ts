@@ -27,8 +27,8 @@ export function forkWorker(options: IForkWorkerOptions) {
     ['--plugin', data.plugin, '--service', data.service],
     {
       env: {
-        CHI_WORKER_OPTIONS: payload,
-        NODE_OPTIONS: process.env.NODE_OPTIONS ?? '--loader ts-node/esm'
+        ...process.env,
+        CHI_WORKER_OPTIONS: payload
       },
       stdio: ['ignore', out, out, 'ipc'],
       serialization: 'advanced'

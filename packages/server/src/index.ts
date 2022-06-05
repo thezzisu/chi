@@ -64,3 +64,4 @@ export class ChiApp {
 }
 
 export * from './config/index.js'
+export * from './util/index.js'

@@ -23,8 +23,8 @@ export function loadPlugin(resolved: string) {
   return new Promise<IPluginInfo>((resolve, reject) => {
     const worker = fork(filepath, [], {
       env: {
-        CHI_LOADER_RESOLVED: resolved,
-        NODE_OPTIONS: process.env.NODE_OPTIONS ?? '--loader ts-node/esm'
+        ...process.env,
+        CHI_LOADER_RESOLVED: resolved
       }
     })
     worker.on('message', (msg: ILoaderErrorMsg | ILoaderSuccessMsg) => {

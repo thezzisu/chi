@@ -1,5 +1,5 @@
 import fs from 'fs-extra'
-import { extname, join, normalize, resolve, sep } from 'node:path'
+import { extname, resolve } from 'node:path'
 import JSON5 from 'json5'
 import { pathToFileURL } from 'node:url'
 
@@ -15,16 +15,4 @@ export async function unifiedImport(path: string, allowJson = false) {
     return imported
   }
   throw new Error(`File not supported: ${extname(path)}`)
-}
-
-export function resolveImport(
-  path: string,
-  resolve: Record<string, string> = {}
-) {
-  path = normalize(path)
-  const [first, ...rest] = path.split(sep)
-  if (first in resolve) {
-    return join(resolve[first], ...rest)
-  }
-  return path
 }

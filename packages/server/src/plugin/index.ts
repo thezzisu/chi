@@ -1,9 +1,9 @@
-import { validateJsonSchema, IPluginInfo } from '@chijs/core'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { validateJsonSchema, IPluginInfo } from '@chijs/core'
 import { ChiApp } from '../index.js'
-import { resolveImport } from '../utils/import.js'
 import { loadPlugin } from './loader.js'
+import { resolveImport } from '../util/index.js'
 
 export class PluginRegistry {
   private plugins

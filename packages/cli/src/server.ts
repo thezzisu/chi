@@ -1,16 +1,24 @@
 import { fork } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { ChiApp, loadConfig } from '@chijs/server'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { ChiApp, moduleInfo } from '@chijs/server'
+import { unifiedImport } from './import.js'
 
 const filepath = fileURLToPath(import.meta.url)
+
+async function loadConfig(path: string) {
+  const { default: config } = await unifiedImport(path, true)
+  return config
+}
 
 export function startServer(config: string) {
   const worker = fork(filepath, [], {
     env: {
       CHI_CONFIG_PATH: config,
-      NODE_OPTIONS: process.env.NODE_OPTIONS ?? '--loader ts-node/esm'
+      NODE_OPTIONS:
+        process.env.NODE_OPTIONS ??
+        (moduleInfo('ts-node') ? '--loader ts-node/esm' : '')
     }
   })
   worker.on('exit', (code, signal) => {
