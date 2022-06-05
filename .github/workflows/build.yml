@@ -24,7 +24,7 @@ jobs:
           wget -nc https://dl.winehq.org/wine-builds/winehq.key
           sudo mv winehq.key /usr/share/keyrings/winehq-archive.key
           wget -nc "https://dl.winehq.org/wine-builds/ubuntu/dists/$(lsb_release -cs)/winehq-$(lsb_release -cs).sources"
-          sudo mv "https://dl.winehq.org/wine-builds/ubuntu/dists/$(lsb_release -cs)/winehq-$(lsb_release -cs).sources" /etc/apt/sources.list.d/
+          sudo mv "winehq-$(lsb_release -cs).sources" /etc/apt/sources.list.d/
           sudo apt update
           sudo apt install --install-recommends winehq-stable
 
