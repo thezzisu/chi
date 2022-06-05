@@ -43,3 +43,24 @@ if (success.length) {
 if (fail.length) {
   console.log(`${chalk.red('Fail')}: ${fail.join(', ')}`)
 }
+
+if (argv.ci) {
+  const core = await import('@actions/core')
+  core.summary
+    .addHeading('Build Results')
+    .addQuote(
+      fail.length ? `❌ ${fail.length} builds failed` : '✅ All builds passed'
+    )
+    .addTable([
+      [
+        { data: 'Package', header: true },
+        { data: 'Result', header: true }
+      ],
+      ...fail.map((name) => [name, 'Fail ❌']),
+      ...success.map((name) => [name, 'Success ✅'])
+    ])
+    .write()
+  if (fail.length) {
+    core.setFailed(`${fail.length} packages failed build`)
+  }
+}

@@ -62,4 +62,7 @@ if (argv.ci) {
       ...ignored.map((name) => [name, 'Ignored ➖'])
     ])
     .write()
+  if (fail.length) {
+    core.setFailed(`${fail.length} packages failed test`)
+  }
 }

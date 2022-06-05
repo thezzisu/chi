@@ -21,9 +21,11 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           sudo dpkg --add-architecture i386
-          wget -qO - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
-          sudo add-apt-repository ppa:cybermax-dexter/sdl2-backport
-          sudo apt-add-repository "deb https://dl.winehq.org/wine-builds/ubuntu $(lsb_release -cs) main"
+          wget -nc https://dl.winehq.org/wine-builds/winehq.key
+          sudo mv winehq.key /usr/share/keyrings/winehq-archive.key
+          wget -nc "https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-$(lsb_release -cs).sources"
+          sudo mv "https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-$(lsb_release -cs).sources" /etc/apt/sources.list.d/
+          sudo apt update
           sudo apt install --install-recommends winehq-stable
 
       - name: Checkout
