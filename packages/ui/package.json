@@ -6,6 +6,14 @@
   "author": "thezzisu <thezzisu@gmail.com>",
   "private": false,
   "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thezzisu/chi.git",
+    "directory": "packages/ui"
+  },
+  "bugs": {
+    "url": "https://github.com/thezzisu/chi/issues"
+  },
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",

@@ -43,7 +43,14 @@ module.exports = configure(function () {
       inspectPort: 5858,
       bundler: 'builder',
       builder: {
-        appId: 'ui'
+        appId: 'org.chijs.ui',
+        productName: 'ChiUI',
+        linux: {
+          executableName: 'chiui',
+          artifactName: '${productName}-${version}.${ext}',
+          category: 'Utility',
+          target: ['AppImage', 'tar.gz']
+        }
       }
     }
   }
