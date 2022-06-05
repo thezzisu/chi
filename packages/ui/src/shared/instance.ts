@@ -6,6 +6,7 @@ export interface IRemoteInstance {
   name: string
   type: 'remote'
   url: string
+  token: string
 }
 
 export type Instance = IRemoteInstance

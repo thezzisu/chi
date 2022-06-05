@@ -33,6 +33,7 @@
           />
         </div>
         <q-input v-model="current.url" label="URL" />
+        <q-input v-model="current.token" label="Token" />
       </q-card-section>
       <q-separator />
       <q-card-actions align="right">
@@ -65,7 +66,8 @@ const newInstance: Instance = {
   id: nanoid(),
   name: 'New Instance',
   type: 'remote',
-  url: 'ws://localhost:3000'
+  url: 'ws://localhost:3000',
+  token: ''
 }
 
 const current = ref(easyDeepClone(isNew ? newInstance : getInstance(id).value))

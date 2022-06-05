@@ -49,7 +49,7 @@
           <component :is="Component" />
         </transition>
       </router-view>
-      <disconnected-page v-else />
+      <disconnected-page v-else :message="message" />
     </q-page-container>
 
     <q-footer
@@ -94,7 +94,10 @@ const menuItems = [
 ]
 
 const instance = getInstance(<string>route.params.instanceId)
-const { connected, socket } = useClient(instance.value.url)
+const { connected, socket, message } = useClient(
+  instance.value.url,
+  instance.value.token
+)
 const statusText = computed(() => {
   if (connected.value) {
     return `Connected ${socket.id}`

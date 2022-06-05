@@ -60,6 +60,11 @@ export default new PluginBuilder<Self>()
         const id = await ctx.action.dispatch('action', 'sample', {
           msg: 'Example action'
         })
+        ctx.server.subscribe(
+          '$s:action:taskUpdate',
+          (data, err) => console.log(`UPD:`, data, err),
+          id
+        )
         console.log(`Created task ${id}`)
       } catch (e) {
         console.log(e)

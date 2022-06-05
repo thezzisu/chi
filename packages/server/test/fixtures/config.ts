@@ -41,5 +41,8 @@ export default defineConfig({
   resolve: {
     '@': resolve(dirname(fileURLToPath(import.meta.url)))
   },
-  logDir: 'stdout'
+  logDir: 'stdout',
+  web: {
+    token: 'test-token'
+  }
 })
