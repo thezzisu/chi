@@ -1,8 +1,8 @@
 // @ts-check
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { fs, chalk, cd, $ } from 'zx'
-import { isActions, targetPackages } from './common.mjs'
+import { fs, chalk, cd, $, argv } from 'zx'
+import { targetPackages } from './common.mjs'
 
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
 
@@ -45,7 +45,7 @@ if (fail.length) {
   console.log(`${chalk.red('Fail')}: ${fail.join(', ')}`)
 }
 
-if (isActions) {
+if (argv.ci) {
   const core = await import('@actions/core')
   core.summary
     .addHeading('Test Results')

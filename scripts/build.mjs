@@ -2,11 +2,11 @@
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { argv, fs, chalk, cd, $ } from 'zx'
-import { targetPackages } from './common.mjs'
+import { sortPackages, targetPackages } from './common.mjs'
 
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
 
-const packages = await targetPackages()
+const packages = sortPackages(await targetPackages())
 
 const success = [],
   fail = []
