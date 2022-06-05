@@ -11,16 +11,11 @@ on:
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
-        experimental: [false]
-        include:
-          - os: ubuntu-latest
-            experimental: true
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - name: Checkout

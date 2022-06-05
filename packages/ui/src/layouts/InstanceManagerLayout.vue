@@ -27,9 +27,3 @@ import { provide } from 'vue'
 const base = '/'
 provide(baseKey, base)
 </script>
-
-<style lang="scss">
-#my_header {
-  background-color: rgb(49, 47, 47);
-}
-</style>

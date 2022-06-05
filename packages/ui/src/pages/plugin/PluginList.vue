@@ -64,9 +64,3 @@ async function load() {
 
 load()
 </script>
-
-<style>
-.page {
-  background-color: gainsboro;
-}
-</style>
