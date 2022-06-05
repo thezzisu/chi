@@ -11,18 +11,18 @@ on:
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
 
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
+        experimental: [false]
+        include:
+          - os: ubuntu-latest
+            experimental: true
 
     steps:
-      - name: Install wine for ubuntu
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install --install-recommends -y wine
-
       - name: Checkout
         uses: actions/checkout@v3
 
