@@ -21,12 +21,9 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           sudo dpkg --add-architecture i386
-          wget -nc https://dl.winehq.org/wine-builds/winehq.key
-          sudo mv winehq.key /usr/share/keyrings/winehq-archive.key
-          wget -nc "https://dl.winehq.org/wine-builds/ubuntu/dists/$(lsb_release -cs)/winehq-$(lsb_release -cs).sources"
-          sudo mv "winehq-$(lsb_release -cs).sources" /etc/apt/sources.list.d/
-          sudo apt update
-          sudo apt install --install-recommends winehq-stable
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y gcc-multilib g++-multilib
+          sudo apt-get install wine wine32
 
       - name: Checkout
         uses: actions/checkout@v3
