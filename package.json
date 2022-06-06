@@ -37,6 +37,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
+    "lint": "node scripts/lint.mjs",
     "test": "node scripts/test.mjs"
   }
 }

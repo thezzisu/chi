@@ -21,6 +21,7 @@
   },
   "scripts": {
     "build": "node ../../scripts/build.mjs --package client",
+    "lint": "eslint --ext .js,.ts ./src/ ./test/",
     "prepare": "node ../../scripts/build.mjs --package client --rebuild",
     "test": "mocha"
   },

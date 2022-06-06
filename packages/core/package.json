@@ -25,6 +25,7 @@
   "devDependencies": {},
   "scripts": {
     "build": "node ../../scripts/build.mjs --package core",
+    "lint": "eslint --ext .js,.ts ./src/ ./test/",
     "prepare": "node ../../scripts/build.mjs --package core --rebuild",
     "test": "mocha"
   },

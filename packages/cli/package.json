@@ -26,6 +26,7 @@
   },
   "scripts": {
     "build": "node ../../scripts/build.mjs --package cli",
+    "lint": "eslint --ext .js,.ts ./src/ ./test/",
     "prepare": "node ../../scripts/build.mjs --package cli --rebuild",
     "test": "mocha"
   },
