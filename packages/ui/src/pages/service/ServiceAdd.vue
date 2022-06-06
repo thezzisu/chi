@@ -32,13 +32,7 @@
           <q-separator />
           <q-card-section>
             <div class="text-subtitle2">Params</div>
-            <div v-for="key of Object.keys(selected.params)" :key="key">
-              <json-editor
-                v-model="params[key]"
-                :label="key"
-                :schema="selected.params[key]"
-              />
-            </div>
+            <params-editor v-model="params" :schema="selected.params" />
           </q-card-section>
           <q-separator />
           <q-card-section>
@@ -74,13 +68,13 @@
 </template>
 
 <script lang="ts" setup>
-import { baseKey } from 'src/shared/injections'
 import { inject, nextTick, ref, toRaw } from 'vue'
-import { getClient } from 'src/shared/client'
-import AsyncBtn from 'src/components/AsyncBtn.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { IPluginInfo, ServiceRestartPolicy } from '@chijs/client'
-import JsonEditor from 'src/components/JsonEditor.vue'
+import AsyncBtn from 'components/AsyncBtn.vue'
+import ParamsEditor from 'components/ParamsEditor.vue'
+import { baseKey } from 'src/shared/injections'
+import { getClient } from 'src/shared/client'
 
 const route = useRoute()
 const pluginId = route.query.pluginId

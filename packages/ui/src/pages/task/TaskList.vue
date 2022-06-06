@@ -5,14 +5,6 @@
         <q-card-section>
           <div class="row justify-between items-center">
             <div class="text-h6">Tasks ({{ tasks.length }})</div>
-            <div>
-              <q-btn
-                padding="xs"
-                color="primary"
-                icon="mdi-play"
-                :to="`${base}/task/add`"
-              />
-            </div>
           </div>
         </q-card-section>
         <q-separator />

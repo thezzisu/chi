@@ -1,6 +1,6 @@
 <template>
-  <q-page padding class="row">
-    <div class="q-pa-sm col-12">
+  <q-page padding class="row content-start">
+    <div class="q-pa-sm col-12 col-lg-6">
       <q-card>
         <q-card-section>
           <div class="row justify-between items-center">
@@ -37,6 +37,13 @@
         </q-card-section>
       </q-card>
     </div>
+    <div class="q-pa-sm col-12 col-lg-6">
+      <action-run
+        :service-id="serviceId"
+        :action-id="actionId"
+        :schema="action?.params ?? {}"
+      />
+    </div>
   </q-page>
 </template>
 
@@ -47,6 +54,7 @@ import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
 import ParamsList from 'src/components/ParamsList.vue'
+import ActionRun from 'src/components/ActionRun.vue'
 
 const base = inject(baseKey)
 const route = useRoute()
