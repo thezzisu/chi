@@ -6,7 +6,6 @@ export interface ServiceBootstrapData {
   params: Record<string, unknown>
 }
 
-export * from '@chijs/core/lib/utils/index.js'
 export * from './plugin.js'
 export * from './action.js'
 export * from './context/index.js'
