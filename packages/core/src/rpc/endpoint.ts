@@ -15,7 +15,7 @@ import {
   SubscriptionId
 } from './base.js'
 import type { Logger } from 'pino'
-import type { Awaitable } from '../utils/index.js'
+import type { Awaitable } from '../util/index.js'
 import { createLogger } from '../logger/index.js'
 
 export type WithThis<T, F> = F extends Fn<infer A, infer R>
@@ -231,6 +231,13 @@ export interface ISubscription {
 
 export interface IPublication {
   unpub: () => Awaitable<void>
+}
+
+export interface IRpcCallable<D extends Descriptor> {
+  call<K extends ProvideKeys<D>>(
+    name: K,
+    ...args: ProvideArgs<D, K>
+  ): Promise<ProvideReturn<D, K>>
 }
 
 export class RpcHandle<D extends Descriptor> {

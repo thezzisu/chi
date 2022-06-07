@@ -1,4 +1,4 @@
-import { TSchema } from '../utils/index.js'
+import { TSchema } from '../util/index.js'
 
 export interface IActionInfo {
   id: string

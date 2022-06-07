@@ -7,8 +7,8 @@ import {
 
 type SelfDescriptor = PluginTypeDescriptor<
   {
-    foo(bar: string): number
-    bar(a: string, b: string): string
+    foo(bar: string): Promise<number>
+    bar(a: string, b: string): Promise<string>
   },
   {}
 >

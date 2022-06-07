@@ -8,7 +8,8 @@ export type MapStatic<T> = {
   [K in keyof T]: T[K] extends TSchema ? Static<T[K]> : unknown
 }
 
-export type Awaitable<T> = T | Promise<T>
+export type Awaitable<T> = Awaited<T> extends infer U ? U | Promise<U> : never
+
 export type EmptyArraySugar<T extends Array<unknown>> = [] extends T
   ? T | undefined
   : T
@@ -36,10 +37,10 @@ export type Spread<A extends readonly [...any]> = A extends [
   ? SpreadTwo<L, Spread<R>>
   : unknown
 
-export type RemovePrefix<S, P extends string> = S extends `${P}${infer T}`
-  ? T
-  : never
+export type WithPrefix<M, P extends string> = {
+  [K in keyof M as K extends string ? `${P}${K}` : never]: M[K]
+}
 
-export type Unprefix<M, P extends string> = {
-  [K in keyof M as RemovePrefix<K, P>]: M[K]
+export type WithoutPrefix<M, P extends string> = {
+  [K in keyof M as K extends `${P}${infer R}` ? R : never]: M[K]
 }

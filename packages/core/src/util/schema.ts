@@ -1,4 +1,4 @@
-import type { TSchema } from './types/index.js'
+import type { TSchema } from './type/index.js'
 import addFormats from 'ajv-formats'
 import Ajv from 'ajv/dist/2019.js'
 

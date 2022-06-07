@@ -1,3 +1,3 @@
-import { RpcTypeDescriptor } from '../rpc/index.js'
+import { RpcTypeDescriptor } from '../endpoint.js'
 
 export type ClientDescriptor = RpcTypeDescriptor<{}, {}>

@@ -1,13 +1,7 @@
-import type { SpreadTwo, Unprefix } from '../utils/index.js'
-import type { Fn } from './base.js'
+import type { SpreadTwo, WithoutPrefix } from '../util/index.js'
 import type { Descriptor, RpcHandle } from './endpoint.js'
 
-export type MapAsync<M> = {
-  [K in keyof M]: M[K] extends Fn<infer A, infer R>
-    ? (...args: A) => Promise<R>
-    : never
-}
-export type RpcWrapped<M, P extends string> = MapAsync<Unprefix<M, P>>
+export type RpcWrapped<M, P extends string> = WithoutPrefix<M, P>
 type GetProvide<H> = H extends RpcHandle<infer D> ? D['provide'] : never
 
 export function createRpcWrapper<

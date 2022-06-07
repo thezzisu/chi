@@ -1,6 +1,6 @@
 import {
   AgentDescriptor,
-  createRpcWrapper,
+  createActionWrapper,
   MapStatic,
   RpcId,
   Static,
@@ -35,7 +35,10 @@ export class ActionContext<D extends Descriptor> {
     public jobId: string
   ) {
     this.handle = service.endpoint.getHandle<AgentDescriptor>(initiator)
-    this.agent = createRpcWrapper(this.handle, '$a:')
+    this.agent = createActionWrapper(this.handle, {
+      taskId,
+      jobId
+    })
   }
 
   use<M>(serviceId: string) {
