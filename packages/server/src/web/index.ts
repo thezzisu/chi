@@ -44,7 +44,9 @@ export class WebServer {
 
   async start() {
     await this.server.register(fastifyStatic, {
-      root: join(resolveModule('@chijs/ui'), 'dist', 'spa')
+      root:
+        this.config.ui ??
+        join(resolveModule('@chijs/ui/package.json'), '..', 'dist', 'spa')
     })
     await this.server.register(fastifyCors, {
       origin: this.config.origin ?? true
