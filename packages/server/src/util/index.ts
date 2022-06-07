@@ -23,3 +23,7 @@ export function moduleInfo(path: string) {
     return null
   }
 }
+
+export function resolveModule(path: string) {
+  return require.resolve(path)
+}

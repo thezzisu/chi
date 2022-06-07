@@ -1,9 +1,22 @@
+import { join } from 'node:path'
 import type { Socket } from 'socket.io'
-import type { ChiApp } from '../index.js'
 import { RPC } from '@chijs/core'
 import fastify from 'fastify'
-import cors from '@fastify/cors'
+import fastifyCors from '@fastify/cors'
+import fastifyStatic from '@fastify/static'
 import fastifySocketIo from 'fastify-socket.io'
+import { ChiApp } from '../index.js'
+import { resolveModule } from '../util/index.js'
+
+type Origin = boolean | string | RegExp | (boolean | string | RegExp)[]
+
+export interface IWebConfig {
+  token?: string
+  origin?: Origin
+  port?: number
+  address?: string
+  ui?: string
+}
 
 export interface IClient {
   socket: Socket
@@ -20,31 +33,38 @@ export class WebServer {
   private server
   private logger
   private clients
+  private config
 
   constructor(private app: ChiApp) {
+    this.config = app.config.web
     this.logger = app.logger.child({ subcomponent: 'webserver' })
     this.server = fastify({ logger: this.logger })
     this.clients = new Map<string, IClient>()
   }
 
   async start() {
-    await this.server.register(cors, { origin: true })
+    await this.server.register(fastifyStatic, {
+      root: join(resolveModule('@chijs/ui'), 'dist', 'spa')
+    })
+    await this.server.register(fastifyCors, {
+      origin: this.config.origin ?? true
+    })
     await this.server.register(fastifySocketIo, {
       cors: {
-        origin: true
+        origin: this.config.origin ?? true
       }
     })
     this.server.io.use((socket, next) => {
       if (
-        this.app.config.web.token &&
-        socket.handshake.auth.token !== this.app.config.web.token
+        this.config.token &&
+        socket.handshake.auth.token !== this.config.token
       ) {
         return next(new Error('Unauthorized'))
       }
       return next()
     })
     this.server.io.on('connection', this.onConnection.bind(this))
-    await this.server.listen(3000)
+    await this.server.listen(this.config.port ?? 3000, this.config.address)
   }
 
   private onConnection(socket: Socket) {

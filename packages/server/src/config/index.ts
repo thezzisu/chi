@@ -1,12 +1,9 @@
 import { IServiceDefn } from '@chijs/core'
 import { DataSourceOptions } from 'typeorm'
+import { IWebConfig } from '../web/index.js'
 
 export interface IServiceDefnWithAutostart extends IServiceDefn {
   autostart?: boolean
-}
-
-export interface IWebConfig {
-  token?: string
 }
 
 export interface IChiConfig {
