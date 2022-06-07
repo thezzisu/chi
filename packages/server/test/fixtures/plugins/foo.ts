@@ -1,6 +1,6 @@
+import { Type } from '@chijs/core'
 import {
   PluginBuilder,
-  Type,
   PluginTypeDescriptor,
   DescriptorOf
 } from '@chijs/runtime'

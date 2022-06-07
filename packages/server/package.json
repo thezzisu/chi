@@ -1,6 +1,6 @@
 {
   "name": "@chijs/server",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Server for Chi framework",
@@ -18,7 +18,7 @@
   "dependencies": {
     "@chijs/core": "^0.0.11",
     "@chijs/runtime": "^0.0.12",
-    "@chijs/ui": "^0.0.2",
+    "@chijs/ui": "^0.0.3",
     "@fastify/cors": "^7.0.0",
     "@fastify/static": "^5.0.2",
     "fastify": "^3.29.0",

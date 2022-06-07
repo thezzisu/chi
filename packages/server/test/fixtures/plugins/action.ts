@@ -1,11 +1,11 @@
+import { Type } from '@chijs/core'
 import { AgentDescriptor, RpcEndpoint } from '@chijs/core'
 import {
   ActionBuilder,
   ActionsOf,
   Built,
   PluginBuilder,
-  PluginTypeDescriptor,
-  Type
+  PluginTypeDescriptor
 } from '@chijs/runtime'
 
 const sample = new ActionBuilder()
@@ -17,12 +17,18 @@ const add = new ActionBuilder()
   .return(Type.Number())
   .build((ctx, params) => params.nums.reduce((acc, cur) => acc + cur))
 
+const echo = new ActionBuilder().build(async (ctx) => {
+  const msg = await ctx.agent.prompt('Enter a message:')
+  ctx.agent.notify(msg)
+})
+
 type Self = PluginTypeDescriptor<
   {},
   {},
   {
     sample: Built<typeof sample>
     add: typeof add
+    echo: typeof echo
   }
 >
 
@@ -53,6 +59,7 @@ export default new PluginBuilder<Self>()
       })
     )
     ctx.registerAction('add', add)
+    ctx.registerAction('echo', echo)
     const agent = ctx.endpoint as RpcEndpoint<AgentDescriptor>
     agent.provide('$a:notify', (options) => console.log(`Notified: ${options}`))
     setTimeout(async () => {
