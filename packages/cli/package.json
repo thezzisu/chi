@@ -1,6 +1,6 @@
 {
   "name": "@chijs/cli",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Command line interface for Chi framework",
@@ -16,8 +16,8 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/client": "^0.0.13",
-    "@chijs/server": "^0.0.16",
+    "@chijs/client": "^0.0.14",
+    "@chijs/server": "^0.0.17",
     "json5": "^2.2.1",
     "yargs": "^17.5.1"
   },
