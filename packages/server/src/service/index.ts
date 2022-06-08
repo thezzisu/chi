@@ -85,9 +85,9 @@ export class ServiceManager {
     const workerId = nanoid()
     const plugin = this.app.plugins.get(service.pluginId)
     const logPath =
-      this.app.config.logDir === 'stdout'
-        ? undefined
-        : join(this.app.config.logDir, service.id, `${+new Date()}.log`)
+      this.app.config.log.path &&
+      join(this.app.config.log.path, service.id, `${+new Date()}.log`)
+    const logLevel = service.logLevel ?? this.app.config.log.level ?? 'info'
 
     const worker = forkWorker({
       data: {
@@ -95,7 +95,8 @@ export class ServiceManager {
         service: service.id,
         plugin: service.pluginId,
         params: service.params,
-        resolved: plugin.resolved
+        resolved: plugin.resolved,
+        level: logLevel
       },
       logger: this.logger,
       logPath

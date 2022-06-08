@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import pino from 'pino'
-import { join } from 'node:path'
+import pretty from 'pino-pretty'
+import { dirname, join } from 'node:path'
 import { ChiAppOptions, defaultConfig, IChiConfig } from './config/index.js'
 import { PluginRegistry } from './plugin/index.js'
 import { ServiceManager } from './service/index.js'
@@ -8,6 +9,7 @@ import { WebServer } from './web/index.js'
 import { RpcManager } from './rpc/index.js'
 import { Database } from './db/index.js'
 import { ActionManager } from './action/index.js'
+import fs from 'fs-extra'
 
 export class ChiApp {
   config
@@ -22,14 +24,25 @@ export class ChiApp {
 
   constructor(options?: ChiAppOptions) {
     this.config = <IChiConfig>Object.assign({}, defaultConfig, options)
-    this.logPath =
-      this.config.logDir === 'stdout'
-        ? undefined
-        : join(this.config.logDir, `app-${+new Date()}.log`)
+    const streams: (pino.DestinationStream | pino.StreamEntry)[] = [
+      { level: 'warn', stream: pretty() }
+    ]
+    this.logPath = this.config.log.path
+      ? join(this.config.log.path, `app-${+new Date()}.log`)
+      : null
+    if (this.logPath) {
+      fs.ensureDirSync(dirname(this.logPath))
+      streams.push({
+        stream: fs.createWriteStream(this.logPath),
+        level: this.config.log.level ?? 'info'
+      })
+    }
+
     this.logger = pino(
-      { name: 'chi', base: undefined },
-      pino.destination(this.logPath ?? process.stdout)
+      { name: 'chi', base: undefined, level: 'trace' },
+      pino.multistream(streams)
     )
+
     this.db = new Database(this)
     this.rpc = new RpcManager(this)
     this.web = new WebServer(this)

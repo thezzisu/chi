@@ -1,3 +1,4 @@
+import pino from 'pino'
 import { RpcTypeDescriptor } from '../../rpc/index.js'
 import { TSchema, WithPrefix } from '../../util/index.js'
 import { IActionInfo, ITaskInfo } from '../../action/index.js'
@@ -25,6 +26,7 @@ export interface IServiceAttr {
   desc?: string
   params: unknown
   restartPolicy: ServiceRestartPolicy
+  logLevel?: pino.Level
 }
 
 export interface IServiceDefn extends IServiceAttr {

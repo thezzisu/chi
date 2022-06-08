@@ -19,10 +19,12 @@ const data: ServiceBootstrapData = deserialize(Buffer.from(payload, 'base64'))
 
 try {
   const { default: plugin } = await import(data.resolved)
+  const logger = createLogger('runtime')
+  logger.level = data.level
   const endpoint = new RpcEndpoint<WorkerDescriptor>(
     RPC.worker(data.workerId),
     (msg) => process.send?.(msg),
-    createLogger('runtime/rpc')
+    logger.child({ scope: 'endpoint' })
   )
   process.on('message', (msg) => endpoint.recv(<IRpcMsg>msg))
   applyWorkerImpl(endpoint)

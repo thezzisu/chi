@@ -1,3 +1,4 @@
+import pino from 'pino'
 import { IServiceDefn } from '@chijs/core'
 import { DataSourceOptions } from 'typeorm'
 import { IWebConfig } from '../web/index.js'
@@ -6,11 +7,16 @@ export interface IServiceDefnWithAutostart extends IServiceDefn {
   autostart?: boolean
 }
 
+export interface IChiLogConfig {
+  path?: string
+  level?: pino.Level
+}
+
 export interface IChiConfig {
   plugins: string[]
   services: IServiceDefnWithAutostart[]
   resolve: Record<string, string>
-  logDir: string
+  log: IChiLogConfig
   db: Omit<DataSourceOptions, 'entities'>
   web: IWebConfig
 }
@@ -25,7 +31,7 @@ export const defaultConfig: IChiConfig = {
   plugins: [],
   services: [],
   resolve: {},
-  logDir: 'logs',
+  log: {},
   db: {
     type: 'sqlite',
     database: ':memory:',

@@ -30,6 +30,7 @@ export class ServiceContext<D extends Descriptor> {
       service: boot.service,
       plugin: boot.plugin
     })
+    this.logger.level = boot.level
     this.server = _endpoint.getHandle<ServerDescriptor>(RPC.server())
     this.plugin = createRpcWrapper(this.server, '$s:plugin:')
     this.service = createRpcWrapper(this.server, '$s:service:')

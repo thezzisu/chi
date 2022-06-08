@@ -1,6 +1,6 @@
 {
   "name": "@chijs/server",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Server for Chi framework",
@@ -16,15 +16,16 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/core": "^0.0.14",
-    "@chijs/runtime": "^0.0.15",
-    "@chijs/ui": "^0.0.5",
+    "@chijs/core": "^0.0.15",
+    "@chijs/runtime": "^0.0.16",
+    "@chijs/ui": "^0.0.6",
     "@fastify/cors": "^7.0.0",
     "@fastify/static": "^5.0.2",
     "fastify": "^3.29.0",
     "fastify-socket.io": "^3.0.0",
     "fs-extra": "^10.1.0",
     "pino": "^8.0.0",
+    "pino-pretty": "^8.0.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.5.1",
     "typeorm": "^0.3.6"
