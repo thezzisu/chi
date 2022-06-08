@@ -32,7 +32,7 @@ import { useRouter } from 'vue-router'
 const props = defineProps<{
   serviceId: string
   actionId: string
-  schema: Record<string, unknown>
+  schema: unknown
 }>()
 
 const params = ref<Record<string, unknown>>({})

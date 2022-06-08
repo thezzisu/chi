@@ -41,7 +41,11 @@
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Instantiated from</q-item-label>
-              <q-item-label>{{ service?.plugin }}</q-item-label>
+              <q-item-label>
+                <router-link :to="pluginUrl">
+                  {{ service?.pluginId }}
+                </router-link>
+              </q-item-label>
             </q-item-section>
           </q-item>
           <q-item>
@@ -116,19 +120,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { InternalDescriptor, IServiceInfo, RPC } from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import AsyncBtn from 'src/components/AsyncBtn.vue'
 import ServiceStatus from 'src/components/ServiceStatus.vue'
+import { baseKey } from 'src/shared/injections'
 
+const base = inject(baseKey)
 const route = useRoute()
 const serviceId = <string>route.params.serviceId
 const client = getClient()
 const service = ref<IServiceInfo>()
 const provides = ref<string[]>([])
 const publishes = ref<string[]>([])
+
+const pluginUrl = computed(
+  () =>
+    `${base}/plugin/view/` + encodeURIComponent('' + service.value?.pluginId)
+)
 
 async function load() {
   service.value = await client.service.get(serviceId)

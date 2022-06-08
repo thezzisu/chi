@@ -18,7 +18,7 @@
             <q-item-section>
               <q-item-label caption>Service</q-item-label>
               <q-item-label>
-                <router-link :to="`${base}/service/${action?.serviceId}`">
+                <router-link :to="serviceUrl">
                   {{ action?.serviceId }}
                 </router-link>
               </q-item-label>
@@ -26,15 +26,15 @@
           </q-item>
         </q-list>
         <q-separator />
-        <q-card-section>
-          <div class="text-subtitle-1">Parameters</div>
-        </q-card-section>
-        <params-list :params="action?.params ?? {}" />
+        <schema-viewer
+          :schema="action?.params ?? { type: 'object' }"
+          name="Parameters"
+        />
         <q-separator />
-        <q-card-section>
-          <div class="text-subtitle-1">Returns</div>
-          <pre>{{ JSON.stringify(action?.return, null, '  ') }}</pre>
-        </q-card-section>
+        <schema-viewer
+          :schema="action?.return ?? { type: 'void' }"
+          name="Returns"
+        />
       </q-card>
     </div>
     <div class="q-pa-sm col-12 col-lg-6">
@@ -48,13 +48,13 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { IActionInfoWithService } from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
-import ParamsList from 'src/components/ParamsList.vue'
-import ActionRun from 'src/components/ActionRun.vue'
+import ActionRun from 'components/ActionRun.vue'
+import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
 
 const base = inject(baseKey)
 const route = useRoute()
@@ -62,6 +62,11 @@ const serviceId = <string>route.params.serviceId
 const actionId = <string>route.params.actionId
 const client = getClient()
 const action = ref<IActionInfoWithService>()
+
+const serviceUrl = computed(
+  () =>
+    `${base}/service/view/` + encodeURIComponent('' + action.value?.serviceId)
+)
 
 async function load() {
   action.value = await client.action.get(serviceId, actionId)

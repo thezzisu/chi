@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="row">
-    <div class="q-pa-sm col-12">
+    <div class="q-pa-sm col-12 col-lg-6">
       <q-card>
         <q-card-section>
           <div class="row justify-between items-center">
@@ -44,32 +44,26 @@
           </q-item>
         </q-list>
         <q-separator />
-        <q-card-section>
-          <div class="text-subtitle-1">Parameters</div>
-        </q-card-section>
-        <params-list :params="plugin?.params ?? {}" />
-        <q-card-actions align="right">
-          <q-btn
-            color="primary"
-            label="Add service"
-            icon="mdi-cog"
-            :to="`${base}/service/add?pluginId=${encodeURIComponent(pluginId)}`"
-          />
-        </q-card-actions>
+        <schema-viewer
+          :schema="plugin?.params ?? { type: 'object' }"
+          name="Parameters"
+        />
       </q-card>
+    </div>
+    <div class="q-pa-sm col-12 col-lg-6">
+      <service-create :plugin-id="pluginId" :schema="plugin?.params" />
     </div>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from 'vue'
+import { ref } from 'vue'
 import { IPluginInfo } from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
-import { baseKey } from 'src/shared/injections'
-import ParamsList from 'src/components/ParamsList.vue'
+import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
+import ServiceCreate from 'components/ServiceCreate.vue'
 
-const base = inject(baseKey)
 const route = useRoute()
 const pluginId = <string>route.params.pluginId
 const client = getClient()

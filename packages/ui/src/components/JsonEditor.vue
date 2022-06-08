@@ -9,7 +9,7 @@
       </template>
       {{ error }}
     </q-banner>
-    <q-input v-model.trim="json" type="textarea" class="editor" />
+    <q-input v-model.trim="json" type="textarea" class="text-mono" />
   </div>
 </template>
 
@@ -24,13 +24,31 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['update:modelValue'])
 
-const json = ref('')
+const json = ref(JSON.stringify(props.modelValue, null, '  '))
 const error = ref('')
 
 watch(
   () => props.modelValue,
   (cur) => {
     json.value = JSON.stringify(cur, null, '  ')
+  },
+  { immediate: true, deep: true }
+)
+
+watch(
+  () => props.schema,
+  (schema) => {
+    if (!schema) return
+    try {
+      const parsed = JSON.parse(json.value)
+      const errors = validateJsonSchema(parsed, <never>schema)
+      if (errors.length) {
+        throw new Error(errors.map((e) => e.message).join('\n'))
+      }
+      error.value = ''
+    } catch (e) {
+      error.value = '' + e
+    }
   },
   { immediate: true, deep: true }
 )
@@ -51,9 +69,3 @@ watch(json, (cur) => {
   }
 })
 </script>
-
-<style>
-.editor {
-  font-family: 'Courier New', Courier, monospace;
-}
-</style>
