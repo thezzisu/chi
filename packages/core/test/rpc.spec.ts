@@ -7,7 +7,7 @@ import { RpcRouter, RpcEndpoint, RpcTypeDescriptor } from '../src/rpc/index.js'
 chai.use(chaiAsPromised)
 const expect = chai.expect
 
-const logger = createLogger('core', 'test')
+const logger = createLogger('core/test')
 
 interface ITestFns {
   foo(bar: string): number

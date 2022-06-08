@@ -1,5 +1,6 @@
 import 'reflect-metadata'
-import { createLogger } from '@chijs/core'
+import pino from 'pino'
+import { join } from 'node:path'
 import { ChiAppOptions, defaultConfig, IChiConfig } from './config/index.js'
 import { PluginRegistry } from './plugin/index.js'
 import { ServiceManager } from './service/index.js'
@@ -17,10 +18,18 @@ export class ChiApp {
   plugins
   services
   actions
+  logPath
 
   constructor(options?: ChiAppOptions) {
     this.config = <IChiConfig>Object.assign({}, defaultConfig, options)
-    this.logger = createLogger('core', 'app')
+    this.logPath =
+      this.config.logDir === 'stdout'
+        ? undefined
+        : join(this.config.logDir, `app-${+new Date()}.log`)
+    this.logger = pino(
+      { name: 'chi', base: undefined },
+      pino.destination(this.logPath ?? process.stdout)
+    )
     this.db = new Database(this)
     this.rpc = new RpcManager(this)
     this.web = new WebServer(this)

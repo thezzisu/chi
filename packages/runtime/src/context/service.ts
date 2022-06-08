@@ -26,7 +26,7 @@ export class ServiceContext<D extends Descriptor> {
     private boot: ServiceBootstrapData,
     private _endpoint: RpcEndpoint<WorkerDescriptor>
   ) {
-    this.logger = createLogger('runtime', 'plugin', {
+    this.logger = createLogger('runtime/plugin', {
       service: boot.service,
       plugin: boot.plugin
     })

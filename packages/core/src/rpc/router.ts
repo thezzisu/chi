@@ -63,7 +63,7 @@ export class RpcAdapter {
   }
 }
 
-const defaultLogger = createLogger('core', 'rpc')
+const defaultLogger = createLogger('core/rpc/router')
 
 export class RpcRouter {
   adapters

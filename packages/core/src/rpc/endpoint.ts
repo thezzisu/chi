@@ -142,7 +142,7 @@ function applyInternalImpl(endpoint: RpcEndpoint<InternalDescriptor>) {
   })
 }
 
-const defaultLogger = createLogger('core', 'rpc')
+const defaultLogger = createLogger('core/rpc/endpoint')
 
 type ProvidedFn = (...args: unknown[]) => unknown
 type PublishedFn = (

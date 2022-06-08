@@ -6,18 +6,20 @@ import { loadPlugin } from './loader.js'
 import { resolveImport } from '../util/index.js'
 
 export class PluginRegistry {
-  private plugins
+  private map
+  private logger
 
   constructor(private app: ChiApp) {
-    this.plugins = new Map<string, IPluginInfo>()
+    this.map = new Map<string, IPluginInfo>()
+    this.logger = app.logger.child({ module: 'server/plugin' })
   }
 
   list(): IPluginInfo[] {
-    return [...this.plugins.values()]
+    return [...this.map.values()]
   }
 
   get(id: string): IPluginInfo {
-    const plugin = this.plugins.get(id)
+    const plugin = this.map.get(id)
     if (!plugin) throw new Error(`Plugin not found: ${id}`)
     return plugin
   }
@@ -28,16 +30,16 @@ export class PluginRegistry {
       resolved = resolve(resolved)
       resolved = pathToFileURL(resolved).href
       const info = await loadPlugin(resolved)
-      this.plugins.set(id, { ...info, id, resolved })
+      this.map.set(id, { ...info, id, resolved })
       return [true]
     } catch (e) {
-      this.app.logger.error(e)
+      this.logger.error(e)
       return [false, '' + e]
     }
   }
 
   unload(id: string) {
-    const plugin = this.plugins.get(id)
+    const plugin = this.map.get(id)
     if (!plugin) throw new Error(`Plugin not found: ${id}`)
     const service = this.app.services
       .list()
@@ -47,11 +49,11 @@ export class PluginRegistry {
         `Plugin ${id} is currently in use by service ${service.id}`
       )
     }
-    this.plugins.delete(id)
+    this.map.delete(id)
   }
 
   verifyParams(id: string, params: unknown) {
-    const plugin = this.plugins.get(id)
+    const plugin = this.map.get(id)
     if (!plugin) throw new Error(`Plugin not found: ${id}`)
     const result = validateJsonSchema(params, plugin.params)
     if (result.length) return false

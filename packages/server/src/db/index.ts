@@ -5,12 +5,14 @@ import { ActionTask } from './task.js'
 
 export class Database {
   ds
+  private logger
 
   constructor(private app: ChiApp) {
     this.ds = new DataSource(<never>{
       ...app.config.db,
       entities: [ActionTask]
     })
+    this.logger = app.logger.child({ module: 'server/db' })
   }
 
   async init() {
@@ -18,7 +20,7 @@ export class Database {
     const badTasks = await this.ds.manager.find(ActionTask, {
       where: { state: JobState.RUNNING }
     })
-    this.app.logger.info(`Cleanup ${badTasks.length} tasks`)
+    this.logger.info(`Cleanup ${badTasks.length} tasks`)
     for (const task of badTasks) {
       for (const job of task.jobs) {
         if (job.state === JobState.RUNNING) {

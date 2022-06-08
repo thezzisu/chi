@@ -29,10 +29,12 @@ export class WorkerExitError extends Error {
 export class ServiceManager {
   map
   emitter
+  private logger
 
   constructor(private app: ChiApp) {
     this.map = new Map<string, IService>()
     this.emitter = new EventEmitter()
+    this.logger = app.logger.child({ module: 'server/service' })
   }
 
   add(defn: IServiceDefn) {
@@ -95,7 +97,7 @@ export class ServiceManager {
         params: service.params,
         resolved: plugin.resolved
       },
-      logger: this.app.logger,
+      logger: this.logger,
       logPath
     })
 
@@ -141,9 +143,7 @@ export class ServiceManager {
         service.state = ServiceState.RUNNING
         this.emitter.emit(id, service)
       })
-      .catch((err) =>
-        this.app.logger.error(err, `Error starting service ${id}`)
-      )
+      .catch((err) => this.logger.error(err, `Error starting service ${id}`))
   }
 
   async stop(id: string) {

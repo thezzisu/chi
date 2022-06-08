@@ -22,7 +22,7 @@ try {
   const endpoint = new RpcEndpoint<WorkerDescriptor>(
     RPC.worker(data.workerId),
     (msg) => process.send?.(msg),
-    createLogger('runtime', 'rpc')
+    createLogger('runtime/rpc')
   )
   process.on('message', (msg) => endpoint.recv(<IRpcMsg>msg))
   applyWorkerImpl(endpoint)
