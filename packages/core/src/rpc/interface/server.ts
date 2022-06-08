@@ -23,7 +23,7 @@ export enum ServiceRestartPolicy {
 export interface IServiceAttr {
   name?: string
   desc?: string
-  params: Record<string, unknown>
+  params: unknown
   restartPolicy: ServiceRestartPolicy
 }
 
@@ -43,7 +43,7 @@ export interface IPluginInfo {
   id: string
   name?: string
   desc?: string
-  params: Record<string, TSchema>
+  params: TSchema
   resolved: string
 }
 
@@ -78,14 +78,14 @@ interface IServerActionAPI {
   dispatch(
     serviceId: string,
     actionId: string,
-    params: Record<string, unknown>
+    params: unknown
   ): Promise<string>
   run(
     taskId: string,
     parent: string,
     serviceId: string,
     actionId: string,
-    params: Record<string, unknown>
+    params: unknown
   ): Promise<unknown>
   get(serviceId: string, actionId: string): Promise<IActionInfoWithService>
   list(): Promise<IActionInfoWithService[]>

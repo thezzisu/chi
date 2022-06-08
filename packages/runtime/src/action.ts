@@ -1,9 +1,8 @@
 import {
   Awaitable,
   IActionInfo,
-  Id,
-  MapStatic,
   Static,
+  TObject,
   TSchema,
   TUnknown,
   Type
@@ -11,35 +10,33 @@ import {
 import { Descriptor, ActionContext } from './context/index.js'
 
 export interface IActionDefn extends Omit<IActionInfo, 'id'> {
-  main(
-    ctx: ActionContext<Descriptor>,
-    params: Record<string, unknown>
-  ): Awaitable<unknown>
+  main(ctx: ActionContext<Descriptor>, params: unknown): Awaitable<unknown>
 }
 
-export interface IAction<P, R> extends Omit<IActionDefn, 'params' | 'return'> {
+export interface IAction<P extends TSchema, R>
+  extends Omit<IActionDefn, 'params' | 'return'> {
   params: P
   return: R
 }
 
 export class ActionBuilder<
   D extends Descriptor,
-  P extends Record<string, TSchema> = {},
+  P extends TSchema = TObject<{}>,
   R extends TSchema = TUnknown
 > {
-  private _params: Record<string, TSchema>
+  private _params: unknown
   private _return: TSchema
   private _name?: string
   private _desc?: string
 
   constructor() {
-    this._params = {}
+    this._params = Type.Strict(Type.Object({}))
     this._return = Type.Strict(Type.Unknown())
   }
 
   private clone() {
     const builder = new ActionBuilder()
-    builder._params = { ...this._params }
+    builder._params = this._params
     builder._return = this._return
     builder._name = this._name
     builder._desc = this._desc
@@ -54,12 +51,9 @@ export class ActionBuilder<
     this._desc = desc
   }
 
-  param<K extends string, T extends TSchema>(
-    name: K,
-    schema: T
-  ): ActionBuilder<D, Id<P & { [k in K]: T }>, R> {
+  params<T extends TSchema>(schema: T): ActionBuilder<D, T, R> {
     const builder = this.clone()
-    builder._params[name] = Type.Strict(schema)
+    builder._params = Type.Strict(schema)
     return <never>builder
   }
 
@@ -70,12 +64,12 @@ export class ActionBuilder<
   }
 
   build(
-    main: (ctx: ActionContext<D>, params: MapStatic<P>) => Awaitable<Static<R>>
+    main: (ctx: ActionContext<D>, params: Static<P>) => Awaitable<Static<R>>
   ): IAction<P, R> {
     return {
       name: this._name,
       desc: this._desc,
-      params: <never>{ ...this._params },
+      params: <never>this._params,
       return: <never>this._return,
       main: <never>main
     }
@@ -84,4 +78,4 @@ export class ActionBuilder<
 
 export type Built<B> = B extends ActionBuilder<infer _, infer P, infer R>
   ? IAction<P, R>
-  : IAction<Record<string, unknown>, unknown>
+  : IAction<TUnknown, unknown>

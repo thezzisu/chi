@@ -1,4 +1,4 @@
-import { RpcTypeDescriptor, IPluginDescriptors } from '@chijs/core'
+import { RpcTypeDescriptor, IPluginDescriptors, TUnknown } from '@chijs/core'
 import { IAction } from '../action'
 
 export type PluginTypeDescriptor<A = {}, B = {}, C = {}> = RpcTypeDescriptor<
@@ -19,8 +19,8 @@ export type ActionOf<
 > = D extends PluginTypeDescriptor<infer _, infer _, infer C>
   ? K extends keyof C
     ? C[K]
-    : IAction<Record<string, unknown>, unknown>
-  : IAction<Record<string, unknown>, unknown>
+    : IAction<TUnknown, unknown>
+  : IAction<TUnknown, unknown>
 
 export type ActionsOf<P> = P extends string
   ? DescriptorOf<P> extends PluginTypeDescriptor<infer _, infer _, infer C>

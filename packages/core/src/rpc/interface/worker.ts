@@ -11,7 +11,7 @@ interface IWorkerActionAPI {
     taskId: string,
     jobId: string,
     actionId: string,
-    params: Record<string, unknown>
+    params: unknown
   ): Promise<unknown>
 }
 

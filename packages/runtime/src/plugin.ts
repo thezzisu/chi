@@ -1,17 +1,10 @@
-import {
-  IPluginInfo,
-  Type,
-  TSchema,
-  SchemaMap,
-  MapStatic,
-  Id
-} from '@chijs/core'
+import { IPluginInfo, Type, TSchema, Static, TObject } from '@chijs/core'
 import { ServiceContext } from './context/service.js'
 import { Descriptor } from './context/index.js'
 
 export interface IPluginDefn<D extends Descriptor>
   extends Omit<IPluginInfo, 'resolved' | 'id'> {
-  main: (ctx: ServiceContext<D>, params: Record<string, unknown>) => unknown
+  main: (ctx: ServiceContext<D>, params: unknown) => unknown
 }
 
 /**
@@ -19,9 +12,9 @@ export interface IPluginDefn<D extends Descriptor>
  * note: the context of main function is not typed
  * @param options Plugin definition
  */
-export function definePlugin<M extends SchemaMap>(options: {
+export function definePlugin<M extends TSchema>(options: {
   params: M
-  main: (ctx: ServiceContext<Descriptor>, params: MapStatic<M>) => unknown
+  main: (ctx: ServiceContext<Descriptor>, params: Static<M>) => unknown
 }): IPluginDefn<Descriptor> {
   return <never>{
     ...options,
@@ -31,18 +24,21 @@ export function definePlugin<M extends SchemaMap>(options: {
   }
 }
 
-export class PluginBuilder<P extends Descriptor, M = {}> {
+export class PluginBuilder<
+  P extends Descriptor,
+  M extends TSchema = TObject<{}>
+> {
   private _name?: string
   private _desc?: string
-  private _params: Record<string, TSchema>
+  private _params: unknown
 
   constructor() {
-    this._params = {}
+    this._params = Type.Strict(Type.Object({}))
   }
 
   private clone() {
     const builder = new PluginBuilder<P, M>()
-    builder._params = { ...this._params }
+    builder._params = this._params
     builder._name = this._name
     builder._desc = this._desc
     return builder
@@ -56,22 +52,19 @@ export class PluginBuilder<P extends Descriptor, M = {}> {
     this._desc = desc
   }
 
-  param<K extends string, T extends TSchema>(
-    name: K,
-    schema: T
-  ): PluginBuilder<P, Id<M & { [k in K]: T }>> {
+  params<T extends TSchema>(schema: T): PluginBuilder<P, T> {
     const builder = this.clone()
-    builder._params[name] = Type.Strict(schema)
+    builder._params = Type.Strict(schema)
     return <never>builder
   }
 
   build(
-    main: (ctx: ServiceContext<P>, params: MapStatic<M>) => unknown
+    main: (ctx: ServiceContext<P>, params: Static<M>) => unknown
   ): IPluginDefn<P> {
     return {
       name: this._name,
       desc: this._desc,
-      params: { ...this._params },
+      params: <never>this._params,
       main: <never>main
     }
   }

@@ -52,12 +52,10 @@ export class ServiceContext<D extends Descriptor> {
       async (initiator, taskId, jobId, actionId, params) => {
         const action = this.actions.get(actionId)
         if (!action) throw new Error(`Action ${actionId} not found`)
-        for (const param in action.params) {
-          const result = validateJsonSchema(params[param], action.params[param])
-          if (result.length) {
-            this.logger.error(result, `Invalid param ${param}`)
-            throw new Error(`Invalid param ${param}`)
-          }
+        const validation = validateJsonSchema(params, action.params)
+        if (validation.length) {
+          this.logger.error(validation, `Invalid params`)
+          throw new Error(`Invalid params`)
         }
         const ctx = new ActionContext(this, initiator, taskId, jobId)
         const result = await action.main(ctx, params)

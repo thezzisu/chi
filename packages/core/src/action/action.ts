@@ -4,7 +4,7 @@ export interface IActionInfo {
   id: string
   name?: string
   desc?: string
-  params: Record<string, TSchema>
+  params: TSchema
   return: TSchema
 }
 
@@ -19,7 +19,7 @@ export interface IJobInfo {
   parent: string
   serviceId: string
   actionId: string
-  params: Record<string, unknown>
+  params: unknown
   return: unknown
   state: JobState
   created: number

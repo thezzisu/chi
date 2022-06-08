@@ -25,7 +25,7 @@ export class ActionManager {
     initiator: RpcId,
     serviceId: string,
     actionId: string,
-    params: Record<string, unknown>
+    params: unknown
   ) {
     let task = new ActionTask()
     task.id = nanoid()
@@ -46,7 +46,7 @@ export class ActionManager {
     parent: string,
     serviceId: string,
     actionId: string,
-    params: Record<string, unknown>
+    params: unknown
   ) {
     const info = this.running.get(taskId)
     if (!info) throw new Error(`Task ${taskId} not found`)

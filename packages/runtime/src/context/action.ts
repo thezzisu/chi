@@ -1,7 +1,6 @@
 import {
   AgentDescriptor,
   createActionWrapper,
-  MapStatic,
   RpcId,
   Static,
   TSchema
@@ -12,9 +11,9 @@ import { ServiceContext } from './service.js'
 
 export type ParamOf<M, K> = K extends keyof M
   ? M[K] extends IAction<infer P, infer _>
-    ? MapStatic<P>
-    : Record<string, unknown>
-  : Record<string, unknown>
+    ? Static<P>
+    : unknown
+  : unknown
 
 export type ReturnOf<M, K> = K extends keyof M
   ? M[K] extends IAction<infer _, infer R>

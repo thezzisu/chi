@@ -1,12 +1,6 @@
 export * from './typebox.js'
-import type { Static, TSchema } from './typebox.js'
 
 export type Id<T> = T extends infer U ? { [K in keyof U]: U[K] } : never
-
-export type SchemaMap = Record<string, TSchema>
-export type MapStatic<T> = {
-  [K in keyof T]: T[K] extends TSchema ? Static<T[K]> : unknown
-}
 
 export type Awaitable<T> = Awaited<T> extends infer U ? U | Promise<U> : never
 

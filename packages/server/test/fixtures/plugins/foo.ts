@@ -20,8 +20,12 @@ declare module '@chijs/core' {
 }
 
 export default new PluginBuilder<SelfDescriptor>()
-  .param('foo', Type.String())
-  .param('wait', Type.String())
+  .params(
+    Type.Object({
+      foo: Type.String(),
+      wait: Type.String()
+    })
+  )
   .build(async (ctx, params) => {
     console.log('Service started')
     ctx.endpoint.provide('foo', (bar) => +bar)

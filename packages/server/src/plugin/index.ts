@@ -50,13 +50,11 @@ export class PluginRegistry {
     this.plugins.delete(id)
   }
 
-  verifyParams(id: string, params: Record<string, unknown>) {
+  verifyParams(id: string, params: unknown) {
     const plugin = this.plugins.get(id)
     if (!plugin) throw new Error(`Plugin not found: ${id}`)
-    for (const param in plugin.params) {
-      const result = validateJsonSchema(params[param], plugin.params[param])
-      if (result.length) return false
-    }
+    const result = validateJsonSchema(params, plugin.params)
+    if (result.length) return false
     return true
   }
 }

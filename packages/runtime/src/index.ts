@@ -3,7 +3,7 @@ export interface ServiceBootstrapData {
   service: string
   plugin: string
   resolved: string
-  params: Record<string, unknown>
+  params: unknown
 }
 
 export * from './plugin.js'
