@@ -1,9 +1,7 @@
-import { resolve } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import { validateJsonSchema, IPluginInfo } from '@chijs/core'
 import { ChiApp } from '../index.js'
 import { loadPlugin } from './loader.js'
-import { resolveImport } from '../util/index.js'
+import { resolvePath } from '../util/index.js'
 
 export class PluginRegistry {
   private map
@@ -26,9 +24,7 @@ export class PluginRegistry {
 
   async load(id: string): Promise<[ok: boolean, reason?: string]> {
     try {
-      let resolved = resolveImport(id, this.app.config.resolve)
-      resolved = resolve(resolved)
-      resolved = pathToFileURL(resolved).href
+      const resolved = resolvePath(id, this.app.config.resolve)
       const info = await loadPlugin(resolved)
       this.map.set(id, { ...info, id, resolved })
       return [true]

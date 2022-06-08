@@ -5,7 +5,7 @@
         <q-card-section>
           <div class="row justify-between items-center">
             <div>
-              <div class="text-h6">Service {{ service?.id }}</div>
+              <div class="text-h6">Service Info</div>
               <service-status :state="service?.state" />
             </div>
 
@@ -37,6 +37,28 @@
         <q-list>
           <q-item>
             <q-item-section avatar>
+              <q-icon name="mdi-identifier" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label caption>ID</q-item-label>
+              <q-item-label>
+                {{ service?.id }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-if="service?.name">
+            <q-item-section avatar>
+              <q-icon name="mdi-format-letter-case" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label caption>Name</q-item-label>
+              <q-item-label>
+                {{ service?.name }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section avatar>
               <q-icon name="mdi-power-plug" />
             </q-item-section>
             <q-item-section>
@@ -48,25 +70,27 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-          <q-item>
+          <q-item v-if="service?.logPath">
             <q-item-section avatar>
               <q-icon name="mdi-text-box" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Log path</q-item-label>
-              <q-item-label>{{ service?.logPath }}</q-item-label>
+              <q-item-label>{{ service.logPath }}</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item>
+          <q-item v-if="service?.workerId">
             <q-item-section avatar>
               <q-icon name="mdi-cog" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Worker ID</q-item-label>
-              <q-item-label>{{ service?.workerId }}</q-item-label>
+              <q-item-label>{{ service.workerId }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
+        <q-separator />
+        <description-view :desc="service?.desc" />
         <q-separator />
         <q-card-section>
           <div class="text-subtitle-1">Parameters</div>
@@ -74,45 +98,68 @@
         </q-card-section>
         <template v-if="service?.workerId">
           <q-separator />
-          <q-card-section>
-            <div class="text-subtitle-1">Provided Functions</div>
-            <q-list v-if="provides.length" dense>
-              <q-item v-for="(name, i) of provides" :key="i">
-                <q-item-section avatar>
-                  <q-icon name="mdi-function-variant" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>
-                    <code>{{ name }}</code>
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-            <div v-else class="column items-center">
-              <q-icon name="mdi-function" size="xl" />
-              <div class="text-caption">No provided functions</div>
-            </div>
-          </q-card-section>
+          <div class="text-subtitle-1 q-px-md q-pt-md q-pb-sm">
+            Provided Functions
+          </div>
+          <q-list v-if="provides.length" dense class="q-pb-md">
+            <q-item v-for="(name, i) of provides" :key="i">
+              <q-item-section avatar>
+                <q-icon name="mdi-function-variant" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  <code>{{ name }}</code>
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <div v-else class="column items-center q-pb-md">
+            <q-icon name="mdi-function" size="xl" />
+            <div class="text-caption">No provided functions</div>
+          </div>
           <q-separator />
-          <q-card-section>
-            <div class="text-subtitle-1">Published Events</div>
-            <q-list v-if="publishes.length" dense>
-              <q-item v-for="(name, i) of publishes" :key="i">
-                <q-item-section avatar>
-                  <q-icon name="mdi-bullhorn-variant" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>
-                    <code>{{ name }}</code>
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-            <div v-else class="column items-center">
-              <q-icon name="mdi-bullhorn-variant-outline" size="xl" />
-              <div class="text-caption">No published events</div>
-            </div>
-          </q-card-section>
+          <div class="text-subtitle-1 q-px-md q-pt-md q-pb-sm">
+            Published Events
+          </div>
+          <q-list v-if="publishes.length" dense class="q-pb-md">
+            <q-item v-for="(name, i) of publishes" :key="i">
+              <q-item-section avatar>
+                <q-icon name="mdi-bullhorn-variant" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  <code>{{ name }}</code>
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <div v-else class="column items-center q-pb-md">
+            <q-icon name="mdi-bullhorn-variant-outline" size="xl" />
+            <div class="text-caption">No published events</div>
+          </div>
+          <q-separator />
+          <div class="text-subtitle-1 q-px-md q-pt-md q-pb-sm">
+            Registered actions
+          </div>
+          <q-list v-if="actions.length">
+            <q-item v-for="(action, i) of actions" :key="i">
+              <q-item-section avatar>
+                <q-icon name="mdi-play-outline" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  <code>{{ action.id }}</code>
+                </q-item-label>
+                <q-item-label caption>
+                  {{ action.desc ?? 'No description' }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <div v-else class="column items-center q-pb-md">
+            <q-icon name="mdi-play-outline" size="xl" />
+            <div class="text-caption">No registered actions</div>
+          </div>
         </template>
       </q-card>
     </div>
@@ -121,12 +168,19 @@
 
 <script lang="ts" setup>
 import { computed, inject, onBeforeUnmount, ref } from 'vue'
-import { InternalDescriptor, IServiceInfo, RPC } from '@chijs/client'
+import {
+  IActionInfo,
+  InternalDescriptor,
+  IServiceInfo,
+  RPC,
+  WorkerDescriptor
+} from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import AsyncBtn from 'src/components/AsyncBtn.vue'
 import ServiceStatus from 'src/components/ServiceStatus.vue'
 import { baseKey } from 'src/shared/injections'
+import DescriptionView from 'src/components/DescriptionView.vue'
 
 const base = inject(baseKey)
 const route = useRoute()
@@ -135,6 +189,7 @@ const client = getClient()
 const service = ref<IServiceInfo>()
 const provides = ref<string[]>([])
 const publishes = ref<string[]>([])
+const actions = ref<IActionInfo[]>([])
 
 const pluginUrl = computed(
   () =>
@@ -144,12 +199,13 @@ const pluginUrl = computed(
 async function update(info: IServiceInfo) {
   service.value = info
   if (service.value.workerId) {
-    const handle = client.endpoint.getHandle<InternalDescriptor>(
-      RPC.worker(service.value.workerId)
-    )
+    const handle = client.endpoint.getHandle<
+      InternalDescriptor & WorkerDescriptor
+    >(RPC.worker(service.value.workerId))
     const info = await handle.call('$:info')
     provides.value = info.provides.filter((x) => !x.startsWith('$'))
     publishes.value = info.publishes.filter((x) => !x.startsWith('$'))
+    actions.value = await handle.call('$w:action:list')
   }
 }
 

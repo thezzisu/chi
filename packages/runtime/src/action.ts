@@ -1,6 +1,7 @@
 import {
   Awaitable,
   IActionInfo,
+  removeUndefined,
   Static,
   TObject,
   TSchema,
@@ -44,11 +45,15 @@ export class ActionBuilder<
   }
 
   name(name: string) {
-    this._name = name
+    const builder = this.clone()
+    builder._name = name
+    return builder
   }
 
   desc(desc: string) {
-    this._desc = desc
+    const builder = this.clone()
+    builder._desc = desc
+    return builder
   }
 
   params<T extends TSchema>(schema: T): ActionBuilder<D, T, R> {
@@ -66,13 +71,13 @@ export class ActionBuilder<
   build(
     main: (ctx: ActionContext<D>, params: Static<P>) => Awaitable<Static<R>>
   ): IAction<P, R> {
-    return {
+    return removeUndefined({
       name: this._name,
       desc: this._desc,
       params: <never>this._params,
       return: <never>this._return,
       main: <never>main
-    }
+    })
   }
 }
 

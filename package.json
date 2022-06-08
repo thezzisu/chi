@@ -4,9 +4,11 @@
   "version": "1.0.0",
   "license": "AGPL-3.0-only",
   "private": true,
+  "type": "module",
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "plugins/*"
     ],
     "nohoist": [
       "**/electron",
@@ -36,8 +38,8 @@
     "zx": "^6.0.7"
   },
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "lint": "node scripts/lint.mjs",
-    "test": "node scripts/test.mjs"
+    "build": "ts-node-esm scripts/build.ts",
+    "lint": "ts-node-esm scripts/lint.ts",
+    "test": "ts-node-esm scripts/test.tss"
   }
 }

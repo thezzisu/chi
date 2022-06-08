@@ -2,7 +2,7 @@
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fs, chalk, cd, $ } from 'zx'
-import { targetPackages } from './common.mjs'
+import { targetPackages } from './common.js'
 
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
 

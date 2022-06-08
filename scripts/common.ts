@@ -1,4 +1,3 @@
-// @ts-check
 import { basename, join, resolve } from 'node:path'
 import glob from 'glob-promise'
 import { argv, chalk, fs } from 'zx'
@@ -9,14 +8,18 @@ export async function targetPackages() {
 
   if (argv.package) {
     packages = argv.package instanceof Array ? argv.package : [argv.package]
-    packages = packages.map((p) => join('packages', p))
+    packages = packages
+      .map((p) => [join('packages', p), join('plugins', p)])
+      .flat()
+      .filter((p) => fs.pathExistsSync(p))
   } else {
-    packages = await glob('packages/*')
+    packages = [await glob('packages/*'), await glob('plugins/*')].flat()
   }
 
   if (argv.exclude) {
     /** @type {string[]} */
-    let exclude = argv.exclude instanceof Array ? argv.exclude : [argv.exclude]
+    const exclude =
+      argv.exclude instanceof Array ? argv.exclude : [argv.exclude]
     packages = packages.filter((x) => !exclude.includes(basename(x)))
   }
 

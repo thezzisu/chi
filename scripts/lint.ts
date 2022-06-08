@@ -2,7 +2,7 @@
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fs, chalk, cd, $, argv } from 'zx'
-import { targetPackages } from './common.mjs'
+import { targetPackages } from './common.js'
 
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
 
@@ -17,17 +17,13 @@ for (const path of packages) {
   if (await fs.pathExists('package.json')) {
     const json = fs.readJSONSync('package.json')
     const name = json.name
-    if (!json.scripts?.test) {
+    if (!json.scripts?.lint) {
       ignored.push(name)
       continue
     }
     try {
-      console.log(`Testing package ${chalk.green(name)}`)
-      if (await fs.pathExists('scripts/test.mjs')) {
-        await $`node scripts/test.mjs ${process.argv.slice(2)}`
-      } else {
-        await $`yarn test`
-      }
+      console.log(`Linting package ${chalk.green(name)}`)
+      await $`yarn lint`
       success.push(name)
     } catch {
       fail.push(name)
@@ -48,10 +44,8 @@ if (fail.length) {
 if (argv.ci) {
   const core = await import('@actions/core')
   core.summary
-    .addHeading('Test Results')
-    .addQuote(
-      fail.length ? `❌ ${fail.length} tests failed` : '✅ All tests passed'
-    )
+    .addHeading('Lint Results')
+    .addQuote(fail.length ? `❌ ${fail.length} failed` : '✅ All passed')
     .addTable([
       [
         { data: 'Package', header: true },
@@ -63,6 +57,6 @@ if (argv.ci) {
     ])
     .write()
   if (fail.length) {
-    core.setFailed(`${fail.length} packages failed test`)
+    core.setFailed(`${fail.length} packages failed`)
   }
 }

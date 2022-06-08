@@ -45,6 +45,13 @@ export interface IPluginInfo {
   id: string
   name?: string
   desc?: string
+  version?: string
+  license?: string
+  author?: string
+  homepage?: string
+  repository?: string
+  bugs?: string
+  icon?: string
   params: TSchema
   resolved: string
 }

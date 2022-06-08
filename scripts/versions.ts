@@ -7,7 +7,7 @@ import glob from 'glob-promise'
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
 
 async function getPackages() {
-  const packages = await glob('packages/*')
+  const packages = [await glob('packages/*'), await glob('plugins/*')].flat()
   return packages
     .filter((p) => fs.existsSync(join(p, 'package.json')))
     .map((p) => [p, fs.readJsonSync(join(p, 'package.json'))])
@@ -16,13 +16,20 @@ async function getPackages() {
 const packages = await getPackages()
 const nodes = Object.fromEntries(
   packages.map((p) => {
-    const [path, { name, version, dependencies, devDependencies }] = p
+    const [
+      path,
+      { name, version, dependencies, devDependencies, peerDependencies }
+    ] = p
     const deps = [
       ...Object.keys(dependencies ?? {}),
-      ...Object.keys(devDependencies ?? {})
+      ...Object.keys(devDependencies ?? {}),
+      ...Object.keys(peerDependencies ?? {})
     ]
       .filter((x) => x.startsWith('@chijs'))
-      .map((x) => ({ name: x, version: dependencies[x] ?? devDependencies[x] }))
+      .map((x) => ({
+        name: x,
+        version: dependencies[x] ?? devDependencies[x] ?? peerDependencies[x]
+      }))
     return [name, { name, version, path, deps }]
   })
 )

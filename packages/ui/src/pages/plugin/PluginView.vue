@@ -13,36 +13,40 @@
         <q-list>
           <q-item>
             <q-item-section avatar>
-              <q-icon name="mdi-cog" />
+              <q-icon name="mdi-identifier" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label caption>ID</q-item-label>
+              <q-item-label>
+                {{ plugin?.id }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-if="plugin?.name">
+            <q-item-section avatar>
+              <q-icon name="mdi-format-letter-case" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Name</q-item-label>
               <q-item-label>
-                {{ plugin?.name === undefined ? plugin?.id : plugin.name }}
+                {{ plugin?.name }}
               </q-item-label>
             </q-item-section>
           </q-item>
           <q-item>
             <q-item-section avatar>
-              <q-icon name="mdi-text-box" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Desc</q-item-label>
-              <q-item-label>
-                {{ plugin?.desc === undefined ? no_desc : plugin.desc }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-text-box" />
+              <q-icon name="mdi-file-link-outline" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Resolved</q-item-label>
-              <q-item-label>{{ plugin?.resolved }}</q-item-label>
+              <q-item-label>
+                <code>{{ plugin?.resolved }}</code>
+              </q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
+        <q-separator />
+        <description-view :desc="plugin?.desc" />
         <q-separator />
         <schema-viewer
           :schema="plugin?.params ?? { type: 'object' }"
@@ -63,12 +67,12 @@ import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
 import ServiceCreate from 'components/ServiceCreate.vue'
+import DescriptionView from 'src/components/DescriptionView.vue'
 
 const route = useRoute()
 const pluginId = <string>route.params.pluginId
 const client = getClient()
 const plugin = ref<IPluginInfo>()
-const no_desc = ref('No description')
 
 async function load() {
   plugin.value = await client.plugin.get(pluginId)

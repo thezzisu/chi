@@ -1,4 +1,11 @@
-import { IPluginInfo, Type, TSchema, Static, TObject } from '@chijs/core'
+import {
+  IPluginInfo,
+  Type,
+  TSchema,
+  Static,
+  TObject,
+  removeUndefined
+} from '@chijs/core'
 import { ServiceContext } from './context/service.js'
 import { Descriptor } from './context/index.js'
 
@@ -45,11 +52,15 @@ export class PluginBuilder<
   }
 
   name(name: string) {
-    this._name = name
+    const builder = this.clone()
+    builder._name = name
+    return builder
   }
 
   desc(desc: string) {
-    this._desc = desc
+    const builder = this.clone()
+    builder._desc = desc
+    return builder
   }
 
   params<T extends TSchema>(schema: T): PluginBuilder<P, T> {
@@ -61,11 +72,11 @@ export class PluginBuilder<
   build(
     main: (ctx: ServiceContext<P>, params: Static<M>) => unknown
   ): IPluginDefn<P> {
-    return {
+    return removeUndefined({
       name: this._name,
       desc: this._desc,
       params: <never>this._params,
       main: <never>main
-    }
+    })
   }
 }

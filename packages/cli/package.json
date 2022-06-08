@@ -1,6 +1,6 @@
 {
   "name": "@chijs/cli",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Command line interface for Chi framework",
@@ -16,8 +16,8 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/client": "^0.0.16",
-    "@chijs/server": "^0.0.19",
+    "@chijs/client": "^0.0.17",
+    "@chijs/server": "^0.0.20",
     "json5": "^2.2.1",
     "yargs": "^17.5.1"
   },
@@ -25,9 +25,9 @@
     "@types/yargs": "^17.0.10"
   },
   "scripts": {
-    "build": "node ../../scripts/build.mjs --package cli",
+    "build": "ts-node-esm ../../scripts/build.ts --package cli",
     "lint": "eslint --ext .js,.ts ./src/ ./test/",
-    "prepare": "node ../../scripts/build.mjs --package cli --rebuild",
+    "prepare": "ts-node-esm ../../scripts/build.ts --package cli --rebuild",
     "test": "mocha"
   },
   "files": [

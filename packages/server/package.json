@@ -1,6 +1,6 @@
 {
   "name": "@chijs/server",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Server for Chi framework",
@@ -16,9 +16,9 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/core": "^0.0.15",
-    "@chijs/runtime": "^0.0.16",
-    "@chijs/ui": "^0.0.6",
+    "@chijs/core": "^0.0.16",
+    "@chijs/runtime": "^0.0.17",
+    "@chijs/ui": "^0.0.7",
     "@fastify/cors": "^7.0.0",
     "@fastify/static": "^5.0.2",
     "fastify": "^3.29.0",
@@ -34,9 +34,9 @@
     "@types/fs-extra": "^9.0.13"
   },
   "scripts": {
-    "build": "node ../../scripts/build.mjs --package server",
+    "build": "ts-node-esm ../../scripts/build.ts --package server",
     "lint": "eslint --ext .js,.ts ./src/ ./test/",
-    "prepare": "node ../../scripts/build.mjs --package server --rebuild",
+    "prepare": "ts-node-esm ../../scripts/build.ts --package server --rebuild",
     "test": "mocha"
   },
   "files": [

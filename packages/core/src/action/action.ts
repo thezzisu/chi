@@ -4,6 +4,7 @@ export interface IActionInfo {
   id: string
   name?: string
   desc?: string
+  icon?: string
   params: TSchema
   return: TSchema
 }

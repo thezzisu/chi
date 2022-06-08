@@ -1,9 +1,9 @@
 {
   "name": "@chijs/runtime",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
-  "description": "Module for Chi plugins",
+  "description": "Chi plugin runtime",
   "author": "thezzisu <thezzisu@gmail.com>",
   "private": false,
   "type": "module",
@@ -16,14 +16,14 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/core": "^0.0.15",
+    "@chijs/core": "^0.0.16",
     "pino": "^8.0.0"
   },
   "devDependencies": {},
   "scripts": {
-    "build": "node ../../scripts/build.mjs --package runtime",
+    "build": "ts-node-esm ../../scripts/build.ts --package runtime",
     "lint": "eslint --ext .js,.ts ./src/ ./test/",
-    "prepare": "node ../../scripts/build.mjs --package runtime --rebuild",
+    "prepare": "ts-node-esm ../../scripts/build.ts --package runtime --rebuild",
     "test": "mocha"
   },
   "files": [

@@ -13,6 +13,28 @@
         <q-list>
           <q-item>
             <q-item-section avatar>
+              <q-icon name="mdi-identifier" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label caption>ID</q-item-label>
+              <q-item-label>
+                {{ action?.id }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-if="action?.name">
+            <q-item-section avatar>
+              <q-icon name="mdi-format-letter-case" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label caption>Name</q-item-label>
+              <q-item-label>
+                {{ action?.name }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section avatar>
               <q-icon name="mdi-cog" />
             </q-item-section>
             <q-item-section>
@@ -25,6 +47,8 @@
             </q-item-section>
           </q-item>
         </q-list>
+        <q-separator />
+        <description-view :desc="action?.desc" />
         <q-separator />
         <schema-viewer
           :schema="action?.params ?? { type: 'object' }"
@@ -55,6 +79,7 @@ import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
 import ActionRun from 'components/ActionRun.vue'
 import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
+import DescriptionView from 'components/DescriptionView.vue'
 
 const base = inject(baseKey)
 const route = useRoute()

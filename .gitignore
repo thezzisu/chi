@@ -105,3 +105,4 @@ dist
 
 # TypeScript build output
 packages/**/lib/
+plugins/**/lib/

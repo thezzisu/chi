@@ -1,0 +1,32 @@
+{
+  "name": "@chijs/plugin-eval",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "description": "A simple eval plugin",
+  "author": "thezzisu <thezzisu@gmail.com>",
+  "private": false,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thezzisu/chi.git",
+    "directory": "plugins/eval"
+  },
+  "bugs": {
+    "url": "https://github.com/thezzisu/chi/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {
+    "@chijs/runtime": "^0.0.17"
+  },
+  "scripts": {
+    "build": "ts-node-esm ../../scripts/build.ts --package eval",
+    "lint": "eslint --ext .js,.ts ./src/",
+    "prepare": "ts-node-esm ../../scripts/build.ts --package eval --rebuild",
+    "test": "mocha"
+  },
+  "files": [
+    "lib"
+  ]
+}

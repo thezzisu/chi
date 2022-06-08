@@ -1,6 +1,6 @@
 {
   "name": "@chijs/core",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Core components of Chi framwork",
@@ -24,9 +24,9 @@
   },
   "devDependencies": {},
   "scripts": {
-    "build": "node ../../scripts/build.mjs --package core",
+    "build": "ts-node-esm ../../scripts/build.ts --package core",
     "lint": "eslint --ext .js,.ts ./src/ ./test/",
-    "prepare": "node ../../scripts/build.mjs --package core --rebuild",
+    "prepare": "ts-node-esm ../../scripts/build.ts --package core --rebuild",
     "test": "mocha"
   },
   "files": [

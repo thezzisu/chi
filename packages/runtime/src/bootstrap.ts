@@ -5,6 +5,8 @@ import {
   createLogger,
   IRpcMsg
 } from '@chijs/core'
+import { isAbsolute } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { deserialize } from 'node:v8'
 import { ServiceContext } from './context/service.js'
 import { ServiceBootstrapData } from './index.js'
@@ -18,7 +20,9 @@ if (!payload) {
 const data: ServiceBootstrapData = deserialize(Buffer.from(payload, 'base64'))
 
 try {
-  const { default: plugin } = await import(data.resolved)
+  let resolved = data.resolved
+  if (isAbsolute(resolved)) resolved = pathToFileURL(resolved).href
+  const { default: plugin } = await import(resolved)
   const logger = createLogger('runtime')
   logger.level = data.level
   const endpoint = new RpcEndpoint<WorkerDescriptor>(
