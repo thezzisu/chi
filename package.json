@@ -40,6 +40,6 @@
   "scripts": {
     "build": "ts-node-esm scripts/build.ts",
     "lint": "ts-node-esm scripts/lint.ts",
-    "test": "ts-node-esm scripts/test.tss"
+    "test": "ts-node-esm scripts/test.ts"
   }
 }
