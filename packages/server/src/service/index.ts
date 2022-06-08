@@ -11,6 +11,7 @@ import {
   IServiceDefn,
   IServiceAttr
 } from '@chijs/core'
+import { EventEmitter } from 'node:events'
 import { ChiApp } from '../index.js'
 import { forkWorker } from './fork.js'
 
@@ -26,20 +27,22 @@ export class WorkerExitError extends Error {
 }
 
 export class ServiceManager {
-  private services
+  map
+  emitter
 
   constructor(private app: ChiApp) {
-    this.services = new Map<string, IService>()
+    this.map = new Map<string, IService>()
+    this.emitter = new EventEmitter()
   }
 
   add(defn: IServiceDefn) {
-    if (this.services.has(defn.id)) {
+    if (this.map.has(defn.id)) {
       throw new Error('Service already exists')
     }
     if (!this.app.plugins.verifyParams(defn.pluginId, defn.params)) {
       throw new Error('Bad params')
     }
-    this.services.set(defn.id, {
+    this.map.set(defn.id, {
       ...defn,
       logPath: '',
       state: ServiceState.STOPPED
@@ -47,7 +50,7 @@ export class ServiceManager {
   }
 
   update(id: string, attr: Partial<IServiceAttr>) {
-    const service = this.services.get(id)
+    const service = this.map.get(id)
     if (!service) throw new Error('Service not found')
     if (service.workerId) throw new Error('Service is running')
     if (
@@ -57,17 +60,19 @@ export class ServiceManager {
       throw new Error('Bad params')
     }
     Object.assign(service, attr)
+    this.emitter.emit(id, service)
   }
 
   remove(id: string) {
-    const service = this.services.get(id)
+    const service = this.map.get(id)
     if (!service) throw new Error('Service not found')
     if (service.workerId) throw new Error('Service is running')
-    this.services.delete(id)
+    this.map.delete(id)
+    this.emitter.emit(id, null)
   }
 
   start(id: string) {
-    const service = this.services.get(id)
+    const service = this.map.get(id)
     if (!service) throw new Error('Service not found')
     if (
       service.state !== ServiceState.STOPPED &&
@@ -106,20 +111,21 @@ export class ServiceManager {
       adapter.dispose(new WorkerExitError(code, signal))
       service.workerId = undefined
       service.workerProcess = undefined
+      if (service.state !== ServiceState.STOPPING) {
+        if (shouldRestart(service.restartPolicy, code !== 0)) {
+          this.start(service.id)
+          return
+        }
+      }
       if (code === 0) {
         service.state = ServiceState.STOPPED
+        service.error = ''
       } else {
         service.state = ServiceState.FAILED
         service.error =
           `Worker exited with ` + (code ? `code ${code}` : `signal ${signal}`)
       }
-      if (
-        service.restartPolicy === ServiceRestartPolicy.ALWAYS ||
-        (service.restartPolicy === ServiceRestartPolicy.ON_FAILURE &&
-          service.state === ServiceState.FAILED)
-      ) {
-        this.start(service.id)
-      }
+      this.emitter.emit(id, service)
     })
 
     service.workerId = workerId
@@ -127,11 +133,13 @@ export class ServiceManager {
     service.logPath = logPath ?? 'stdout'
     service.state = ServiceState.STARTING
     service.error = undefined
+    this.emitter.emit(id, service)
     this.app.rpc.endpoint
       .getHandle<WorkerDescriptor>(RPC.worker(workerId))
       .call('$w:waitReady')
       .then(() => {
         service.state = ServiceState.RUNNING
+        this.emitter.emit(id, service)
       })
       .catch((err) =>
         this.app.logger.error(err, `Error starting service ${id}`)
@@ -139,11 +147,12 @@ export class ServiceManager {
   }
 
   async stop(id: string) {
-    const service = this.services.get(id)
+    const service = this.map.get(id)
     if (!service) throw new Error('Service not found')
     if (!service.workerId) throw new Error('Service is not running')
 
     service.state = ServiceState.STOPPING
+    this.emitter.emit(id, service)
     const handle = this.app.rpc.endpoint.getHandle<WorkerDescriptor>(
       RPC.worker(service.workerId)
     )
@@ -155,15 +164,26 @@ export class ServiceManager {
   }
 
   list(): IServiceInfo[] {
-    return [...this.services.values()].map(
+    return [...this.map.values()].map(
       ({ workerProcess: _, ...service }) => service
     )
   }
 
   get(id: string): IServiceInfo {
-    const service = this.services.get(id)
+    const service = this.map.get(id)
     if (!service) throw new Error('Service not found')
     const { workerProcess: _, ...rest } = service
     return rest
+  }
+}
+
+function shouldRestart(policy: ServiceRestartPolicy, failed: boolean) {
+  switch (policy) {
+    case ServiceRestartPolicy.ALWAYS:
+      return true
+    case ServiceRestartPolicy.ON_FAILURE:
+      return failed
+    default:
+      return false
   }
 }

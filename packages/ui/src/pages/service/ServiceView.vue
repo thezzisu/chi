@@ -120,7 +120,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, ref } from 'vue'
+import { computed, inject, onBeforeUnmount, ref } from 'vue'
 import { InternalDescriptor, IServiceInfo, RPC } from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
@@ -141,8 +141,8 @@ const pluginUrl = computed(
     `${base}/plugin/view/` + encodeURIComponent('' + service.value?.pluginId)
 )
 
-async function load() {
-  service.value = await client.service.get(serviceId)
+async function update(info: IServiceInfo) {
+  service.value = info
   if (service.value.workerId) {
     const handle = client.endpoint.getHandle<InternalDescriptor>(
       RPC.worker(service.value.workerId)
@@ -153,14 +153,34 @@ async function load() {
   }
 }
 
+let sub: Promise<string> | null = null
+
+async function unsub() {
+  if (sub) {
+    sub.then((id) => client.server.unsubscribe(id))
+    sub = null
+  }
+}
+
+onBeforeUnmount(() => {
+  unsub()
+})
+
 async function start() {
   await client.service.start(serviceId)
-  await load()
 }
 
 async function stop() {
   await client.service.stop(serviceId)
-  await load()
+}
+
+async function load() {
+  update(await client.service.get(serviceId))
+  sub = client.server.subscribe(
+    '$s:service:update',
+    (info) => update(info),
+    serviceId
+  )
 }
 
 load()

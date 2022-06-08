@@ -105,6 +105,7 @@ export interface IServerAPI
 export type ServerDescriptor = RpcTypeDescriptor<
   WithPrefix<IServerAPI, '$s:'>,
   {
+    ['$s:service:update'](serviceId: string): IServiceInfo
     ['$s:action:taskUpdate'](taskId: string): ITaskInfo
   }
 >
