@@ -4,16 +4,11 @@
       <q-item-section>
         <q-item-label class="text-mono">{{ props.name }}</q-item-label>
         <q-item-label caption class="text-mono">
-          <q-badge color="blue">{{ props.schema.type }}</q-badge>
+          <q-badge color="indigo">{{ props.schema.type }}</q-badge>
         </q-item-label>
       </q-item-section>
     </template>
-    <schema-view
-      v-for="[key, value] of properties"
-      :key="key"
-      :schema="value"
-      :name="key"
-    />
+    <schema-view :schema="items" name="items" />
   </q-expansion-item>
 </template>
 
@@ -27,7 +22,5 @@ const props = defineProps<{
   schema: JSONSchema7
 }>()
 
-const properties = computed(
-  () => Object.entries(props.schema.properties ?? {}) as [string, JSONSchema7][]
-)
+const items = computed(() => props.schema.items as JSONSchema7)
 </script>

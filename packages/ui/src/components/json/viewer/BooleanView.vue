@@ -1,10 +1,10 @@
 <template>
-  <q-expansion-item :content-inset-level="0.2" default-opened>
+  <q-expansion-item :content-inset-level="0.2">
     <template #header>
       <q-item-section>
         <q-item-label class="text-mono">{{ props.name }}</q-item-label>
         <q-item-label caption class="text-mono">
-          <q-badge color="blue">{{ props.schema.type }}</q-badge>
+          <q-badge color="purple">{{ props.schema.type }}</q-badge>
         </q-item-label>
       </q-item-section>
     </template>

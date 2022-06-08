@@ -9,6 +9,8 @@ import ObjectView from 'components/json/viewer/ObjectView.vue'
 import UnknownView from 'components/json/viewer/UnknownView.vue'
 import StringView from 'components/json/viewer/StringView.vue'
 import NumberView from 'components/json/viewer/NumberView.vue'
+import ArrayView from 'components/json/viewer/ArrayView.vue'
+import BooleanView from 'components/json/viewer/BooleanView.vue'
 
 const props = defineProps<{
   name: string
@@ -24,6 +26,10 @@ const target = computed(() => {
     case 'integer':
     case 'number':
       return NumberView
+    case 'array':
+      return ArrayView
+    case 'boolean':
+      return BooleanView
     default:
       return UnknownView
   }
