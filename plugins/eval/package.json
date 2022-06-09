@@ -18,7 +18,7 @@
   "dependencies": {},
   "devDependencies": {},
   "peerDependencies": {
-    "@chijs/runtime": "^0.0.17"
+    "@chijs/runtime": "^0.0.18"
   },
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package eval",
