@@ -5,7 +5,7 @@ import {
   Static,
   TObject,
   TSchema,
-  TUnknown,
+  TVoid,
   Type
 } from '@chijs/core'
 import { Descriptor, ActionContext } from './context/index.js'
@@ -14,7 +14,7 @@ export interface IActionDefn extends Omit<IActionInfo, 'id'> {
   main(ctx: ActionContext<Descriptor>, params: unknown): Awaitable<unknown>
 }
 
-export interface IAction<P extends TSchema, R>
+export interface IAction<P extends TSchema, R extends TSchema>
   extends Omit<IActionDefn, 'params' | 'return'> {
   params: P
   return: R
@@ -23,7 +23,7 @@ export interface IAction<P extends TSchema, R>
 export class ActionBuilder<
   D extends Descriptor,
   P extends TSchema = TObject<{}>,
-  R extends TSchema = TUnknown
+  R extends TSchema = TVoid
 > {
   private _params: unknown
   private _return: TSchema
@@ -32,7 +32,7 @@ export class ActionBuilder<
 
   constructor() {
     this._params = Type.Strict(Type.Object({}))
-    this._return = Type.Strict(Type.Unknown())
+    this._return = Type.Strict(Type.Void())
   }
 
   private clone() {
@@ -83,4 +83,4 @@ export class ActionBuilder<
 
 export type Built<B> = B extends ActionBuilder<infer _, infer P, infer R>
   ? IAction<P, R>
-  : IAction<TUnknown, unknown>
+  : IAction<TSchema, TSchema>

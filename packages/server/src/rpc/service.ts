@@ -13,7 +13,9 @@ export function applyServiceImpl(
 
   endpoint.provide('$s:service:remove', (id) => app.services.remove(id))
 
-  endpoint.provide('$s:service:start', (id) => app.services.start(id))
+  endpoint.provide('$s:service:start', function (id) {
+    app.services.start(id, this.remoteId)
+  })
 
   endpoint.provide('$s:service:stop', (id) => app.services.stop(id))
 

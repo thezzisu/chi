@@ -1,9 +1,16 @@
-import { Descriptor, Fn, RpcHandle, RpcTypeDescriptor } from '../rpc/index.js'
+import {
+  Descriptor,
+  Fn,
+  RpcHandle,
+  RpcId,
+  RpcTypeDescriptor
+} from '../rpc/index.js'
 import { WithPrefix } from '../util/index.js'
 
 export interface IAgentInteractContext {
-  taskId: string
-  jobId: string
+  taskId?: string
+  jobId?: string
+  serviceId?: string
 }
 
 export interface IAgentInteractOptions {
@@ -59,11 +66,12 @@ export function createActionWrapper(
   handle: RpcHandle<Descriptor>,
   context: IAgentInteractContext
 ) {
-  return <IAgentMethods>new Proxy(
+  return <IAgentMethods & { remoteId: RpcId }>new Proxy(
     {},
     {
       get(target, prop) {
         if (prop === 'then') return null
+        if (prop === 'remoteId') return handle.remoteId
         if (typeof prop !== 'string') throw new Error('Invalid property')
         return (...args: unknown[]) =>
           handle.call(<never>`${prefix}${prop}`, context, ...args)

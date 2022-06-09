@@ -6,22 +6,8 @@ import {
   TSchema
 } from '@chijs/core'
 import { IAction } from '../action.js'
-import { Descriptor } from './base.js'
+import { Descriptor, DescriptorOf, PluginTypeDescriptor } from './base.js'
 import { ServiceContext } from './service.js'
-
-export type ParamOf<M, K> = K extends keyof M
-  ? M[K] extends IAction<infer P, infer _>
-    ? Static<P>
-    : unknown
-  : unknown
-
-export type ReturnOf<M, K> = K extends keyof M
-  ? M[K] extends IAction<infer _, infer R>
-    ? R extends TSchema
-      ? Static<R>
-      : unknown
-    : unknown
-  : unknown
 
 export class ActionContext<D extends Descriptor> {
   handle
@@ -45,9 +31,33 @@ export class ActionContext<D extends Descriptor> {
   }
 }
 
+export type ActionsOf<M> = DescriptorOf<M> extends PluginTypeDescriptor<
+  infer _,
+  infer _,
+  infer C
+>
+  ? C
+  : never
+
+export type ActionKeys<M> = keyof ActionsOf<M>
+
+export type ActionOf<M, K> = K extends keyof ActionsOf<M>
+  ? ActionsOf<M>[K] extends IAction<infer _, infer _>
+    ? ActionsOf<M>[K]
+    : IAction<TSchema, TSchema>
+  : IAction<TSchema, TSchema>
+
+export type ParamOf<M, K> = ActionOf<M, K> extends IAction<infer P, infer _>
+  ? Static<P>
+  : never
+
+export type ReturnOf<M, K> = ActionOf<M, K> extends IAction<infer _, infer R>
+  ? Static<R>
+  : never
+
 export class ActionHandle<M, D extends Descriptor> {
   constructor(private ctx: ActionContext<D>, private serviceId: string) {}
-  async run<K extends keyof M>(
+  async run<K extends ActionKeys<M>>(
     actionId: K,
     params: ParamOf<M, K>
   ): Promise<ReturnOf<M, K>> {

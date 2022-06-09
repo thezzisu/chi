@@ -73,7 +73,7 @@ export class ServiceManager {
     this.emitter.emit(id, null)
   }
 
-  start(id: string) {
+  start(id: string, initiator: string) {
     const service = this.map.get(id)
     if (!service) throw new Error('Service not found')
     if (
@@ -96,7 +96,8 @@ export class ServiceManager {
         plugin: service.pluginId,
         params: service.params,
         resolved: plugin.resolved,
-        level: logLevel
+        level: logLevel,
+        initiator
       },
       logger: this.logger,
       logPath
@@ -116,7 +117,7 @@ export class ServiceManager {
       service.workerProcess = undefined
       if (service.state !== ServiceState.STOPPING) {
         if (shouldRestart(service.restartPolicy, code !== 0)) {
-          this.start(service.id)
+          this.start(service.id, RPC.server())
           return
         }
       }

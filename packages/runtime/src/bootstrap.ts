@@ -31,8 +31,8 @@ try {
     logger.child({ scope: 'endpoint' })
   )
   process.on('message', (msg) => endpoint.recv(<IRpcMsg>msg))
-  applyWorkerImpl(endpoint)
   const ctx = new ServiceContext(data, endpoint)
+  applyWorkerImpl(endpoint, ctx)
   await plugin.main(ctx, data.params)
   initialization.resolve()
 } catch (err) {

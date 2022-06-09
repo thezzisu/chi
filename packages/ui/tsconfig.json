@@ -27,7 +27,10 @@
       "stores/*": [
         "src/stores/*"
       ]
-    }
+    },
+    "lib": [
+      "DOM.Iterable"
+    ]
   },
   "include": [
     "src/**/*.ts",

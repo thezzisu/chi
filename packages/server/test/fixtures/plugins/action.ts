@@ -41,6 +41,7 @@ declare module '@chijs/core' {
 export default new PluginBuilder<Self>()
   .params(Type.Object({ hello: Type.String() }))
   .build(async (ctx, params) => {
+    console.log(ctx.agent.remoteId)
     console.log(params.hello)
     ctx.registerAction(
       'sample',
@@ -60,6 +61,31 @@ export default new PluginBuilder<Self>()
     )
     ctx.registerAction('add', add)
     ctx.registerAction('echo', echo)
+    ctx.registerAction(
+      'test1',
+      new ActionBuilder().build(async (ctx) => {
+        await ctx.use('action').run('test2', {})
+        await ctx.use('action').run('test2', {})
+        await ctx.use('action').run('test2', {})
+        await ctx.use('action').run('test2', {})
+      })
+    )
+    ctx.registerAction(
+      'test2',
+      new ActionBuilder().build(async (ctx) => {
+        await ctx.use('action').run('test3', {})
+        await ctx.use('action').run('test3', {})
+        await ctx.use('action').run('test3', {})
+        await ctx.use('action').run('test3', {})
+      })
+    )
+    ctx.registerAction(
+      'test3',
+      new ActionBuilder().return(Type.Number()).build(async () => {
+        return Math.random()
+      })
+    )
+    ctx.action.dispatch('action', 'test1', {}).then((id) => console.log(id))
     const agent = ctx.endpoint as RpcEndpoint<AgentDescriptor>
     agent.provide('$a:notify', (options) => console.log(`Notified: ${options}`))
     setTimeout(async () => {

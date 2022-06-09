@@ -1,6 +1,6 @@
 <template>
-  <q-page padding class="row">
-    <div class="q-pa-sm col-12">
+  <q-page padding class="row content-start justify-center">
+    <div class="q-pa-sm col-12 col-lg-6">
       <q-card>
         <q-card-section>
           <div class="row justify-between items-center">
@@ -64,22 +64,37 @@
         </q-list>
       </q-card>
     </div>
+    <template v-if="task?.jobs.length">
+      <div class="q-pa-sm col-12 col-lg-6">
+        <q-card>
+          <jobs-graph v-model="job" :jobs="task.jobs" />
+        </q-card>
+      </div>
+    </template>
+    <template v-if="job">
+      <div class="q-pa-sm col-12">
+        <job-info :job="job" />
+      </div>
+    </template>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import { computed, inject, onBeforeUnmount, ref } from 'vue'
-import { ITaskInfo, JobState } from '@chijs/client'
+import { IJobInfo, ITaskInfo, JobState } from '@chijs/client'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
 import JobStatus from 'components/JobStatus.vue'
+import JobsGraph from 'components/JobsGraph.vue'
+import JobInfo from 'components/JobInfo.vue'
 
 const base = inject(baseKey)
 const route = useRoute()
 const taskId = <string>route.params.taskId
 const client = getClient()
 const task = ref<ITaskInfo>()
+const job = ref<IJobInfo>()
 
 const serviceUrl = computed(
   () => `${base}/service/view/` + encodeURIComponent('' + task.value?.serviceId)
@@ -95,16 +110,19 @@ const actionUrl = computed(
 
 let sub: Promise<string> | null = null
 
+function update(info: ITaskInfo) {
+  task.value = info
+  if (info.state !== JobState.RUNNING) unsub()
+}
+
 async function load() {
-  task.value = await client.action.getTask(taskId)
-  if (task.value.state === JobState.RUNNING) {
+  const info = await client.action.getTask(taskId)
+  update(info)
+  if (info.state === JobState.RUNNING) {
     sub = client.server.subscribe(
       '$s:action:taskUpdate',
-      (info) => {
-        task.value = info
-        if (task.value.state !== JobState.RUNNING) unsub()
-      },
-      task.value.id
+      (info) => update(info),
+      info.id
     )
   }
 }

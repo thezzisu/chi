@@ -1,6 +1,7 @@
 import pino from 'pino'
 
 export interface ServiceBootstrapData {
+  initiator: string
   workerId: string
   service: string
   plugin: string

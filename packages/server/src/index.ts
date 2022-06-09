@@ -1,7 +1,9 @@
 import 'reflect-metadata'
 import pino from 'pino'
 import pretty from 'pino-pretty'
+import fs from 'fs-extra'
 import { dirname, join } from 'node:path'
+import { RPC } from '@chijs/core'
 import { ChiAppOptions, defaultConfig, IChiConfig } from './config/index.js'
 import { PluginRegistry } from './plugin/index.js'
 import { ServiceManager } from './service/index.js'
@@ -9,7 +11,6 @@ import { WebServer } from './web/index.js'
 import { RpcManager } from './rpc/index.js'
 import { Database } from './db/index.js'
 import { ActionManager } from './action/index.js'
-import fs from 'fs-extra'
 
 export class ChiApp {
   config
@@ -76,7 +77,7 @@ export class ChiApp {
     this.logger.info(`Starting services`)
     for (const service of this.config.services.filter((s) => s.autostart)) {
       try {
-        this.services.start(service.id)
+        this.services.start(service.id, RPC.server())
       } catch (e) {
         this.logger.error(e)
       }

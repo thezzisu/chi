@@ -7,12 +7,12 @@ import {
   ServerDescriptor,
   withOverride,
   WorkerDescriptor,
-  validateJsonSchema
+  createActionWrapper
 } from '@chijs/core'
-import { Descriptor, ActionOf } from './base.js'
-import { ActionContext } from './action.js'
+import { Descriptor, DescriptorOf } from './base.js'
 import { IActionDefn } from '../action.js'
 import { ServiceBootstrapData } from '../index.js'
+import { ActionOf } from './action.js'
 
 export class ServiceContext<D extends Descriptor> {
   logger
@@ -20,59 +20,37 @@ export class ServiceContext<D extends Descriptor> {
   service
   server
   action
+  agent
   actions
 
   constructor(
     private boot: ServiceBootstrapData,
-    private _endpoint: RpcEndpoint<WorkerDescriptor>
+    public endpoint: RpcEndpoint<WorkerDescriptor>
   ) {
     this.logger = createLogger('runtime/plugin', {
       service: boot.service,
       plugin: boot.plugin
     })
     this.logger.level = boot.level
-    this.server = _endpoint.getHandle<ServerDescriptor>(RPC.server())
+
+    this.server = endpoint.getHandle<ServerDescriptor>(RPC.server())
     this.plugin = createRpcWrapper(this.server, '$s:plugin:')
     this.service = createRpcWrapper(this.server, '$s:service:')
     this.action = createRpcWrapper(this.server, '$s:action:')
-    this.actions = new Map<string, IActionDefn>()
-    this._endpoint.provide('$w:action:get', (id) => {
-      const action = this.actions.get(id)
-      if (!action) throw new Error(`Action ${id} not found`)
-      const { main: _, ...info } = action
-      return { ...info, id }
+
+    this.agent = createActionWrapper(endpoint.getHandle(boot.initiator), {
+      serviceId: boot.service
     })
-    this._endpoint.provide('$w:action:list', () =>
-      [...this.actions.entries()].map(([id, { main: _, ...info }]) => ({
-        ...info,
-        id
-      }))
-    )
-    this._endpoint.provide(
-      '$w:action:run',
-      async (initiator, taskId, jobId, actionId, params) => {
-        const action = this.actions.get(actionId)
-        if (!action) throw new Error(`Action ${actionId} not found`)
-        const validation = validateJsonSchema(params, action.params)
-        if (validation.length) {
-          this.logger.error(validation, `Invalid params`)
-          throw new Error(`Invalid params`)
-        }
-        const ctx = new ActionContext(this, initiator, taskId, jobId)
-        const result = await action.main(ctx, params)
-        return result
-      }
-    )
+
+    this.actions = new Map<string, IActionDefn>()
   }
 
-  get endpoint() {
-    return <RpcEndpoint<D>>this._endpoint
-  }
-
-  async getServiceProxy<D extends Descriptor>(id: string) {
+  async getServiceProxy<M>(id: string, _service?: M) {
     const service = await this.service.get(id)
     if (!service.workerId) throw new Error(`Service ${id} is not running`)
-    const handle = this.endpoint.getHandle<D>(RPC.worker(service.workerId))
+    const handle = this.endpoint.getHandle<DescriptorOf<M>>(
+      RPC.worker(service.workerId)
+    )
     const internalHandle = <RpcHandle<WorkerDescriptor>>handle
     const wrapper = createRpcWrapper(handle, '')
     const internalWrapper = createRpcWrapper(internalHandle, '$w:')
