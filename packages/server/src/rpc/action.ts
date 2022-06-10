@@ -73,30 +73,32 @@ export function applyActionImpl(
     return actions.map((item) => ({ ...item, serviceId }))
   })
 
-  endpoint.provide('$s:action:getTask', async (id) => {
+  endpoint.provide('$s:task:get', async (id) => {
     const task = await Tasks.findOneByOrFail({ id })
     return task
   })
 
-  endpoint.provide('$s:action:listTask', async () => {
+  endpoint.provide('$s:task:list', async () => {
     const tasks = await Tasks.find()
     return tasks
   })
 
-  endpoint.provide('$s:action:listTaskByService', async (serviceId) => {
+  endpoint.provide('$s:task:listByService', async (serviceId) => {
     const tasks = await Tasks.find({ where: { serviceId } })
     return tasks
   })
 
-  endpoint.provide(
-    '$s:action:listTaskByAction',
-    async (serviceId, actionId) => {
-      const tasks = await Tasks.find({ where: { serviceId, actionId } })
-      return tasks
-    }
-  )
+  endpoint.provide('$s:task:listByAction', async (serviceId, actionId) => {
+    const tasks = await Tasks.find({ where: { serviceId, actionId } })
+    return tasks
+  })
 
-  endpoint.publish('$s:action:taskUpdate', (cb, taskId) => {
+  endpoint.provide('$s:task:remove', async (id) => {
+    const task = await Tasks.findOneByOrFail({ id })
+    await Tasks.remove(task)
+  })
+
+  endpoint.publish('$s:task:update', (cb, taskId) => {
     if (!app.actions.running.has(taskId))
       throw new Error(`Task ${taskId} not found or not running`)
     app.actions.emitter.on(taskId, cb)

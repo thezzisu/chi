@@ -99,22 +99,27 @@ interface IServerActionAPI {
   get(serviceId: string, actionId: string): Promise<IActionInfoWithService>
   list(): Promise<IActionInfoWithService[]>
   listByService(serviceId: string): Promise<IActionInfoWithService[]>
-  getTask(id: string): Promise<ITaskInfo>
-  listTask(): Promise<ITaskInfo[]>
-  listTaskByService(serviceId: string): Promise<ITaskInfo[]>
-  listTaskByAction(serviceId: string, actionId: string): Promise<ITaskInfo[]>
+}
+
+interface IServerTaskAPI {
+  get(id: string): Promise<ITaskInfo>
+  list(): Promise<ITaskInfo[]>
+  listByService(serviceId: string): Promise<ITaskInfo[]>
+  listByAction(serviceId: string, actionId: string): Promise<ITaskInfo[]>
+  remove(id: string): Promise<void>
 }
 
 export interface IServerAPI
   extends WithPrefix<IServerMiscAPI, 'misc:'>,
     WithPrefix<IServerPluginAPI, 'plugin:'>,
     WithPrefix<IServerServiceAPI, 'service:'>,
-    WithPrefix<IServerActionAPI, 'action:'> {}
+    WithPrefix<IServerActionAPI, 'action:'>,
+    WithPrefix<IServerTaskAPI, 'task:'> {}
 
 export type ServerDescriptor = RpcTypeDescriptor<
   WithPrefix<IServerAPI, '$s:'>,
   {
     ['$s:service:update'](serviceId: string): IServiceInfo
-    ['$s:action:taskUpdate'](taskId: string): ITaskInfo
+    ['$s:task:update'](taskId: string): ITaskInfo
   }
 >

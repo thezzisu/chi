@@ -15,23 +15,17 @@
             </div>
           </div>
         </q-card-section>
-        <q-list class="list bg-white" separator bordered dense>
-          <q-item v-for="service of services" :key="service.id">
+        <q-list class="list bg-white" separator bordered>
+          <q-item
+            v-for="service of services"
+            :key="service.id"
+            :to="`${base}/service/view/${encodeURIComponent(service.id)}`"
+          >
             <q-item-section>
               <q-item-section>{{ service.id }}</q-item-section>
             </q-item-section>
-            <q-item>
-              <service-status :state="service.state" />
-            </q-item>
             <q-item-section side>
-              <q-btn
-                :to="`${base}/service/view/${encodeURIComponent(service.id)}`"
-                icon="mdi-eye"
-                round
-                flat
-                dense
-                color="black"
-              />
+              <service-status :state="service.state" />
             </q-item-section>
           </q-item>
         </q-list>
