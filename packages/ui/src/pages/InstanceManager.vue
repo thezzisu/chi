@@ -28,8 +28,7 @@
                 dense
                 round
                 icon="mdi-open-in-new"
-                :to="`/instance/${instance.id}/`"
-                target="_blank"
+                @click="open(`/instance/${instance.id}/`)"
               />
               <q-btn
                 flat
@@ -55,4 +54,14 @@
 
 <script lang="ts" setup>
 import { instances } from 'src/shared/instance'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+function open(path: string) {
+  if (window.bridge?.open) {
+    window.bridge.open(path)
+  } else {
+    window.open(router.resolve(path).href, '_blank')
+  }
+}
 </script>

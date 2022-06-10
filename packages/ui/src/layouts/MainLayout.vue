@@ -1,22 +1,10 @@
 <template>
   <q-layout view="hHh Lpr lff">
-    <q-header elevated class="row no-wrap">
-      <q-toolbar class="col-auto bg-brand q-px-none">
-        <q-btn
-          flat
-          round
-          dense
-          icon="mdi-menu"
-          class="q-mx-sm"
-          @click="navOpen = !navOpen"
-        />
-        <q-separator dark vertical inset />
-        <q-btn stretch flat no-caps :to="base" :icon="`img:${logoWhite}`" />
-      </q-toolbar>
+    <app-header v-model:nav="navOpen">
       <q-toolbar class="bg-blue-grey-10">
         <q-toolbar-title>Dashboard</q-toolbar-title>
       </q-toolbar>
-    </q-header>
+    </app-header>
 
     <q-drawer
       v-model="navOpen"
@@ -67,13 +55,13 @@
 </template>
 
 <script lang="ts" setup>
-import logoWhite from 'assets/logo-white.svg'
 import { baseKey } from 'src/shared/injections'
 import { getInstance } from 'src/shared/instance'
 import { provide, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DisconnectedPage from 'src/pages/DisconnectedPage.vue'
 import { useClient } from 'src/shared/client'
+import AppHeader from 'src/components/AppHeader.vue'
 
 const navOpen = ref(false)
 
