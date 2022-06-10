@@ -1,6 +1,15 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { basename, join, resolve } from 'node:path'
-import glob from 'glob-promise'
 import { argv, chalk, fs } from 'zx'
+import _glob from 'glob'
+
+export function glob(pattern: string, options: _glob.IOptions = {}) {
+  return new Promise<string[]>((resolve, reject) =>
+    _glob(pattern, options, (err, files) =>
+      err ? reject(err) : resolve(files)
+    )
+  )
+}
 
 export async function targetPackages() {
   /** @type {string[]} */
@@ -33,10 +42,7 @@ export async function targetPackages() {
   return packages
 }
 
-/**
- * @param {string[]} packages
- */
-export function sortPackages(packages) {
+export function sortPackages(packages: string[]) {
   const nodes = packages
     .filter((p) => fs.existsSync(join(p, 'package.json')))
     .map((p) => [p, fs.readJsonSync(join(p, 'package.json'))])
@@ -63,7 +69,7 @@ export function sortPackages(packages) {
   }
   const sorted = []
   while (queue.length) {
-    const index = queue.shift()
+    const index = queue.shift()!
     sorted.push(nodes[index])
     for (const dep of nodes[index].deps) {
       const index = nodes.findIndex((x) => x.name === dep)

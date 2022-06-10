@@ -2,7 +2,7 @@
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fs, cd, chalk, argv } from 'zx'
-import glob from 'glob-promise'
+import { glob } from './common.js'
 
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
 
