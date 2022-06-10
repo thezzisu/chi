@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron'
+import { dialog, ipcMain } from 'electron'
 import { createWindow, getWindow } from './wm'
 
 ipcMain.handle('minimize', (event) => {
@@ -24,4 +24,11 @@ ipcMain.handle('open', (event, path) => {
 ipcMain.handle('openDevTools', (event) => {
   const win = getWindow(event.sender.id)
   win?.webContents.openDevTools()
+})
+
+ipcMain.handle('showOpenDialog', (event, options) => {
+  const win = getWindow(event.sender.id)
+  return win
+    ? dialog.showOpenDialog(win, options)
+    : dialog.showOpenDialog(options)
 })

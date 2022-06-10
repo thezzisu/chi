@@ -36,7 +36,7 @@
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package server",
     "lint": "eslint --ext .js,.ts ./src/ ./test/",
-    "prepare": "ts-node-esm ../../scripts/build.ts --package server --rebuild",
+    "prepublishOnly": "ts-node-esm ../../scripts/build.ts --package server --rebuild",
     "test": "mocha"
   },
   "files": [

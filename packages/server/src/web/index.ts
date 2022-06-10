@@ -66,7 +66,11 @@ export class WebServer {
       return next()
     })
     this.server.io.on('connection', this.onConnection.bind(this))
-    await this.server.listen(this.config.port ?? 3000, this.config.address)
+    const result = await this.server.listen(
+      this.config.port ?? 3000,
+      this.config.address
+    )
+    this.logger.error(`Web server listening on ${result}`)
   }
 
   private onConnection(socket: Socket) {

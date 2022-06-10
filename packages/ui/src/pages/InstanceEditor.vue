@@ -26,14 +26,28 @@
           <div class="text-grey-7 text-caption">Type</div>
           <q-option-group
             v-model="current.type"
-            name="preferred_genre"
             :options="instanceTypes"
             color="primary"
             inline
           />
         </div>
-        <q-input v-model="current.url" label="URL" />
-        <q-input v-model="current.token" label="Token" />
+        <template v-if="current.type === 'remote'">
+          <q-input v-model="current.url" label="URL" />
+          <q-input v-model="current.token" label="Token" />
+        </template>
+        <template v-else>
+          <q-input v-model="current.config" label="Config path">
+            <template #append>
+              <q-btn
+                icon="mdi-file-cog-outline"
+                flat
+                round
+                color="primary"
+                @click="selectFile"
+              />
+            </template>
+          </q-input>
+        </template>
       </q-card-section>
       <q-separator />
       <q-card-actions align="right">
@@ -52,19 +66,24 @@
 import { nextTick, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { nanoid } from 'nanoid'
-import { getInstance, instanceMap, Instance } from 'src/shared/instance'
-import { easyDeepClone } from 'src/shared/misc'
+import {
+  easyDeepClone,
+  getInstance,
+  instanceMap,
+  Instance,
+  instanceTypes,
+  selectConfig
+} from 'src/shared'
 import { useQuasar } from 'quasar'
 
 const route = useRoute()
 const id = <string>route.params.id
 const isNew = !id
 
-const instanceTypes = [{ label: 'Remote', value: 'remote' }]
-
 const newInstance: Instance = {
   id: nanoid(),
   name: 'New Instance',
+  desc: '',
   type: 'remote',
   url: 'ws://localhost:3000',
   token: ''
@@ -104,6 +123,13 @@ function save() {
   })
   if (isNew) {
     nextTick(() => router.replace('/'))
+  }
+}
+
+async function selectFile() {
+  const file = await selectConfig()
+  if (file && current.value.type === 'local') {
+    current.value.config = file
   }
 }
 </script>

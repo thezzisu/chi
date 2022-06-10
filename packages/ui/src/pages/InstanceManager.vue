@@ -19,7 +19,9 @@
           <q-item-section>
             <q-item-label>{{ instance.name }}</q-item-label>
             <q-item-label overline>{{ instance.type }}</q-item-label>
-            <q-item-label caption>{{ instance.url }}</q-item-label>
+            <q-item-label caption class="text-mono" lines="1">
+              {{ instance.type === 'local' ? instance.config : instance.url }}
+            </q-item-label>
           </q-item-section>
           <q-item-section side>
             <div class="text-grey-8 q-gutter-xs">

@@ -3,6 +3,7 @@ import { app } from 'electron'
 import { createWindow } from './wm'
 import { createTray } from './tray'
 import './ipc'
+import './runner'
 
 app.whenReady().then(() => {
   createTray()

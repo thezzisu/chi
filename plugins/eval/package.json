@@ -23,7 +23,7 @@
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package eval",
     "lint": "eslint --ext .js,.ts ./src/",
-    "prepare": "ts-node-esm ../../scripts/build.ts --package eval --rebuild"
+    "prepublishOnly": "ts-node-esm ../../scripts/build.ts --package eval --rebuild"
   },
   "files": [
     "lib"

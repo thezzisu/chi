@@ -25,6 +25,7 @@ try {
   yargs(hideBin(process.argv))
     .version(version)
     .scriptName('chi')
+    .option('managed', { type: 'boolean' })
     .command(
       'serve <config>',
       'Start Chi Server',
@@ -34,7 +35,7 @@ try {
           describe: 'the path to the config file',
           demandOption: true
         }),
-      (argv) => startServer(argv.config)
+      (argv) => startServer(argv.config, argv.managed)
     )
     .demandCommand()
     .recommendCommands()

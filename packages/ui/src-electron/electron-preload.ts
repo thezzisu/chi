@@ -1,4 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import { startServer } from './runner'
+import type { dialog } from 'electron'
 
 const bridge = {
   minimize() {
@@ -15,6 +17,14 @@ const bridge = {
   },
   openDevTools() {
     ipcRenderer.invoke('openDevTools')
+  },
+  startServer(...args: Parameters<typeof startServer>) {
+    type T = ReturnType<typeof startServer>
+    return ipcRenderer.invoke('startServer', ...args) as T
+  },
+  showOpenDialog(...args: Parameters<typeof dialog.showOpenDialog>) {
+    type T = ReturnType<typeof dialog.showOpenDialog>
+    return ipcRenderer.invoke('showOpenDialog', ...args) as T
   }
 }
 

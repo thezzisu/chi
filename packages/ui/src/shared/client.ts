@@ -1,6 +1,7 @@
 import { AgentDescriptor, ChiClient, io, RpcEndpoint } from '@chijs/client'
-import { ref } from 'vue'
+import { ref, toRaw } from 'vue'
 import { Dialog, Notify } from 'quasar'
+import { getInstance, Instance } from './instance'
 
 function applyActions(client: ChiClient) {
   const endpoint = client.endpoint as RpcEndpoint<AgentDescriptor>
@@ -64,29 +65,55 @@ function applyActions(client: ChiClient) {
 
 let client: ChiClient
 
-export function useClient(url: string, token: string) {
-  const socket = io(url, {
-    auth: {
-      token
+async function resolveClientInfo(instance: Instance) {
+  if (instance.type === 'remote') {
+    return {
+      url: instance.url,
+      token: instance.token
     }
+  }
+  const result = await window.bridge?.startServer({
+    config: instance.config,
+    name: instance.name
   })
+  if (!result) throw new Error('Cannot use local instances')
+  const [err, value] = result
+  if (err) throw err
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return value!
+}
+
+export function useInstance(id: string) {
+  const instance = toRaw(getInstance(id).value)
   const connected = ref(false)
-  const message = ref('Connecting')
-  socket.on('connect', () => {
-    client = new ChiClient(socket)
-    applyActions(client)
-    connected.value = true
-  })
-  socket.on('disconnect', (reason) => {
-    client.dispose(new Error('Socket disconnected'))
-    connected.value = false
-    message.value = reason
-  })
-  socket.on('connect_error', (err) => {
-    connected.value = false
-    message.value = `${err.name}: ${err.message}`
-  })
-  return { socket, message, connected }
+  const message = ref(instance.type === 'remote' ? 'Connecting' : 'Starting')
+  const status = ref('Disconnected')
+  resolveClientInfo(instance)
+    .then(({ url, token }) => {
+      const socket = io(url, {
+        auth: {
+          token
+        }
+      })
+      socket.on('connect', () => {
+        client = new ChiClient(socket)
+        applyActions(client)
+        connected.value = true
+      })
+      socket.on('disconnect', (reason) => {
+        client.dispose(new Error('Socket disconnected'))
+        connected.value = false
+        message.value = reason
+      })
+      socket.on('connect_error', (err) => {
+        connected.value = false
+        message.value = `${err.name}: ${err.message}`
+      })
+    })
+    .catch((err) => {
+      message.value = err.message
+    })
+  return { status, message, connected }
 }
 
 export function getClient() {

@@ -23,7 +23,7 @@
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package runtime",
     "lint": "eslint --ext .js,.ts ./src/ ./test/",
-    "prepare": "ts-node-esm ../../scripts/build.ts --package runtime --rebuild",
+    "prepublishOnly": "ts-node-esm ../../scripts/build.ts --package runtime --rebuild",
     "test": "mocha"
   },
   "files": [
