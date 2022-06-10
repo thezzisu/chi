@@ -18,6 +18,7 @@
   "dependencies": {
     "@chijs/client": "^0.0.18",
     "@chijs/server": "^0.0.21",
+    "chalk": "^5.0.1",
     "json5": "^2.2.1",
     "yargs": "^17.5.1"
   },
