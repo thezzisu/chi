@@ -7,9 +7,9 @@ import {
   removeUndefined
 } from '@chijs/core'
 import { ServiceContext } from './context/service.js'
-import { Descriptor } from './context/index.js'
+import { PluginDescriptor } from './context/index.js'
 
-export interface IPluginDefn<D extends Descriptor>
+export interface IPluginDefn<D extends PluginDescriptor>
   extends Omit<IPluginInfo, 'resolved' | 'id'> {
   main: (ctx: ServiceContext<D>, params: unknown) => unknown
 }
@@ -21,8 +21,8 @@ export interface IPluginDefn<D extends Descriptor>
  */
 export function definePlugin<M extends TSchema>(options: {
   params: M
-  main: (ctx: ServiceContext<Descriptor>, params: Static<M>) => unknown
-}): IPluginDefn<Descriptor> {
+  main: (ctx: ServiceContext<PluginDescriptor>, params: Static<M>) => unknown
+}): IPluginDefn<PluginDescriptor> {
   return <never>{
     ...options,
     params: Object.fromEntries(
@@ -32,7 +32,7 @@ export function definePlugin<M extends TSchema>(options: {
 }
 
 export class PluginBuilder<
-  P extends Descriptor,
+  P extends PluginDescriptor,
   M extends TSchema = TObject<{}>
 > {
   private _name?: string

@@ -5,7 +5,7 @@ export type PluginTypeDescriptor<A = {}, B = {}, C = {}> = RpcTypeDescriptor<
   A,
   B
 > & { action: C }
-export type Descriptor = PluginTypeDescriptor<{}, {}, {}>
+export type PluginDescriptor = PluginTypeDescriptor<{}, {}, {}>
 export type UnknownDescriptor = PluginTypeDescriptor<
   Record<string, (...args: unknown[]) => Promise<unknown>>,
   Record<string, (...args: unknown[]) => unknown>,
@@ -14,10 +14,10 @@ export type UnknownDescriptor = PluginTypeDescriptor<
 
 export type DescriptorOf<P> = P extends string
   ? P extends keyof IPluginDescriptors
-    ? IPluginDescriptors[P] extends Descriptor
+    ? IPluginDescriptors[P] extends PluginDescriptor
       ? IPluginDescriptors[P]
       : UnknownDescriptor
-    : Descriptor
-  : P extends Descriptor
+    : PluginDescriptor
+  : P extends PluginDescriptor
   ? P
   : UnknownDescriptor

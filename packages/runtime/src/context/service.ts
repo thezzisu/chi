@@ -9,12 +9,12 @@ import {
   WorkerDescriptor,
   createActionWrapper
 } from '@chijs/core'
-import { Descriptor, DescriptorOf } from './base.js'
+import { PluginDescriptor, DescriptorOf } from './base.js'
 import { IActionDefn } from '../action.js'
 import { ServiceBootstrapData } from '../index.js'
 import { ActionOf } from './action.js'
 
-export class ServiceContext<D extends Descriptor> {
+export class ServiceContext<D extends PluginDescriptor> {
   logger
   plugin
   service
