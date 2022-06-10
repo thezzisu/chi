@@ -7,41 +7,29 @@
             <div class="text-h6">Actions ({{ actions.length }})</div>
           </div>
         </q-card-section>
-        <q-separator />
-        <q-card-section v-if="actions.length" class="row">
-          <div
+        <q-list separator bordered>
+          <q-item
             v-for="(action, i) of actions"
             :key="i"
-            class="q-pa-xs col-6 col-xl-1"
+            :to="
+              `${base}/action/view` +
+              `/${encodeURIComponent(action.serviceId)}` +
+              `/${encodeURIComponent(action.id)}`
+            "
           >
-            <q-card>
-              <q-card-section>{{ action.id }}</q-card-section>
-              <q-list>
-                <q-item>
-                  <q-item-section>
-                    <q-item-label>{{ action.serviceId }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-              <q-card-actions align="right">
-                <q-btn
-                  :to="
-                    `${base}/action/view` +
-                    `/${encodeURIComponent(action.serviceId)}` +
-                    `/${encodeURIComponent(action.id)}`
-                  "
-                  label="View"
-                />
-              </q-card-actions>
-            </q-card>
-          </div>
-        </q-card-section>
-        <q-card-section v-else class="column items-center">
+            <q-item-section>
+              <q-item-label>
+                {{ action.serviceId }} / {{ action.id }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+        <q-item v-if="!actions.length" class="column items-center">
           <div>
             <q-icon name="mdi-cog-off-outline" size="xl" color="primary" />
           </div>
           <div class="text-subtitle2">No actions</div>
-        </q-card-section>
+        </q-item>
       </q-card>
     </div>
   </q-page>

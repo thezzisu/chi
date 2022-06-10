@@ -52,6 +52,17 @@
           :schema="plugin?.params ?? { type: 'object' }"
           name="Parameters"
         />
+        <q-separator />
+        <q-card-actions align="right">
+          <async-btn
+            :callback="remove"
+            notify-success
+            :btn-props="{
+              color: 'negative',
+              label: 'Unload'
+            }"
+          />
+        </q-card-actions>
       </q-card>
     </div>
     <div class="q-pa-sm col-12 col-lg-6">
@@ -61,18 +72,28 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import { IPluginInfo } from '@chijs/client'
-import { useRoute } from 'vue-router'
-import { getClient } from 'src/shared/client'
+import { useRoute, useRouter } from 'vue-router'
 import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
 import ServiceCreate from 'components/ServiceCreate.vue'
-import DescriptionView from 'src/components/DescriptionView.vue'
+import DescriptionView from 'components/DescriptionView.vue'
+import AsyncBtn from 'components/AsyncBtn.vue'
+import { getClient, baseKey, confirm } from 'src/shared'
 
 const route = useRoute()
 const pluginId = <string>route.params.pluginId
 const client = getClient()
 const plugin = ref<IPluginInfo>()
+const base = inject(baseKey)
+
+const router = useRouter()
+
+async function remove() {
+  await confirm('Are you sure to unload this plugin?')
+  await client.plugin.unload(pluginId)
+  router.replace(`${base}/plugin`)
+}
 
 async function load() {
   plugin.value = await client.plugin.get(pluginId)

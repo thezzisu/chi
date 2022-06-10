@@ -28,7 +28,9 @@
         <q-item-section>
           <q-item-label caption>Service</q-item-label>
           <q-item-label>
-            {{ props.job.serviceId }}
+            <router-link :to="serviceUrl">
+              {{ props.job?.serviceId }}
+            </router-link>
           </q-item-label>
         </q-item-section>
       </q-item>
@@ -39,7 +41,9 @@
         <q-item-section>
           <q-item-label caption>Action</q-item-label>
           <q-item-label>
-            {{ props.job.actionId }}
+            <router-link :to="actionUrl">
+              {{ props.job?.actionId }}
+            </router-link>
           </q-item-label>
         </q-item-section>
       </q-item>
@@ -50,7 +54,7 @@
         <q-item-section>
           <q-item-label caption>Created</q-item-label>
           <q-item-label>
-            {{ new Date(job.created).toLocaleString() }}
+            {{ new Date(props.job.created).toLocaleString() }}
           </q-item-label>
         </q-item-section>
       </q-item>
@@ -61,7 +65,7 @@
         <q-item-section>
           <q-item-label caption>Finished</q-item-label>
           <q-item-label>
-            {{ new Date(job.finished).toLocaleString() }}
+            {{ new Date(props.job.finished).toLocaleString() }}
           </q-item-label>
         </q-item-section>
       </q-item>
@@ -80,8 +84,23 @@
 </template>
 
 <script setup lang="ts">
+import {  computed, inject } from 'vue'
 import { IJobInfo } from '@chijs/client'
+import { baseKey } from 'src/shared/injections'
 import JobStatus from 'components/JobStatus.vue'
 
+const base = inject(baseKey)
 const props = defineProps<{ job: IJobInfo }>()
+
+const serviceUrl = computed(
+  () => `${base}/service/view/` + encodeURIComponent('' + props.job?.serviceId)
+)
+
+const actionUrl = computed(
+  () =>
+    `${base}/action/view/` +
+    encodeURIComponent('' + props.job?.serviceId) +
+    '/' +
+    encodeURIComponent('' + props.job?.actionId)
+)
 </script>

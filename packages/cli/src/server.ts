@@ -1,9 +1,9 @@
 import { fork } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { ChiApp, moduleInfo } from '@chijs/server'
+import { dirname, resolve } from 'node:path'
 import { unifiedImport } from './import.js'
+import { hasModule } from './utils.js'
 
 const filepath = fileURLToPath(import.meta.url)
 
@@ -15,10 +15,12 @@ async function loadConfig(path: string) {
 export function startServer(config: string) {
   const worker = fork(filepath, [], {
     env: {
+      ...process.env,
+      APP_ROOT_PATH: dirname(config),
       CHI_CONFIG_PATH: config,
       NODE_OPTIONS:
         process.env.NODE_OPTIONS ??
-        (moduleInfo('ts-node') ? '--loader ts-node/esm' : '')
+        (hasModule('ts-node') ? '--loader ts-node/esm --no-warnings' : '')
     }
   })
   worker.on('exit', (code, signal) => {
@@ -35,6 +37,7 @@ if (process.argv[1] === filepath) {
     path = resolve(path)
     if (!existsSync(path)) throw new Error(`Config file not found: ${path}`)
     const config = await loadConfig(path)
+    const { ChiApp } = await import('@chijs/server')
     const app = new ChiApp(config)
     await app.start()
   } catch (e) {

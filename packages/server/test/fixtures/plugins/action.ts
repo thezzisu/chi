@@ -94,7 +94,7 @@ export default new PluginBuilder<Self>()
           msg: 'Example action'
         })
         ctx.server.subscribe(
-          '$s:action:taskUpdate',
+          '$s:task:update',
           (data, err) => console.log(`UPD:`, data, err),
           id
         )

@@ -62,6 +62,17 @@
             </q-item-section>
           </q-item>
         </q-list>
+        <q-separator />
+        <q-card-actions align="right">
+          <async-btn
+            :callback="remove"
+            notify-success
+            :btn-props="{
+              color: 'negative',
+              label: 'Remove'
+            }"
+          />
+        </q-card-actions>
       </q-card>
     </div>
     <template v-if="task?.jobs.length">
@@ -82,14 +93,15 @@
 <script lang="ts" setup>
 import { computed, inject, onBeforeUnmount, ref } from 'vue'
 import { IJobInfo, ITaskInfo, JobState } from '@chijs/client'
-import { useRoute } from 'vue-router'
-import { getClient } from 'src/shared/client'
-import { baseKey } from 'src/shared/injections'
+import { useRoute, useRouter } from 'vue-router'
+import { getClient, baseKey, confirm } from 'src/shared'
+import AsyncBtn from 'components/AsyncBtn.vue'
 import JobStatus from 'components/JobStatus.vue'
 import JobsGraph from 'components/JobsGraph.vue'
 import JobInfo from 'components/JobInfo.vue'
 
 const base = inject(baseKey)
+const router = useRouter()
 const route = useRoute()
 const taskId = <string>route.params.taskId
 const client = getClient()
@@ -108,6 +120,12 @@ const actionUrl = computed(
     encodeURIComponent('' + task.value?.actionId)
 )
 
+async function remove() {
+  await confirm('Are you sure you want to remove this task?')
+  await client.task.remove(taskId)
+  router.replace(`${base}/task`)
+}
+
 let sub: Promise<string> | null = null
 
 function update(info: ITaskInfo) {
@@ -116,11 +134,11 @@ function update(info: ITaskInfo) {
 }
 
 async function load() {
-  const info = await client.action.getTask(taskId)
+  const info = await client.task.get(taskId)
   update(info)
   if (info.state === JobState.RUNNING) {
     sub = client.server.subscribe(
-      '$s:action:taskUpdate',
+      '$s:task:update',
       (info) => update(info),
       info.id
     )

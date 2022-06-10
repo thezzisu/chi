@@ -20,6 +20,7 @@ export class ServiceContext<D extends PluginDescriptor> {
   service
   server
   action
+  task
   agent
   actions
 
@@ -37,6 +38,7 @@ export class ServiceContext<D extends PluginDescriptor> {
     this.plugin = createRpcWrapper(this.server, '$s:plugin:')
     this.service = createRpcWrapper(this.server, '$s:service:')
     this.action = createRpcWrapper(this.server, '$s:action:')
+    this.task = createRpcWrapper(this.server, '$s:task:')
 
     this.agent = createActionWrapper(endpoint.getHandle(boot.initiator), {
       serviceId: boot.service
