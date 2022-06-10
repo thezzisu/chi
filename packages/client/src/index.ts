@@ -8,6 +8,7 @@ export class ChiClient {
   service
   plugin
   action
+  task
   misc
 
   private socketListener
@@ -24,6 +25,7 @@ export class ChiClient {
     this.plugin = createRpcWrapper(this.server, '$s:plugin:')
     this.misc = createRpcWrapper(this.server, '$s:misc:')
     this.action = createRpcWrapper(this.server, '$s:action:')
+    this.task = createRpcWrapper(this.server, '$s:task:')
   }
 
   dispose(reason: unknown) {

@@ -30,6 +30,16 @@
                 :callback="stop"
                 notify-success
               />
+              <async-btn
+                :btn-props="{
+                  padding: 'xs',
+                  color: 'negative',
+                  icon: 'mdi-delete',
+                  outline: true
+                }"
+                :callback="remove"
+                notify-success
+              />
             </div>
           </div>
         </q-card-section>
@@ -175,11 +185,10 @@ import {
   RPC,
   WorkerDescriptor
 } from '@chijs/client'
-import { useRoute } from 'vue-router'
-import { getClient } from 'src/shared/client'
+import { useRoute, useRouter } from 'vue-router'
+import { baseKey, getClient, confirm } from 'src/shared'
 import AsyncBtn from 'src/components/AsyncBtn.vue'
 import ServiceStatus from 'src/components/ServiceStatus.vue'
-import { baseKey } from 'src/shared/injections'
 import DescriptionView from 'src/components/DescriptionView.vue'
 
 const base = inject(baseKey)
@@ -228,6 +237,14 @@ async function start() {
 
 async function stop() {
   await client.service.stop(serviceId)
+}
+
+const router = useRouter()
+
+async function remove() {
+  await confirm('Are you sure you want to remove this service?')
+  await client.service.remove(serviceId)
+  router.replace(`${base}/service`)
 }
 
 async function load() {

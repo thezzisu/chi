@@ -30,17 +30,6 @@
                 round
                 flat
                 dense
-                color="black"
-              />
-            </q-item-section>
-            <q-item-section side>
-              <q-btn
-                icon="mdi-delete"
-                round
-                flat
-                dense
-                color="black"
-                @click="remove"
               />
             </q-item-section>
           </q-item>
@@ -61,28 +50,12 @@ import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
 import { IServiceInfo } from '@chijs/client'
 import { getClient } from 'src/shared/client'
-import { useQuasar } from 'quasar'
 import ServiceStatus from 'src/components/ServiceStatus.vue'
 
 const client = getClient()
 const base = inject(baseKey)
-const $q = useQuasar()
 
 const services = ref<IServiceInfo[]>([])
-
-function remove() {
-  $q.dialog({
-    title: 'Confirm',
-    message: 'Are you sure to delete ?',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    $q.notify({
-      message: 'Service Deleted',
-      color: 'positive'
-    })
-  })
-}
 
 async function load() {
   services.value = await client.service.list()

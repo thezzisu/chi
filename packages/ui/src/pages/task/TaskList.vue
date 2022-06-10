@@ -9,13 +9,14 @@
         </q-card-section>
         <q-separator />
         <q-list>
-          <q-item
-            v-for="task of tasks"
-            :key="task.id"
-            class="q-pa-xs col-6 col-xl-1"
-          >
+          <q-item v-for="task of tasks" :key="task.id">
             <q-item-section>
-              <q-item-label>{{ task.id }} : {{ task.serviceId }}</q-item-label>
+              <q-item-label>
+                {{ task.serviceId }} / {{ task.actionId }}
+              </q-item-label>
+              <q-item-label caption class="text-mono">
+                {{ task.id }}
+              </q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-btn
@@ -24,17 +25,6 @@
                 round
                 flat
                 dense
-                color="black"
-              />
-            </q-item-section>
-            <q-item-section side>
-              <q-btn
-                icon="mdi-delete"
-                round
-                flat
-                dense
-                color="black"
-                @click="remove"
               />
             </q-item-section>
           </q-item>
@@ -55,32 +45,14 @@ import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
 import { ITaskInfo } from '@chijs/client'
 import { getClient } from 'src/shared/client'
-import { useQuasar } from 'quasar'
 
 const client = getClient()
 const base = inject(baseKey)
 
 const tasks = ref<ITaskInfo[]>([])
-const $q = useQuasar()
-
-function remove() {
-  $q.dialog({
-    title: 'Confirm',
-    message: 'Are you sure to delete ?',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-
-    $q.notify({
-      message: 'Task Deleted',
-      color: 'positive'
-    })
-
-  })
-}
 
 async function load() {
-  tasks.value = await client.action.listTask()
+  tasks.value = await client.task.list()
 }
 
 load()

@@ -7,29 +7,26 @@
             <div class="text-h6">Actions ({{ actions.length }})</div>
           </div>
         </q-card-section>
-        <q-list class="list bg-white" separator bordered>
-          <q-item
-            v-for="(action, i) of actions"
-            :key="i"
-            class="q-pa-xs col-6 col-xl-1"
-          >
-              <q-item-section>
-                <q-item-label>{{ action.id }} : {{ action.serviceId }}</q-item-label>
-                </q-item-section>
-              <q-item-section side>
-                <q-btn
-                  :to="
-                    `${base}/action/view` +
-                    `/${encodeURIComponent(action.serviceId)}` +
-                    `/${encodeURIComponent(action.id)}`
-                  "
-                  icon="mdi-eye"
-                  round
-                 flat
-                 dense
-                color="black"
-                />
-              </q-item-section>
+        <q-list separator bordered>
+          <q-item v-for="(action, i) of actions" :key="i">
+            <q-item-section>
+              <q-item-label>
+                {{ action.serviceId }} / {{ action.id }}
+              </q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                :to="
+                  `${base}/action/view` +
+                  `/${encodeURIComponent(action.serviceId)}` +
+                  `/${encodeURIComponent(action.id)}`
+                "
+                icon="mdi-eye"
+                round
+                flat
+                dense
+              />
+            </q-item-section>
           </q-item>
         </q-list>
         <q-item v-if="!actions.length" class="column items-center">
