@@ -8,33 +8,33 @@
           </div>
         </q-card-section>
         <q-separator />
-        <q-card-section v-if="tasks.length" class="row">
-          <div
+<q-list>
+          <q-item
             v-for="task of tasks"
             :key="task.id"
             class="q-pa-xs col-6 col-xl-1"
           >
-            <q-card>
-              <q-card-section>{{ task.id }}</q-card-section>
-              <q-list>
-                <q-item>
-                  <q-item-section>
-                    <q-item-label>{{ task.serviceId }}</q-item-label>
+              <q-item-section>
+                    <q-item-label>{{ task.id }} : {{ task.serviceId }}</q-item-label>
                   </q-item-section>
-                </q-item>
-              </q-list>
-              <q-card-actions align="right">
-                <q-btn :to="`${base}/task/view/${task.id}`" label="View" />
-              </q-card-actions>
-            </q-card>
-          </div>
-        </q-card-section>
-        <q-card-section v-else class="column items-center">
+              <q-item-actions side>
+                <q-btn
+                :to="`${base}/task/view/${task.id}`"
+                icon="mdi-eye"
+                round
+                flat
+                 dense
+                color="black" />
+              </q-item-actions>
+
+          </q-item>
+    </q-list>
+        <q-item v-if="!tasks.length" class="column items-center">
           <div>
             <q-icon name="mdi-cog-off-outline" size="xl" color="primary" />
           </div>
           <div class="text-subtitle2">No tasks</div>
-        </q-card-section>
+        </q-item>
       </q-card>
     </div>
   </q-page>
