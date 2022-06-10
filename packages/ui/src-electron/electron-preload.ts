@@ -12,6 +12,9 @@ const bridge = {
   },
   open(path: string) {
     ipcRenderer.invoke('open', path)
+  },
+  openDevTools() {
+    ipcRenderer.invoke('openDevTools')
   }
 }
 

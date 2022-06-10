@@ -25,9 +25,7 @@ export function createWindow(path = '/') {
   url.hash = path
   win.loadURL(url.href)
 
-  if (process.env.DEBUGGING) {
-    win.webContents.openDevTools()
-  } else {
+  if (!process.env.DEBUGGING) {
     win.webContents.on('devtools-opened', () => {
       win.webContents.closeDevTools()
     })

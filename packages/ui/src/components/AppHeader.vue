@@ -4,7 +4,16 @@
       v-if="isElectron"
       class="q-electron-drag row justify-between bg-brand"
     >
-      <q-btn dense flat :icon="`img:${logoWhite}`" :to="base" />
+      <div class="row">
+        <q-btn dense flat :icon="`img:${logoWhite}`" :to="base" />
+        <q-btn
+          v-if="isDebugging"
+          dense
+          flat
+          icon="mdi-bug"
+          @click="openDevTools"
+        />
+      </div>
       <div>ChiUI</div>
       <div class="row">
         <q-btn dense flat icon="mdi-window-minimize" @click="minimize" />
@@ -39,7 +48,14 @@
 import { inject } from 'vue'
 import logoWhite from 'assets/logo-white.svg'
 import { baseKey } from 'src/shared/injections'
-import { isElectron, minimize, maximize, close } from 'src/shared/bridge'
+import {
+  isElectron,
+  isDebugging,
+  minimize,
+  maximize,
+  close,
+  openDevTools
+} from 'src/shared/bridge'
 
 const props = defineProps<{
   nav?: boolean

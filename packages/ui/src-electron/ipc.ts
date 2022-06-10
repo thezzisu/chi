@@ -20,3 +20,8 @@ ipcMain.handle('close', (event) => {
 ipcMain.handle('open', (event, path) => {
   createWindow(path)
 })
+
+ipcMain.handle('openDevTools', (event) => {
+  const win = getWindow(event.sender.id)
+  win?.webContents.openDevTools()
+})

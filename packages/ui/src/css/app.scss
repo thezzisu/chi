@@ -1,3 +1,5 @@
+@import url(./cascadia-code.css);
+
 .bg-brand {
   background: #ff6d91 !important;
 }
@@ -50,4 +52,15 @@
 .scrollbar::-webkit-scrollbar-thumb:hover {
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
   background-color: #a5a5a5;
+}
+
+.no-user-select {
+  user-select: none;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: 'Cascadia Code', 'Consolas', Courier, monospace;
 }
