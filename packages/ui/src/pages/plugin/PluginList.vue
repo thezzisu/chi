@@ -16,18 +16,13 @@
           </div>
         </q-card-section>
         <q-list class="list bg-white" separator bordered>
-          <q-item v-for="plugin of plugins" :key="plugin.id">
+          <q-item
+            v-for="plugin of plugins"
+            :key="plugin.id"
+            :to="`${base}/plugin/view/${encodeURIComponent(plugin.id)}`"
+          >
             <q-item-section>
               <q-item-label>{{ plugin.id }}</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-btn
-                :to="`${base}/plugin/view/${encodeURIComponent(plugin.id)}`"
-                icon="mdi-eye"
-                round
-                flat
-                dense
-              />
             </q-item-section>
           </q-item>
         </q-list>

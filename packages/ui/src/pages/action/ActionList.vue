@@ -8,24 +8,19 @@
           </div>
         </q-card-section>
         <q-list separator bordered>
-          <q-item v-for="(action, i) of actions" :key="i">
+          <q-item
+            v-for="(action, i) of actions"
+            :key="i"
+            :to="
+              `${base}/action/view` +
+              `/${encodeURIComponent(action.serviceId)}` +
+              `/${encodeURIComponent(action.id)}`
+            "
+          >
             <q-item-section>
               <q-item-label>
                 {{ action.serviceId }} / {{ action.id }}
               </q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-btn
-                :to="
-                  `${base}/action/view` +
-                  `/${encodeURIComponent(action.serviceId)}` +
-                  `/${encodeURIComponent(action.id)}`
-                "
-                icon="mdi-eye"
-                round
-                flat
-                dense
-              />
             </q-item-section>
           </q-item>
         </q-list>

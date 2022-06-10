@@ -9,7 +9,11 @@
         </q-card-section>
         <q-separator />
         <q-list>
-          <q-item v-for="task of tasks" :key="task.id">
+          <q-item
+            v-for="task of tasks"
+            :key="task.id"
+            :to="`${base}/task/view/${task.id}`"
+          >
             <q-item-section>
               <q-item-label>
                 {{ task.serviceId }} / {{ task.actionId }}
@@ -19,13 +23,7 @@
               </q-item-label>
             </q-item-section>
             <q-item-section side>
-              <q-btn
-                :to="`${base}/task/view/${task.id}`"
-                icon="mdi-eye"
-                round
-                flat
-                dense
-              />
+              <job-status :state="task.state" />
             </q-item-section>
           </q-item>
         </q-list>
@@ -45,6 +43,7 @@ import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
 import { ITaskInfo } from '@chijs/client'
 import { getClient } from 'src/shared/client'
+import JobStatus from 'components/JobStatus.vue'
 
 const client = getClient()
 const base = inject(baseKey)
