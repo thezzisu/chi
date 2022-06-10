@@ -6,10 +6,10 @@ import {
   TSchema
 } from '@chijs/core'
 import { IAction } from '../action.js'
-import { Descriptor, DescriptorOf, PluginTypeDescriptor } from './base.js'
+import { PluginDescriptor, DescriptorOf, PluginTypeDescriptor } from './base.js'
 import { ServiceContext } from './service.js'
 
-export class ActionContext<D extends Descriptor> {
+export class ActionContext<D extends PluginDescriptor> {
   handle
   agent
 
@@ -55,7 +55,7 @@ export type ReturnOf<M, K> = ActionOf<M, K> extends IAction<infer _, infer R>
   ? Static<R>
   : never
 
-export class ActionHandle<M, D extends Descriptor> {
+export class ActionHandle<M, D extends PluginDescriptor> {
   constructor(private ctx: ActionContext<D>, private serviceId: string) {}
   async run<K extends ActionKeys<M>>(
     actionId: K,

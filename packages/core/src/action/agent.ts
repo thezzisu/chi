@@ -1,5 +1,5 @@
 import {
-  Descriptor,
+  RpcDescriptor,
   Fn,
   RpcHandle,
   RpcId,
@@ -63,7 +63,7 @@ export type AgentDescriptor = RpcTypeDescriptor<
 >
 
 export function createActionWrapper(
-  handle: RpcHandle<Descriptor>,
+  handle: RpcHandle<RpcDescriptor>,
   context: IAgentInteractContext
 ) {
   return <IAgentMethods & { remoteId: RpcId }>new Proxy(

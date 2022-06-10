@@ -1,5 +1,9 @@
 import { RpcEndpoint, validateJsonSchema, WorkerDescriptor } from '@chijs/core'
-import { ServiceContext, Descriptor, ActionContext } from './context/index.js'
+import {
+  ServiceContext,
+  PluginDescriptor,
+  ActionContext
+} from './context/index.js'
 
 /** @internal */
 export const initialization = {
@@ -17,7 +21,7 @@ initialization.promise = new Promise<void>((resolve, reject) => {
 /** @internal */
 export function applyWorkerImpl(
   endpoint: RpcEndpoint<WorkerDescriptor>,
-  ctx: ServiceContext<Descriptor>
+  ctx: ServiceContext<PluginDescriptor>
 ) {
   endpoint.provide('$w:exit', () => process.exit(0))
 
