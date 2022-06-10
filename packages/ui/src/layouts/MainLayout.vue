@@ -31,13 +31,17 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container>
-      <router-view v-if="connected" v-slot="{ Component }">
-        <transition name="router" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-      <disconnected-page v-else :message="message" />
+    <q-page-container class="abs-fit overflow-hidden">
+      <div class="row no-wrap full-height overflow-auto scrollbar">
+        <div class="col">
+          <router-view v-if="connected" v-slot="{ Component }">
+            <transition name="router" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </router-view>
+          <disconnected-page v-else :message="message" />
+        </div>
+      </div>
     </q-page-container>
 
     <q-footer

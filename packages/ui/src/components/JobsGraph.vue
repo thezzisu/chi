@@ -74,10 +74,3 @@ const root = computed(() => createJobTree(props.jobs))
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tree = ref<any>(null)
 </script>
-
-<style>
-.c-jg-wrapper {
-  overflow: scroll;
-  max-height: 40vh;
-}
-</style>

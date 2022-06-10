@@ -1,5 +1,5 @@
 <template>
-  <div class="c-tv-wrapper">
+  <div class="c-tv-wrapper scrollbar">
     <tree-node v-bind="props" ref="node">
       <template #default="scoped">
         <slot v-bind="scoped"></slot>

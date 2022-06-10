@@ -6,12 +6,16 @@
       </q-toolbar>
     </app-header>
 
-    <q-page-container>
-      <router-view v-slot="{ Component }">
-        <transition name="router" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
+    <q-page-container class="abs-fit overflow-hidden">
+      <div class="row no-wrap full-height overflow-auto scrollbar">
+        <div class="col">
+          <router-view v-slot="{ Component }">
+            <transition name="router" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </router-view>
+        </div>
+      </div>
     </q-page-container>
   </q-layout>
 </template>
