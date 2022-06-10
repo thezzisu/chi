@@ -22,7 +22,9 @@
     "build": "quasar build",
     "prepublishOnly": "quasar build -m spa"
   },
-  "dependencies": {},
+  "dependencies": {
+    "which": "^2.0.2"
+  },
   "devDependencies": {
     "@chijs/client": "^0.0.18",
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",
@@ -44,8 +46,7 @@
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
     "vue-i18n": "^9.0.0",
-    "vue-router": "^4.0.0",
-    "which": "^2.0.2"
+    "vue-router": "^4.0.0"
   },
   "engines": {
     "node": "^18 || ^16",
