@@ -48,7 +48,7 @@ export async function startServer(
     processes.set(config, process)
     const [errstr, info] = await new Promise<[string, IProcessAccessInfo]>(
       (resolve, reject) => {
-        const stream = <Readable>process.stdio[4]
+        const stream = <Readable>process.stderr
         const rl = readline.createInterface({ input: stream })
         rl.once('line', (line) => {
           try {
