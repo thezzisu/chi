@@ -16,8 +16,7 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/client": "^0.0.18",
-    "@chijs/server": "^0.0.21",
+    "@chijs/core": "^0.0.17",
     "chalk": "^5.0.1",
     "get-port": "^6.1.2",
     "json5": "^2.2.1",
@@ -25,6 +24,10 @@
   },
   "devDependencies": {
     "@types/yargs": "^17.0.10"
+  },
+  "optionalDependencies": {
+    "@chijs/client": "^0.0.18",
+    "@chijs/server": "^0.0.21"
   },
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package cli",

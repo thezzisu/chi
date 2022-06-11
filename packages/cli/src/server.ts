@@ -1,12 +1,12 @@
+import { nanoid } from '@chijs/core'
+import chalk from 'chalk'
+import getPort from 'get-port'
 import { fork } from 'node:child_process'
-import { fileURLToPath } from 'node:url'
 import { existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { unifiedImport } from './import.js'
 import { hasModule } from './utils.js'
-import { nanoid } from '@chijs/core'
-import getPort from 'get-port'
-import chalk from 'chalk'
 
 const CLI_CONFIG_NOT_FOUND = 52
 const CLI_START_FAILED = 53

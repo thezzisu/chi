@@ -1,6 +1,6 @@
 import fs from 'fs-extra'
-import { extname, resolve } from 'node:path'
 import JSON5 from 'json5'
+import { extname, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 export async function unifiedImport(path: string, allowJson = false) {

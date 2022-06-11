@@ -1,11 +1,11 @@
-import { ChiClient, io } from '@chijs/client'
 import chalk from 'chalk'
 import repl from 'node:repl'
 
 const CLI_CONNECT_ERROR = 1
 const CLI_DISCONNECT = 2
 
-export function startClient(options: { url: string; token?: string }) {
+export async function startClient(options: { url: string; token?: string }) {
+  const { ChiClient, io } = await import('@chijs/client')
   const socket = io(options.url, { auth: { token: options.token ?? '' } })
   socket.on('connect', () => {
     console.log(chalk.green('Connected to Chi server'))

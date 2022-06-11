@@ -18,17 +18,29 @@ const nodes = Object.fromEntries(
   packages.map((p) => {
     const [
       path,
-      { name, version, dependencies, devDependencies, peerDependencies }
+      {
+        name,
+        version,
+        dependencies,
+        devDependencies,
+        peerDependencies,
+        optionalDependencies
+      }
     ] = p
     const deps = [
       ...Object.keys(dependencies ?? {}),
       ...Object.keys(devDependencies ?? {}),
-      ...Object.keys(peerDependencies ?? {})
+      ...Object.keys(peerDependencies ?? {}),
+      ...Object.keys(optionalDependencies ?? {})
     ]
       .filter((x) => x.startsWith('@chijs'))
       .map((x) => ({
         name: x,
-        version: dependencies[x] ?? devDependencies[x] ?? peerDependencies[x]
+        version:
+          dependencies[x] ??
+          devDependencies[x] ??
+          peerDependencies[x] ??
+          optionalDependencies[x]
       }))
     return [name, { name, version, path, deps }]
   })
