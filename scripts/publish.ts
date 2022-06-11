@@ -8,19 +8,15 @@ cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
 
 const packages = await targetPackages()
 
-const success = [],
-  fail = [],
-  ignored = []
+const success: string[] = [],
+  fail: string[] = [],
+  ignored: string[] = []
 
 for (const path of packages) {
   cd(path)
   if (await fs.pathExists('package.json')) {
     const json = fs.readJSONSync('package.json')
     const name = json.name
-    if (!json.scripts?.test) {
-      ignored.push(name)
-      continue
-    }
     try {
       console.log(`Publishing package ${chalk.green(name)}`)
       await $`npm pub`
