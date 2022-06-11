@@ -38,3 +38,6 @@ export type WithPrefix<M, P extends string> = {
 export type WithoutPrefix<M, P extends string> = {
   [K in keyof M as K extends `${P}${infer R}` ? R : never]: M[K]
 }
+
+export type WithOptional<T, K extends keyof T> = Omit<T, K> &
+  Partial<Pick<T, K>>

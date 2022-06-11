@@ -1,12 +1,12 @@
-import { join } from 'node:path'
-import type { Socket } from 'socket.io'
 import { RPC } from '@chijs/core'
-import fastify from 'fastify'
 import fastifyCors from '@fastify/cors'
 import fastifyStatic from '@fastify/static'
-import fastifySocketIo from 'fastify-socket.io'
+import fastify from 'fastify'
+import { join } from 'node:path'
+import type { Socket } from 'socket.io'
 import { ChiApp } from '../index.js'
 import { resolveModule } from '../util/index.js'
+import fastifySocketIo from './io.js'
 
 type Origin = boolean | string | RegExp | (boolean | string | RegExp)[]
 

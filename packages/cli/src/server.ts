@@ -1,5 +1,6 @@
 import { nanoid } from '@chijs/core'
 import chalk from 'chalk'
+import fs from 'fs-extra'
 import getPort from 'get-port'
 import { fork } from 'node:child_process'
 import { existsSync } from 'node:fs'
@@ -26,16 +27,37 @@ function report(msg: unknown) {
   console.error(JSON.stringify(msg))
 }
 
+function resolveConfig(config?: string) {
+  if (config) return resolve(config)
+  const prefixes = ['chi', 'chi.conf', 'chi.config']
+  const suffixes = [
+    '.ts',
+    '.mts',
+    '.cts',
+    '.js',
+    '.mjs',
+    '.cjs',
+    '.json',
+    '.json5',
+    '.yml',
+    '.yaml'
+  ]
+  return prefixes
+    .map((p) => suffixes.map((s) => resolve(p + s)))
+    .flat()
+    .filter((path) => fs.pathExistsSync(path))[0]
+}
+
 export function startServer(options: {
-  config: string
+  config?: string
   managed?: boolean
   restart?: boolean
 }) {
-  // config: string, managed = false, restart = false
-  const config = resolve(options.config)
-  if (!existsSync(config)) {
+  const config = resolveConfig(options.config)
+  if (!config || !existsSync(config)) {
     process.exit(CLI_CONFIG_NOT_FOUND)
   }
+  options.config = config
   process.chdir(dirname(config))
   const worker = fork(filepath, [], {
     env: {

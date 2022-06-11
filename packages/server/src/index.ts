@@ -3,7 +3,7 @@ import pino from 'pino'
 import pretty from 'pino-pretty'
 import fs from 'fs-extra'
 import { dirname, join } from 'node:path'
-import { RPC } from '@chijs/core'
+import { RPC, ServiceRestartPolicy } from '@chijs/core'
 import { ChiAppOptions, defaultConfig, IChiConfig } from './config/index.js'
 import { PluginRegistry } from './plugin/index.js'
 import { ServiceManager } from './service/index.js'
@@ -69,7 +69,10 @@ export class ChiApp {
     for (const service of this.config.services) {
       try {
         this.logger.info(`Loading service ${service.id}`)
-        this.services.add(service)
+        this.services.add({
+          restartPolicy: ServiceRestartPolicy.NEVER,
+          ...service
+        })
       } catch (e) {
         this.logger.error(e)
       }

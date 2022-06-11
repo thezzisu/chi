@@ -15,8 +15,7 @@ export default defineConfig({
         foo: 'bar',
         wait: ''
       },
-      autostart: true,
-      restartPolicy: ServiceRestartPolicy.NEVER
+      autostart: true
     },
     {
       id: 'test',
@@ -25,8 +24,7 @@ export default defineConfig({
         foo: 'bar',
         wait: 'test2'
       },
-      autostart: true,
-      restartPolicy: ServiceRestartPolicy.NEVER
+      autostart: true
     },
     {
       id: 'action',
@@ -42,10 +40,11 @@ export default defineConfig({
     '@': resolve(dirname(fileURLToPath(import.meta.url)))
   },
   web: {
-    token: 'test-token'
+    port: -1,
+    token: 'example-token'
   },
   log: {
     path: 'logs',
-    level: 'trace'
+    level: 'info'
   }
 })

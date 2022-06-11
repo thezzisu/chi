@@ -1,0 +1,20 @@
+{
+  "name": "chi-example",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "author": "thezzisu <thezzisu@gmail.com>",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@chijs/cli": "^0.0.23",
+    "@chijs/client": "^0.0.19",
+    "@chijs/server": "^0.0.22"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --ext .js,.ts ./src/",
+    "start": "chi serve"
+  }
+}

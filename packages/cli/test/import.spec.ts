@@ -6,7 +6,18 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 describe('unified import', () => {
-  const exts = ['json', 'json5', 'js', 'mjs', 'cjs', 'ts', 'mts', 'cts']
+  const exts = [
+    'json',
+    'json5',
+    'js',
+    'mjs',
+    'cjs',
+    'ts',
+    'mts',
+    'cts',
+    'yml',
+    'yaml'
+  ]
   for (const ext of exts) {
     it(`should import ${ext}`, async () => {
       const imported = await unifiedImport(

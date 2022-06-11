@@ -28,14 +28,13 @@ try {
     .scriptName('chi')
     .option('managed', { type: 'boolean' })
     .command(
-      'serve <config>',
+      'serve [config]',
       'Start Chi Server',
       (yargs) =>
         yargs
           .positional('config', {
             type: 'string',
-            describe: 'the path to the config file',
-            demandOption: true
+            describe: 'the path to the config file'
           })
           .option('restart', { type: 'boolean' }),
       (argv) => startServer(argv)

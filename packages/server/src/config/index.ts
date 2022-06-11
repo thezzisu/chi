@@ -1,5 +1,5 @@
 import pino from 'pino'
-import { IServiceDefn } from '@chijs/core'
+import { IServiceDefn, WithOptional } from '@chijs/core'
 import { DataSourceOptions } from 'typeorm'
 import { IWebConfig } from '../web/index.js'
 
@@ -14,7 +14,7 @@ export interface IChiLogConfig {
 
 export interface IChiConfig {
   plugins: string[]
-  services: IServiceDefnWithAutostart[]
+  services: WithOptional<IServiceDefnWithAutostart, 'restartPolicy'>[]
   resolve: Record<string, string>
   log: IChiLogConfig
   db: Omit<DataSourceOptions, 'entities'>
