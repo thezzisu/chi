@@ -51,7 +51,7 @@
     >
       <div class="row justify-center">
         <div>
-          <code>{{ statusText }}</code>
+          <code>{{ status }}</code>
         </div>
       </div>
     </q-footer>
@@ -60,11 +60,10 @@
 
 <script lang="ts" setup>
 import { baseKey } from 'src/shared/injections'
-import { getInstance } from 'src/shared/instance'
-import { provide, ref, computed } from 'vue'
+import { provide, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import DisconnectedPage from 'src/pages/DisconnectedPage.vue'
-import { useClient } from 'src/shared/client'
+import { useInstance } from 'src/shared/client'
 import AppHeader from 'src/components/AppHeader.vue'
 
 const navOpen = ref(false)
@@ -85,15 +84,7 @@ const menuItems = [
   }
 ]
 
-const instance = getInstance(<string>route.params.instanceId)
-const { connected, socket, message } = useClient(
-  instance.value.url,
-  instance.value.token
+const { connected, status, message } = useInstance(
+  <string>route.params.instanceId
 )
-const statusText = computed(() => {
-  if (connected.value) {
-    return `Connected ${socket.id}`
-  }
-  return 'Disconnected'
-})
 </script>

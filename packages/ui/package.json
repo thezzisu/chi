@@ -20,16 +20,21 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "prepare": "quasar build -m spa"
+    "prepublishOnly": "quasar build -m spa"
   },
-  "dependencies": {},
+  "dependencies": {
+    "cross-spawn": "^7.0.3",
+    "which": "^2.0.2"
+  },
   "devDependencies": {
     "@chijs/client": "^0.0.18",
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",
     "@quasar/app-vite": "^1.0.0",
     "@quasar/extras": "^1.0.0",
+    "@types/cross-spawn": "^6.0.2",
     "@types/json-schema": "^7.0.11",
     "@types/markdown-it": "^12.2.3",
+    "@types/which": "^2.0.1",
     "@vueuse/core": "^8.5.0",
     "autoprefixer": "^10.4.2",
     "electron": "^19.0.3",

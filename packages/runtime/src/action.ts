@@ -8,10 +8,13 @@ import {
   TVoid,
   Type
 } from '@chijs/core'
-import { Descriptor, ActionContext } from './context/index.js'
+import { PluginDescriptor, ActionContext } from './context/index.js'
 
 export interface IActionDefn extends Omit<IActionInfo, 'id'> {
-  main(ctx: ActionContext<Descriptor>, params: unknown): Awaitable<unknown>
+  main(
+    ctx: ActionContext<PluginDescriptor>,
+    params: unknown
+  ): Awaitable<unknown>
 }
 
 export interface IAction<P extends TSchema, R extends TSchema>
@@ -21,7 +24,7 @@ export interface IAction<P extends TSchema, R extends TSchema>
 }
 
 export class ActionBuilder<
-  D extends Descriptor,
+  D extends PluginDescriptor,
   P extends TSchema = TObject<{}>,
   R extends TSchema = TVoid
 > {
