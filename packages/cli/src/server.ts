@@ -22,7 +22,7 @@ async function loadConfig(path: string) {
 }
 
 function report(msg: unknown) {
-  console.log(JSON.stringify(msg))
+  console.error(JSON.stringify(msg))
 }
 
 export function startServer(config: string, managed = false, restart = false) {
