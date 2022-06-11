@@ -7,6 +7,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
+import { startClient } from './client.js'
 import { startServer } from './server.js'
 
 const cwd = process.cwd()
@@ -37,7 +38,16 @@ try {
             demandOption: true
           })
           .option('restart', { type: 'boolean' }),
-      (argv) => startServer(argv.config, argv.managed, argv.restart)
+      (argv) => startServer(argv)
+    )
+    .command(
+      'connect <url>',
+      'Connect to Chi server',
+      (yargs) =>
+        yargs
+          .positional('url', { type: 'string', demandOption: true })
+          .option('token', { type: 'string' }),
+      (args) => startClient(args)
     )
     .demandCommand()
     .recommendCommands()

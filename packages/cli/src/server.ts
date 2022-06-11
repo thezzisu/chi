@@ -11,6 +11,7 @@ import chalk from 'chalk'
 const CLI_CONFIG_NOT_FOUND = 52
 const CLI_START_FAILED = 53
 
+const WORKER_REQUEST_STOP = 0
 const WORKER_REQUEST_RESTART = 61
 const WORKER_START_FAILED = 62
 
@@ -25,8 +26,13 @@ function report(msg: unknown) {
   console.error(JSON.stringify(msg))
 }
 
-export function startServer(config: string, managed = false, restart = false) {
-  config = resolve(config)
+export function startServer(options: {
+  config: string
+  managed?: boolean
+  restart?: boolean
+}) {
+  // config: string, managed = false, restart = false
+  const config = resolve(options.config)
   if (!existsSync(config)) {
     process.exit(CLI_CONFIG_NOT_FOUND)
   }
@@ -43,23 +49,28 @@ export function startServer(config: string, managed = false, restart = false) {
     stdio: ['ignore', 'inherit', 'ignore', 'ipc']
   })
   worker.on('exit', (code, signal) => {
-    console.log(
-      `Server exited with ` + (signal ? `signal ${signal}` : `code ${code}`)
-    )
     switch (code) {
       case WORKER_REQUEST_RESTART:
-        return setImmediate(() => startServer(config, managed, restart))
+        console.log(chalk.yellow('Restarting...'))
+        return setImmediate(() => startServer(options))
+      case WORKER_REQUEST_STOP:
+        console.log(chalk.yellow('Server stopped'))
+        return process.exit(0)
       case WORKER_START_FAILED:
+        console.log(chalk.red('Failed to start server'))
         return process.exit(CLI_START_FAILED)
       default:
-        if (restart) {
+        console.log(
+          `Server exited with ` + (signal ? `signal ${signal}` : `code ${code}`)
+        )
+        if (options.restart) {
           console.log('Restart in 5 seconds...')
-          setTimeout(() => startServer(config, managed, restart), 5000)
+          setTimeout(() => startServer(options), 5000)
         }
     }
   })
   worker.on('message', (msg) => {
-    if (managed) {
+    if (options.managed) {
       report(msg)
     }
   })

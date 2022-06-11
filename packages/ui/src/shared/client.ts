@@ -99,11 +99,13 @@ export function useInstance(id: string) {
         client = new ChiClient(socket)
         applyActions(client)
         connected.value = true
+        status.value = 'Connected ' + socket.id
       })
       socket.on('disconnect', (reason) => {
         client.dispose(new Error('Socket disconnected'))
         connected.value = false
         message.value = reason
+        status.value = 'Disconnected'
       })
       socket.on('connect_error', (err) => {
         connected.value = false
