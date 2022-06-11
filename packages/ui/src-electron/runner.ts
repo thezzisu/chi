@@ -43,7 +43,7 @@ export async function startServer(
     const cli = require.resolve('@chijs/cli')
     const node = options.node ?? (await which('node'))
     const process = spawn(node, [cli, 'serve', config, '--managed'], {
-      stdio: ['ignore', 'ignore', 'pipe', 'ipc']
+      stdio: ['ignore', 'ignore', 'pipe']
     })
     processes.set(config, process)
     const [errstr, info] = await new Promise<[string, IProcessAccessInfo]>(
