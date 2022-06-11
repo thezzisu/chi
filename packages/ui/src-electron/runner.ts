@@ -46,22 +46,29 @@ export async function startServer(
       shell: true
     })
     processes.set(config, process)
-    const info = await new Promise<IProcessAccessInfo>((resolve, reject) => {
-      const stream = <Readable>process.stderr
-      const rl = readline.createInterface({ input: stream })
-      rl.once('line', (line) => {
-        try {
-          resolve(JSON.parse(line))
-        } catch (e) {
-          process.kill()
-          reject(e)
-        }
-      })
-      process.once('exit', (code, signal) => {
-        reject(new Error(signal ? `signal ${signal}` : `code ${code}`))
-      })
-    })
-    process.on('close', (code, signal) => {
+    const [errstr, info] = await new Promise<[string, IProcessAccessInfo]>(
+      (resolve, reject) => {
+        const stream = <Readable>process.stderr
+        const rl = readline.createInterface({ input: stream })
+        rl.once('line', (line) => {
+          try {
+            resolve(JSON.parse(line))
+          } catch (e) {
+            process.kill()
+            reject(e)
+          }
+        })
+        process.once('exit', (code, signal) => {
+          processes.delete(config)
+          reject(new Error(signal ? `signal ${signal}` : `code ${code}`))
+        })
+      }
+    )
+    if (errstr) {
+      process.kill()
+      throw new Error(errstr)
+    }
+    process.on('exit', (code, signal) => {
       processes.delete(config)
       new Notification({
         title: 'Instance Stopped',

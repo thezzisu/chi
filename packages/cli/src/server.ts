@@ -8,6 +8,12 @@ import { nanoid } from '@chijs/core'
 import getPort from 'get-port'
 import chalk from 'chalk'
 
+const CLI_CONFIG_NOT_FOUND = 52
+const CLI_START_FAILED = 53
+
+const WORKER_REQUEST_RESTART = 61
+const WORKER_START_FAILED = 62
+
 const filepath = fileURLToPath(import.meta.url)
 
 async function loadConfig(path: string) {
@@ -15,10 +21,10 @@ async function loadConfig(path: string) {
   return config
 }
 
-export function startServer(config: string, managed = false) {
+export function startServer(config: string, managed = false, restart = false) {
   config = resolve(config)
   if (!existsSync(config)) {
-    process.exit(2)
+    process.exit(CLI_CONFIG_NOT_FOUND)
   }
   process.chdir(dirname(config))
   const worker = fork(filepath, [], {
@@ -36,6 +42,17 @@ export function startServer(config: string, managed = false) {
     console.log(
       `Server exited with ` + (signal ? `signal ${signal}` : `code ${code}`)
     )
+    switch (code) {
+      case WORKER_REQUEST_RESTART:
+        return setImmediate(() => startServer(config, managed, restart))
+      case WORKER_START_FAILED:
+        return process.exit(CLI_START_FAILED)
+      default:
+        if (restart) {
+          console.log('Restart in 5 seconds...')
+          setTimeout(() => startServer(config, managed, restart), 5000)
+        }
+    }
   })
   worker.on('message', (msg) => {
     if (managed) {
@@ -66,12 +83,17 @@ if (process.argv[1] === filepath) {
     const host = app.config.web.address ?? 'localhost'
     const port = app.config.web.port ?? 3000
     const url = `ws://${host}:${port}`
-    process.send?.({
-      token: app.config.web.token ?? '',
-      url
-    })
+    process.send?.([
+      null,
+      {
+        token: app.config.web.token ?? '',
+        url
+      }
+    ])
   } catch (e) {
     console.log('Server failed to start')
     console.log(e)
+    process.send?.(['' + e, null])
+    process.exit(WORKER_START_FAILED)
   }
 }

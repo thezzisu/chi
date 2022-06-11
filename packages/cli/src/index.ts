@@ -30,12 +30,14 @@ try {
       'serve <config>',
       'Start Chi Server',
       (yargs) =>
-        yargs.positional('config', {
-          type: 'string',
-          describe: 'the path to the config file',
-          demandOption: true
-        }),
-      (argv) => startServer(argv.config, argv.managed)
+        yargs
+          .positional('config', {
+            type: 'string',
+            describe: 'the path to the config file',
+            demandOption: true
+          })
+          .option('restart', { type: 'boolean' }),
+      (argv) => startServer(argv.config, argv.managed, argv.restart)
     )
     .demandCommand()
     .recommendCommands()
