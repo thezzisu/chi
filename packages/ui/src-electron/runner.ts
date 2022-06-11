@@ -1,10 +1,11 @@
-import { ChildProcess, spawn } from 'child_process'
+import { ChildProcess } from 'child_process'
+import spawn from 'cross-spawn'
+import { ipcMain, Notification } from 'electron'
 import { createRequire } from 'module'
 import { basename, dirname, join, resolve } from 'path'
-import * as readline from 'node:readline'
+import * as readline from 'readline'
+import type { Readable } from 'stream'
 import which from 'which'
-import { Readable } from 'stream'
-import { ipcMain, Notification } from 'electron'
 
 export interface IChiProcessOptions {
   config: string
@@ -42,20 +43,19 @@ export async function startServer(
     const cli = require.resolve('@chijs/cli')
     const node = options.node ?? (await which('node'))
     const process = spawn(node, [cli, 'serve', config, '--managed'], {
-      stdio: ['ignore', 'ignore', 'pipe'],
-      shell: true
+      stdio: ['ignore', 'ignore', 'pipe', 'ipc']
     })
     processes.set(config, process)
     const [errstr, info] = await new Promise<[string, IProcessAccessInfo]>(
       (resolve, reject) => {
-        const stream = <Readable>process.stderr
+        const stream = <Readable>process.stdio[4]
         const rl = readline.createInterface({ input: stream })
         rl.once('line', (line) => {
           try {
             resolve(JSON.parse(line))
           } catch (e) {
             process.kill()
-            reject(e)
+            reject(new Error(`Unable to parse JSON: ${line}`))
           }
         })
         process.once('exit', (code, signal) => {

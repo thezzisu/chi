@@ -21,6 +21,10 @@ async function loadConfig(path: string) {
   return config
 }
 
+function report(msg: unknown) {
+  console.log(JSON.stringify(msg))
+}
+
 export function startServer(config: string, managed = false, restart = false) {
   config = resolve(config)
   if (!existsSync(config)) {
@@ -56,7 +60,7 @@ export function startServer(config: string, managed = false, restart = false) {
   })
   worker.on('message', (msg) => {
     if (managed) {
-      console.error(JSON.stringify(msg))
+      report(msg)
     }
   })
 }
