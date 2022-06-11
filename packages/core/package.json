@@ -1,6 +1,6 @@
 {
   "name": "@chijs/core",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Core components of Chi framwork",
@@ -19,7 +19,7 @@
     "@sinclair/typebox": "^0.23.5",
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
-    "nanoid": "^3.3.4",
+    "nanoid": "^4.0.0",
     "pino": "^8.0.0"
   },
   "devDependencies": {},

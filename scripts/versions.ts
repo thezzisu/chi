@@ -37,10 +37,10 @@ const nodes = Object.fromEntries(
       .map((x) => ({
         name: x,
         version:
-          dependencies[x] ??
-          devDependencies[x] ??
-          peerDependencies[x] ??
-          optionalDependencies[x]
+          dependencies?.[x] ??
+          devDependencies?.[x] ??
+          peerDependencies?.[x] ??
+          optionalDependencies?.[x]
       }))
     return [name, { name, version, path, deps }]
   })
