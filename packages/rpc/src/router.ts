@@ -2,7 +2,6 @@ import { Logger } from 'pino'
 import { encodeReject, RpcMsgType } from './base.js'
 
 import type { RpcId, IRpcMsg, IRpcDieMsg } from './base.js'
-import { createLogger } from '../logger/index.js'
 
 function createRpcDieMsg(src: RpcId, dst: RpcId, reason: unknown): IRpcDieMsg {
   return {
@@ -63,12 +62,10 @@ export class RpcAdapter {
   }
 }
 
-const defaultLogger = createLogger('core/rpc/router')
-
 export class RpcRouter {
   adapters
 
-  constructor(public logger: Logger = defaultLogger) {
+  constructor(public logger: Logger) {
     this.adapters = new Map<RpcId, RpcAdapter>()
   }
 

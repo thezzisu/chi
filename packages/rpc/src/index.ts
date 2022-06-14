@@ -2,7 +2,6 @@ export * from './base.js'
 export * from './endpoint.js'
 export * from './router.js'
 export * from './wrapper.js'
-export * from './interface/index.js'
 
 export const RPC = {
   server: () => 's',

@@ -15,8 +15,7 @@ import {
   SubscriptionId
 } from './base.js'
 import type { Logger } from 'pino'
-import type { Awaitable } from '../util/index.js'
-import { createLogger } from '../logger/index.js'
+import type { Awaitable } from '@chijs/util'
 
 export type WithThis<T, F> = F extends Fn<infer A, infer R>
   ? (this: T, ...args: A) => R
@@ -142,8 +141,6 @@ function applyInternalImpl(endpoint: RpcEndpoint<InternalDescriptor>) {
   })
 }
 
-const defaultLogger = createLogger('core/rpc/endpoint')
-
 type ProvidedFn = (...args: unknown[]) => unknown
 type PublishedFn = (
   cb: (data: unknown, err?: unknown) => void,
@@ -163,7 +160,7 @@ export class RpcEndpoint<D extends RpcDescriptor> {
   constructor(
     public localId: RpcId,
     public send: (msg: IRpcMsg) => unknown,
-    public logger: Logger = defaultLogger
+    public logger: Logger
   ) {
     this.disposed = false
     this.handles = new Map<RpcId, RpcHandle<RpcTypeDescriptor<{}, {}>>>()
