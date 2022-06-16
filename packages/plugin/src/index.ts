@@ -1,6 +1,7 @@
 import { IChiPlugin, PluginBuilder, PluginTypeDescriptor } from './plugin.js'
 
 export * from './action.js'
+export * from './agent.js'
 export * from './common.js'
 export * from './plugin.js'
 export * from './unit.js'

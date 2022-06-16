@@ -1,4 +1,3 @@
-import { RPC } from '@chijs/core'
 import fastifyCors from '@fastify/cors'
 import fastifyStatic from '@fastify/static'
 import fastify from 'fastify'
@@ -75,9 +74,8 @@ export class WebServer {
 
   private onConnection(socket: Socket) {
     this.logger.info(`Client ${socket.id} connected`)
-    const adapter = this.app.rpc.router.createAdapter(
-      RPC.client(socket.id),
-      (msg) => socket.emit('rpc', msg)
+    const adapter = this.app.rpc.router.createAdapter(socket.id, (msg) =>
+      socket.emit('rpc', msg)
     )
     socket.on('rpc', (msg) => adapter.recv(msg))
     socket.on('disconnect', (reason) => {

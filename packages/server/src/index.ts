@@ -1,16 +1,17 @@
-import 'reflect-metadata'
-import pino from 'pino'
-import pretty from 'pino-pretty'
+import { createBaseLogger } from '@chijs/util'
 import fs from 'fs-extra'
 import { dirname, join } from 'node:path'
-import { RPC, ServiceRestartPolicy } from '@chijs/core'
+import pino from 'pino'
+import pretty from 'pino-pretty'
+import 'reflect-metadata'
+import { ActionManager } from './action/index.js'
 import { ChiAppOptions, defaultConfig, IChiConfig } from './config/index.js'
-import { PluginRegistry } from './plugin/index.js'
+import { Database } from './db/index.js'
+import { PluginManager } from './plugin/index.js'
+import { RpcManager } from './rpc/index.js'
 import { ServiceManager } from './service/index.js'
 import { WebServer } from './web/index.js'
-import { RpcManager } from './rpc/index.js'
-import { Database } from './db/index.js'
-import { ActionManager } from './action/index.js'
+import { WorkerManager } from './worker/index.js'
 
 export class ChiApp {
   config
@@ -18,28 +19,28 @@ export class ChiApp {
   db
   rpc
   web
+  workers
   plugins
   services
   actions
-  logPath
 
   constructor(options?: ChiAppOptions) {
     this.config = <IChiConfig>Object.assign({}, defaultConfig, options)
     const streams: (pino.DestinationStream | pino.StreamEntry)[] = [
       { level: 'warn', stream: pretty() }
     ]
-    this.logPath = this.config.log.path
-      ? join(this.config.log.path, `app-${+new Date()}.log`)
-      : null
-    if (this.logPath) {
-      fs.ensureDirSync(dirname(this.logPath))
+    const logPath =
+      this.config.log.path &&
+      join(this.config.log.path, 'app', `${+new Date()}.log`)
+    if (logPath) {
+      fs.ensureDirSync(dirname(logPath))
       streams.push({
-        stream: fs.createWriteStream(this.logPath),
+        stream: fs.createWriteStream(logPath),
         level: this.config.log.level ?? 'info'
       })
     }
 
-    this.logger = pino(
+    this.logger = createBaseLogger(
       { name: 'chi', base: undefined, level: 'trace' },
       pino.multistream(streams)
     )
@@ -47,7 +48,8 @@ export class ChiApp {
     this.db = new Database(this)
     this.rpc = new RpcManager(this)
     this.web = new WebServer(this)
-    this.plugins = new PluginRegistry(this)
+    this.workers = new WorkerManager(this)
+    this.plugins = new PluginManager(this)
     this.services = new ServiceManager(this)
     this.actions = new ActionManager(this)
   }
@@ -65,30 +67,9 @@ export class ChiApp {
         this.logger.error(e)
       }
     }
-    this.logger.info(`Loading services`)
-    for (const service of this.config.services) {
-      try {
-        this.logger.info(`Loading service ${service.id}`)
-        this.services.add({
-          restartPolicy: ServiceRestartPolicy.NEVER,
-          ...service
-        })
-      } catch (e) {
-        this.logger.error(e)
-      }
-    }
-    this.logger.info(`Starting services`)
-    for (const service of this.config.services.filter((s) => s.autostart)) {
-      try {
-        this.services.start(service.id, RPC.server())
-      } catch (e) {
-        this.logger.error(e)
-      }
-    }
-    this.logger.error('Chi started')
   }
 }
 
 export * from './config/index.js'
-export * from './util/index.js'
 export * from './rpc/base.js'
+export * from './util/index.js'

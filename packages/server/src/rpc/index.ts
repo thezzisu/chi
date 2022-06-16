@@ -1,4 +1,4 @@
-import { RpcEndpoint, RPC, RpcRouter } from '@chijs/rpc'
+import { RpcEndpoint, RpcRouter } from '@chijs/rpc'
 import { ChiApp } from '../index.js'
 import { applyServerImpl, ServerDescriptor } from './base.js'
 
@@ -11,11 +11,11 @@ export class RpcManager {
   constructor(private app: ChiApp) {
     this.logger = app.logger.child({ module: 'server/rpc' })
     this.router = new RpcRouter(this.logger.child({ scope: 'router' }))
-    this.adapter = this.router.createAdapter(RPC.server(), (msg) =>
+    this.adapter = this.router.createAdapter('@server', (msg) =>
       this.endpoint.recv(msg)
     )
     this.endpoint = new RpcEndpoint<ServerDescriptor>(
-      RPC.server(),
+      '@server',
       (msg) => this.adapter.recv(msg),
       this.logger.child({ scope: 'endpoint' })
     )

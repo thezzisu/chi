@@ -1,11 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
-import { IJobInfo, ITaskInfo, JobState } from '@chijs/core'
+import { IJobInfo, JobState } from '../action/index.js'
 
 @Entity()
-export class ActionTask implements ITaskInfo {
+export class ActionTask {
   @PrimaryGeneratedColumn() ord!: number
   @Column({ unique: true }) id!: string
-  @Column() serviceId!: string
+  @Column() pluginId!: string
   @Column() actionId!: string
   @Column() state!: JobState
   @Column({ type: 'simple-json' }) jobs!: IJobInfo[]

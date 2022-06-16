@@ -2,6 +2,7 @@
 import { RpcId } from '@chijs/rpc'
 import { Awaitable } from '@chijs/util'
 import { ChiApp } from '../index.js'
+import { WorkerDescriptor } from './boot.js'
 import { forkWorker, IForkWorkerOptions } from './fork.js'
 
 export class WorkerExitError extends Error {
@@ -38,6 +39,7 @@ export class ChiWorker {
       this.child = forkWorker(options)
       this.child.on('message', (msg) => this.adapter!.recv(<never>msg))
       this.child.on('exit', this.exitHandler.bind(this))
+      this.manager.workers.set(this.options.rpcId, this)
     } catch (err) {
       this.adapter?.dispose(err)
       this.resolve([-1, null])
@@ -45,16 +47,29 @@ export class ChiWorker {
   }
 
   exitHandler(code: number | null, signal: NodeJS.Signals | null) {
+    this.manager.workers.delete(this.options.rpcId)
     this.adapter?.dispose(new WorkerExitError(code, signal))
     this.resolve([code, signal])
   }
 
+  exit(reason?: unknown) {
+    try {
+      const handle = this.getHandle()
+      handle.exec('exit', reason)
+    } catch {
+      // ignore error here
+    }
+    // TODO: kill the process if it is still running
+  }
+
   kill(signal?: number | NodeJS.Signals) {
-    this.child?.kill(signal)
+    if (!this.child?.killed) this.child?.kill(signal)
   }
 
   getHandle() {
-    return this.manager.app.rpc.endpoint.getHandle(this.options.rpcId)
+    return this.manager.app.rpc.endpoint.getHandle<WorkerDescriptor>(
+      this.options.rpcId
+    )
   }
 }
 
@@ -62,6 +77,10 @@ export class WorkerManager {
   workers
 
   constructor(public app: ChiApp) {
-    this.workers = new Map<RpcId, Worker>()
+    this.workers = new Map<RpcId, ChiWorker>()
+  }
+
+  fork(options: IForkWorkerOptions) {
+    return new ChiWorker(this, options)
   }
 }

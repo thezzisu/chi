@@ -1,4 +1,4 @@
-import { Id } from '@chijs/util'
+import { Id, TObject, TSchema, Type, TypeBuilder } from '@chijs/util'
 import {
   ActionBaseDescriptor,
   ActionBuilder,
@@ -7,33 +7,39 @@ import {
 import { EntityBuilder, IChiPluginEntityMeta } from './common.js'
 import { IChiPluginUnitDefn, UnitBaseDescriptor, UnitBuilder } from './unit.js'
 
-export type PluginTypeDescriptor<A, U> = {
+export type PluginTypeDescriptor<A, U, P extends TSchema> = {
   actions: A
   units: U
+  params: P
 }
 
-type PluginBaseDescriptor = PluginTypeDescriptor<{}, {}>
+export type PluginBaseDescriptor = PluginTypeDescriptor<{}, {}, TSchema>
 
 export interface IChiPlugin<
   D extends PluginBaseDescriptor = PluginTypeDescriptor<
     Record<string, IChiPluginActionDefn>,
-    Record<string, IChiPluginUnitDefn>
+    Record<string, IChiPluginUnitDefn>,
+    TSchema
   >
 > {
   meta: IChiPluginEntityMeta
   actions: D['actions']
   units: D['units']
+  params: D['params']
 }
 
 export class PluginBuilder<
-  D extends PluginBaseDescriptor = PluginBaseDescriptor
+  D extends PluginBaseDescriptor = PluginTypeDescriptor<{}, {}, TObject<{}>>
 > extends EntityBuilder<IChiPlugin> {
-  actions: Record<string, IChiPluginActionDefn>
-  units: Record<string, IChiPluginUnitDefn>
+  private actions: Record<string, IChiPluginActionDefn>
+  private units: Record<string, IChiPluginUnitDefn>
+  private _params: TSchema
+
   constructor() {
     super()
     this.actions = {}
     this.units = {}
+    this._params = Type.Object({})
   }
 
   clone() {
@@ -49,17 +55,30 @@ export class PluginBuilder<
     return {
       meta: clone.meta,
       actions: clone.actions,
-      units: clone.units
+      units: clone.units,
+      params: clone._params
     }
+  }
+
+  params<T extends TSchema>(
+    schema: T | ((builder: TypeBuilder) => T)
+  ): PluginBuilder<PluginTypeDescriptor<D['actions'], D['units'], T>> {
+    const clone = this.clone()
+    clone._params = schema instanceof Function ? schema(Type) : schema
+    return <any>clone
   }
 
   action<K extends string, D1 extends ActionBaseDescriptor>(
     id: K,
     action:
       | IChiPluginActionDefn<D1>
-      | ((builder: ActionBuilder) => IChiPluginActionDefn<D1>)
+      | ((builder: ActionBuilder<D>) => IChiPluginActionDefn<D1>)
   ): PluginBuilder<
-    PluginTypeDescriptor<Id<D['actions'] & { [k in K]: D1 }>, D['units']>
+    PluginTypeDescriptor<
+      Id<D['actions'] & { [k in K]: D1 }>,
+      D['units'],
+      D['params']
+    >
   > {
     const clone = this.clone()
     if (typeof action === 'function') {
@@ -74,9 +93,13 @@ export class PluginBuilder<
     id: K,
     unit:
       | IChiPluginUnitDefn<D1>
-      | ((builder: UnitBuilder) => IChiPluginUnitDefn<D1>)
+      | ((builder: UnitBuilder<D>) => IChiPluginUnitDefn<D1>)
   ): PluginBuilder<
-    PluginTypeDescriptor<D['actions'], Id<D['units'] & { [k in K]: D1 }>>
+    PluginTypeDescriptor<
+      D['actions'],
+      Id<D['units'] & { [k in K]: D1 }>,
+      D['params']
+    >
   > {
     const clone = this.clone()
     if (typeof unit === 'function') {

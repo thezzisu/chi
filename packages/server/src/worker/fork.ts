@@ -12,16 +12,16 @@ export interface IWorkerOptions {
 
 export interface IForkWorkerOptions extends IWorkerOptions {
   rpcId: RpcId
-  logPath?: string
+  log: string | null
   logger?: Logger
 }
 
 export const workerPath = fileURLToPath(import.meta.url)
 
 export function forkWorker(options: IForkWorkerOptions) {
-  const { logPath } = options
-  logPath && fs.ensureDirSync(dirname(logPath))
-  const out = logPath ? fs.openSync(logPath, 'a') : 'inherit'
+  const { log } = options
+  log && fs.ensureDirSync(dirname(log))
+  const out = log ? fs.openSync(log, 'a') : 'inherit'
   options.logger?.info(`Forking worker`)
   const ps = fork(workerPath, ['--worker', '--rpcId', options.rpcId], {
     env: {

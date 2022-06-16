@@ -1,6 +1,7 @@
 import { RpcBaseDescriptor, RpcEndpoint } from '@chijs/rpc'
-import type { Logger } from '@chijs/util'
+import type { Logger, Static } from '@chijs/util'
 import type { ServerDescriptor } from '@chijs/server'
+import { PluginBaseDescriptor } from './plugin'
 
 export interface IChiPluginEntityMeta {
   name?: string
@@ -9,12 +10,16 @@ export interface IChiPluginEntityMeta {
   [key: string]: unknown
 }
 
-export class BaseContext<D extends RpcBaseDescriptor> {
+export class BaseContext<
+  P extends PluginBaseDescriptor,
+  D extends RpcBaseDescriptor
+> {
   server
 
   constructor(
     public readonly endpoint: RpcEndpoint<D>,
-    public readonly logger: Logger
+    public readonly logger: Logger,
+    public readonly params: Static<P['params']>
   ) {
     this.server = endpoint.getHandle<ServerDescriptor>('@server')
   }

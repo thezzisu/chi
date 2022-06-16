@@ -24,7 +24,7 @@ export function applyServiceImpl(
   endpoint.provide('$s:service:get', (id) => app.services.get(id))
 
   endpoint.publish('$s:service:update', (cb, serviceId) => {
-    if (!app.services.map.has(serviceId))
+    if (!app.services.services.has(serviceId))
       throw new Error(`Service ${serviceId} not found`)
     app.services.emitter.on(serviceId, cb)
     return () => {

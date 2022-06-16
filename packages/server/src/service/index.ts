@@ -1,39 +1,33 @@
-import { ChildProcess } from 'node:child_process'
 import { join } from 'node:path'
 import { EventEmitter } from 'node:events'
 import { ChiApp } from '../index.js'
-import { forkWorker } from './fork.js'
 
-export interface IService extends IServiceInfo {
-  workerProcess?: ChildProcess
-}
-
-export class WorkerExitError extends Error {
-  constructor(public code: number | null, public signal: string | null) {
-    super(`Worker exited with ` + (code ? `code ${code}` : `signal ${signal}`))
-    this.name = 'WorkerExitError'
-  }
+export interface IServiceInfo {
+  serviceId: string
+  pluginId: string
+  unitId: string
+  params: unknown
 }
 
 export class ServiceManager {
-  map
+  services
   emitter
   private logger
 
   constructor(private app: ChiApp) {
-    this.map = new Map<string, IService>()
+    this.services = new Map<string, IServiceInfo>()
     this.emitter = new EventEmitter()
     this.logger = app.logger.child({ module: 'server/service' })
   }
 
-  add(defn: IServiceDefn) {
-    if (this.map.has(defn.id)) {
+  create(serviceId: string, pluginId: string, unitId: string, params: unknown) {
+    if (this.services.has(defn.id)) {
       throw new Error('Service already exists')
     }
     if (!this.app.plugins.verifyParams(defn.pluginId, defn.params)) {
       throw new Error('Bad params')
     }
-    this.map.set(defn.id, {
+    this.services.set(defn.id, {
       ...defn,
       logPath: '',
       state: ServiceState.STOPPED
@@ -41,7 +35,7 @@ export class ServiceManager {
   }
 
   update(id: string, attr: Partial<IServiceAttr>) {
-    const service = this.map.get(id)
+    const service = this.services.get(id)
     if (!service) throw new Error('Service not found')
     if (service.workerId) throw new Error('Service is running')
     if (
@@ -55,15 +49,15 @@ export class ServiceManager {
   }
 
   remove(id: string) {
-    const service = this.map.get(id)
+    const service = this.services.get(id)
     if (!service) throw new Error('Service not found')
     if (service.workerId) throw new Error('Service is running')
-    this.map.delete(id)
+    this.services.delete(id)
     this.emitter.emit(id, null)
   }
 
   start(id: string, initiator: string) {
-    const service = this.map.get(id)
+    const service = this.services.get(id)
     if (!service) throw new Error('Service not found')
     if (
       service.state !== ServiceState.STOPPED &&
@@ -138,7 +132,7 @@ export class ServiceManager {
   }
 
   async stop(id: string) {
-    const service = this.map.get(id)
+    const service = this.services.get(id)
     if (!service) throw new Error('Service not found')
     if (!service.workerId) throw new Error('Service is not running')
 
@@ -155,13 +149,13 @@ export class ServiceManager {
   }
 
   list(): IServiceInfo[] {
-    return [...this.map.values()].map(
+    return [...this.services.values()].map(
       ({ workerProcess: _, ...service }) => service
     )
   }
 
   get(id: string): IServiceInfo {
-    const service = this.map.get(id)
+    const service = this.services.get(id)
     if (!service) throw new Error('Service not found')
     const { workerProcess: _, ...rest } = service
     return rest
