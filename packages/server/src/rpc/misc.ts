@@ -1,8 +1,20 @@
-import { RpcEndpoint, ServerDescriptor, STARTUP_TIMESTAMP } from '@chijs/core'
-import { ChiApp } from '../index.js'
+import { RpcEndpoint } from '@chijs/rpc'
 import fs from 'fs-extra'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { ChiApp } from '../index.js'
+import { ServerDescriptor } from './base.js'
+
+/** @internal */
+export interface IMiscProvides {
+  versions(): Promise<Record<string, string>>
+  startTime(): Promise<number>
+}
+
+/** @internal */ // eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IMiscPublishes {}
+
+const STARTUP_TIMESTAMP = Date.now()
 
 export function applyMiscImpl(
   endpoint: RpcEndpoint<ServerDescriptor>,

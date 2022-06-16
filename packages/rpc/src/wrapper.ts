@@ -1,11 +1,11 @@
 import type { WithoutPrefix } from '@chijs/util'
-import type { RpcDescriptor, RpcHandle } from './endpoint.js'
+import type { RpcBaseDescriptor, RpcHandle } from './endpoint.js'
 
 export type RpcWrapped<M, P extends string> = WithoutPrefix<M, P>
 type GetProvide<H> = H extends RpcHandle<infer D> ? D['provide'] : never
 
 export function createRpcWrapper<
-  H extends RpcHandle<RpcDescriptor>,
+  H extends RpcHandle<RpcBaseDescriptor>,
   P extends string
 >(handle: H, prefix: P) {
   return <RpcWrapped<GetProvide<H>, P> & { handle: H }>new Proxy(

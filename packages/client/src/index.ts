@@ -1,7 +1,16 @@
 import type { Socket } from 'socket.io-client'
-import { RpcEndpoint, createRpcWrapper, RPC, IRpcMsg } from '@chijs/core'
+import {
+  RpcEndpoint,
+  createRpcWrapper,
+  RPC,
+  IRpcMsg,
+  RpcTypeDescriptor
+} from '@chijs/rpc'
+import type { ServerDescriptor } from '@chijs/server'
+import { createLogger } from '@chijs/util'
 
-import type { ClientDescriptor, ServerDescriptor } from '@chijs/core'
+export type ClientDescriptor = RpcTypeDescriptor<{}, {}>
+
 export class ChiClient {
   endpoint
   server
@@ -16,7 +25,8 @@ export class ChiClient {
   constructor(public socket: Socket) {
     this.endpoint = new RpcEndpoint<ClientDescriptor>(
       RPC.client(socket.id),
-      (msg) => socket.emit('rpc', msg)
+      (msg) => socket.emit('rpc', msg),
+      createLogger(['client', 'endpoint'])
     )
     this.socketListener = (msg: unknown) => this.endpoint.recv(<IRpcMsg>msg)
     this.socket.on('rpc', this.socketListener)
@@ -34,5 +44,5 @@ export class ChiClient {
   }
 }
 
-export * from '@chijs/core'
+export * from '@chijs/util'
 export * from 'socket.io-client'

@@ -26,6 +26,14 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.18.4.tgz#6774231779dd700e0af29f6ad8d479582d7ce5ef"
   integrity sha512-FDge0dFazETFcxGw/EXzOkN8uJp0PC7Qbm+Pe9T+av2zlBpOgunFHkQPPn+eRuClU73JF+98D531UgayY89tow==
 
+"@chijs/runtime@^0.0.19":
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/@chijs/runtime/-/runtime-0.0.19.tgz#5dbf4e924c5643564e75e9be759a67f83a1f5912"
+  integrity sha512-Lxq9FANNznCe0UamZQigDWw4NtkWkSq5OWnEk7ssxsOE2r3zEyC5cHNJmk3lmFvMhFV6Bi0pnlLasLk4b8YeqA==
+  dependencies:
+    "@chijs/core" "^0.0.18"
+    pino "^8.0.0"
+
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-support/-/source-map-support-0.8.1.tgz#00629c35a688e05a88b1cda684fb9d5e73f000a1"

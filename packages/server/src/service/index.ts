@@ -1,16 +1,5 @@
 import { ChildProcess } from 'node:child_process'
 import { join } from 'node:path'
-import {
-  nanoid,
-  IRpcMsg,
-  IServiceInfo,
-  WorkerDescriptor,
-  RPC,
-  ServiceRestartPolicy,
-  ServiceState,
-  IServiceDefn,
-  IServiceAttr
-} from '@chijs/core'
 import { EventEmitter } from 'node:events'
 import { ChiApp } from '../index.js'
 import { forkWorker } from './fork.js'

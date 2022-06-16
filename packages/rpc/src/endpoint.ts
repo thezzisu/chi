@@ -91,7 +91,7 @@ export type PublishCb<
     : never
   : never
 
-export type RpcDescriptor = RpcTypeDescriptor<{}, {}>
+export type RpcBaseDescriptor = RpcTypeDescriptor<{}, {}>
 
 export interface IRpcEndpointInfo {
   provides: string[]
@@ -147,7 +147,7 @@ type PublishedFn = (
   ...args: unknown[]
 ) => Awaitable<() => Awaitable<void>>
 
-export class RpcEndpoint<D extends RpcDescriptor> {
+export class RpcEndpoint<D extends RpcBaseDescriptor> {
   /** @internal */
   handles
   /** @internal */
@@ -169,7 +169,7 @@ export class RpcEndpoint<D extends RpcDescriptor> {
     applyInternalImpl(<never>this)
   }
 
-  getHandle<D extends RpcDescriptor>(remoteId: RpcId): RpcHandle<D> {
+  getHandle<D extends RpcBaseDescriptor>(remoteId: RpcId): RpcHandle<D> {
     let handle = this.handles.get(remoteId)
     if (!handle) {
       handle = new RpcHandle(this, remoteId)
@@ -230,14 +230,14 @@ export interface IPublication {
   unpub: () => Awaitable<void>
 }
 
-export interface IRpcCallable<D extends RpcDescriptor> {
+export interface IRpcCallable<D extends RpcBaseDescriptor> {
   call<K extends ProvideKeys<D>>(
     name: K,
     ...args: ProvideArgs<D, K>
   ): Promise<ProvideReturn<D, K>>
 }
 
-export class RpcHandle<D extends RpcDescriptor> {
+export class RpcHandle<D extends RpcBaseDescriptor> {
   /** @internal */
   invocations
   /** @internal */
@@ -248,7 +248,7 @@ export class RpcHandle<D extends RpcDescriptor> {
   disposed
 
   constructor(
-    public endpoint: RpcEndpoint<RpcDescriptor>,
+    public endpoint: RpcEndpoint<RpcBaseDescriptor>,
     public remoteId: RpcId
   ) {
     this.invocations = new Map<CallId, IRpcInvocation>()

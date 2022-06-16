@@ -1,6 +1,6 @@
-import { RpcEndpoint, RPC, RpcRouter, ServerDescriptor } from '@chijs/core'
+import { RpcEndpoint, RPC, RpcRouter } from '@chijs/rpc'
 import { ChiApp } from '../index.js'
-import { applyServerImpl } from './base.js'
+import { applyServerImpl, ServerDescriptor } from './base.js'
 
 export class RpcManager {
   router

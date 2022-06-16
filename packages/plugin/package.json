@@ -1,32 +1,31 @@
 {
-  "name": "@chijs/core",
-  "version": "0.0.18",
+  "name": "@chijs/plugin",
+  "version": "0.0.1",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
-  "description": "Core components of Chi framwork",
+  "description": "Chi plugin",
   "author": "thezzisu <thezzisu@gmail.com>",
   "private": false,
   "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thezzisu/chi.git",
-    "directory": "packages/core"
+    "directory": "packages/plugin"
   },
   "bugs": {
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@sinclair/typebox": "^0.23.5",
-    "ajv": "^8.11.0",
-    "ajv-formats": "^2.1.1",
-    "nanoid": "^4.0.0",
+    "@chijs/core": "^0.0.18",
+    "@chijs/rpc": "^0.0.1",
+    "@chijs/util": "^0.0.1",
     "pino": "^8.0.0"
   },
   "devDependencies": {},
   "scripts": {
-    "build": "ts-node-esm ../../scripts/build.ts --package core",
+    "build": "ts-node-esm ../../scripts/build.ts --package plugin",
     "lint": "eslint --ext .js,.ts ./src/ ./test/",
-    "prepublishOnly": "ts-node-esm ../../scripts/build.ts --package core --rebuild",
+    "prepublishOnly": "ts-node-esm ../../scripts/build.ts --package plugin --rebuild",
     "test": "mocha"
   },
   "files": [
