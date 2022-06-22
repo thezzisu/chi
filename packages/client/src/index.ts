@@ -29,12 +29,12 @@ export class ChiClient {
     )
     this.socketListener = (msg: unknown) => this.endpoint.recv(<IRpcMsg>msg)
     this.socket.on('rpc', this.socketListener)
-    this.server = this.endpoint.getHandle<ServerDescriptor>('@server')
-    this.service = createRpcWrapper(this.server, '$s:service:')
-    this.plugin = createRpcWrapper(this.server, '$s:plugin:')
-    this.misc = createRpcWrapper(this.server, '$s:misc:')
-    this.action = createRpcWrapper(this.server, '$s:action:')
-    this.task = createRpcWrapper(this.server, '$s:task:')
+    this.server = this.endpoint.getHandle<ServerDescriptor>('#server')
+    this.service = createRpcWrapper(this.server, '#server:service:')
+    this.plugin = createRpcWrapper(this.server, '#server:plugin:')
+    this.misc = createRpcWrapper(this.server, '#server:misc:')
+    this.action = createRpcWrapper(this.server, '#server:action:')
+    this.task = createRpcWrapper(this.server, '#server:task:')
   }
 
   dispose(reason: unknown) {

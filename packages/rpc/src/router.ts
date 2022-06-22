@@ -18,7 +18,8 @@ export class RpcAdapter {
   constructor(
     private router: RpcRouter,
     public id: RpcId,
-    public send: (msg: IRpcMsg) => unknown
+    public send: (msg: IRpcMsg) => unknown,
+    public meta?: unknown
   ) {
     this.connections = new Set<RpcId>()
   }
@@ -69,10 +70,14 @@ export class RpcRouter {
     this.adapters = new Map<RpcId, RpcAdapter>()
   }
 
-  createAdapter(id: RpcId, send: (msg: IRpcMsg) => unknown) {
+  create(id: RpcId, send: (msg: IRpcMsg) => unknown, meta?: unknown) {
     if (this.adapters.has(id)) throw new Error('Adapter already exists')
-    const adapter = new RpcAdapter(this, id, send)
+    const adapter = new RpcAdapter(this, id, send, meta)
     this.adapters.set(id, adapter)
     return adapter
+  }
+
+  get(id: RpcId) {
+    return this.adapters.get(id)
   }
 }

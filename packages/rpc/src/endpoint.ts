@@ -100,18 +100,18 @@ export interface IRpcEndpointInfo {
 
 export type InternalDescriptor = RpcTypeDescriptor<
   {
-    ['$:ping'](): void
-    ['$:subscribe'](type: string, ...args: unknown[]): SubscriptionId
-    ['$:unsubscribe'](id: SubscriptionId): void
-    ['$:info'](): IRpcEndpointInfo
+    ['#:ping'](): void
+    ['#:subscribe'](type: string, ...args: unknown[]): SubscriptionId
+    ['#:unsubscribe'](id: SubscriptionId): void
+    ['#:info'](): IRpcEndpointInfo
   },
   {}
 >
 
 function applyInternalImpl(endpoint: RpcEndpoint<InternalDescriptor>) {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  endpoint.provide('$:ping', () => {})
-  endpoint.provide('$:subscribe', async function (type, ...args) {
+  endpoint.provide('#:ping', () => {})
+  endpoint.provide('#:subscribe', async function (type, ...args) {
     const impl = this.endpoint.published(<never>type)
     const subscriptionId = nanoid()
     const cb = (data: unknown) =>
@@ -126,14 +126,14 @@ function applyInternalImpl(endpoint: RpcEndpoint<InternalDescriptor>) {
     this.publications.set(subscriptionId, { unpub })
     return subscriptionId
   })
-  endpoint.provide('$:unsubscribe', async function (id) {
+  endpoint.provide('#:unsubscribe', async function (id) {
     const publication = this.publications.get(id)
     if (publication) {
       await publication.unpub()
       this.publications.delete(id)
     }
   })
-  endpoint.provide('$:info', function () {
+  endpoint.provide('#:info', function () {
     return {
       provides: [...this.endpoint.provides.keys()],
       publishes: [...this.endpoint.publishes.keys()]
@@ -257,8 +257,8 @@ export class RpcHandle<D extends RpcBaseDescriptor> {
     this.disposed = false
   }
 
-  async connect() {
-    await (this as RpcHandle<InternalDescriptor>).call('$:ping')
+  async ping() {
+    await (this as RpcHandle<InternalDescriptor>).call('#:ping')
   }
 
   private handleDie(msg: IRpcDieMsg) {
@@ -416,7 +416,7 @@ export class RpcHandle<D extends RpcBaseDescriptor> {
     ...args: PublishArgs<D, K>
   ): Promise<SubscriptionId> {
     const subscription = await (this as RpcHandle<InternalDescriptor>).call(
-      '$:subscribe',
+      '#:subscribe',
       name,
       ...args
     )
@@ -426,7 +426,7 @@ export class RpcHandle<D extends RpcBaseDescriptor> {
 
   async unsubscribe(id: SubscriptionId): Promise<void> {
     if (this.subscriptions.delete(id)) {
-      await (this as RpcHandle<InternalDescriptor>).call('$:unsubscribe', id)
+      await (this as RpcHandle<InternalDescriptor>).call('#:unsubscribe', id)
     }
   }
 }

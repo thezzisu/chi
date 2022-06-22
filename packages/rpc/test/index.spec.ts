@@ -20,7 +20,7 @@ type Desc = RpcTypeDescriptor<ITestFns, ITestPubs>
 
 async function setupRpc() {
   const router = new RpcRouter(createLogger('router'))
-  const adapter1 = router.createAdapter('1', (msg) => {
+  const adapter1 = router.create('1', (msg) => {
     endpoint1.recv(msg)
   })
   const endpoint1 = new RpcEndpoint<Desc>(
@@ -36,7 +36,7 @@ async function setupRpc() {
     const id = setInterval(() => cb(Date.now()), int)
     return () => clearInterval(id)
   })
-  const adapter2 = router.createAdapter('2', (msg) => {
+  const adapter2 = router.create('2', (msg) => {
     endpoint2.recv(msg)
   })
   const endpoint2 = new RpcEndpoint<RpcTypeDescriptor<{}, {}>>(
@@ -45,7 +45,7 @@ async function setupRpc() {
     createLogger('endpoint2')
   )
   const handle = endpoint2.getHandle<Desc>('1')
-  await handle.connect()
+  await handle.ping()
   return { router, adapter1, endpoint1, adapter2, endpoint2, handle }
 }
 
@@ -100,7 +100,8 @@ describe('RPC', () => {
   it('publish remote close', async () => {
     const { endpoint1, adapter1, handle } = await setupRpc()
     const results: number[] = []
-    let error
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any
     await handle.subscribe(
       'interval',
       (data, err) => {

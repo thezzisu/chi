@@ -1,4 +1,4 @@
-import { nanoid } from '@chijs/core'
+import { uniqueId } from '@chijs/util'
 import chalk from 'chalk'
 import fs from 'fs-extra'
 import getPort from 'get-port'
@@ -107,8 +107,8 @@ if (process.argv[1] === filepath) {
     const { ChiApp } = await import('@chijs/server')
     type Config = ConstructorParameters<typeof ChiApp>[0]
     const config: Config = await loadConfig(path)
-    if (config?.web?.token === '$RANDOM') {
-      config.web.token = `${nanoid()}-${nanoid()}`
+    if (config?.web?.token === '#RANDOM') {
+      config.web.token = `${uniqueId()}-${uniqueId()}`
       console.log(`Generated token: ${chalk.yellow(config.web.token)}`)
     }
     if (config?.web?.port === -1) {
