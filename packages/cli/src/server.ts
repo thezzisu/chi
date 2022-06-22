@@ -104,8 +104,8 @@ if (process.argv[1] === filepath) {
     if (!path) throw new Error(`CHI_CONFIG_PATH not set`)
     path = resolve(path)
     if (!existsSync(path)) throw new Error(`Config file not found: ${path}`)
-    const { ChiApp } = await import('@chijs/server')
-    type Config = ConstructorParameters<typeof ChiApp>[0]
+    const { ChiServer } = await import('@chijs/app')
+    type Config = ConstructorParameters<typeof ChiServer>[0]
     const config: Config = await loadConfig(path)
     if (config?.web?.token === '#RANDOM') {
       config.web.token = `${uniqueId()}-${uniqueId()}`
@@ -115,15 +115,15 @@ if (process.argv[1] === filepath) {
       config.web.port = await getPort()
       console.log(`Listen port: ${chalk.yellow(config.web.port)}`)
     }
-    const app = new ChiApp(config)
-    await app.start()
-    const host = app.config.web.address ?? 'localhost'
-    const port = app.config.web.port ?? 3000
+    const server = new ChiServer(config)
+    await server.start()
+    const host = server.config.web.address ?? 'localhost'
+    const port = server.config.web.port ?? 3000
     const url = `ws://${host}:${port}`
     process.send?.([
       null,
       {
-        token: app.config.web.token ?? '',
+        token: server.config.web.token ?? '',
         url
       }
     ])

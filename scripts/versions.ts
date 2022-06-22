@@ -46,7 +46,7 @@ const nodes = Object.fromEntries(
   })
 )
 
-if (argv.list) {
+if (argv.l || argv.list) {
   for (const name of Object.keys(nodes)) {
     console.group(`${chalk.blue(name)}@${chalk.green(nodes[name].version)}`)
     if (nodes[name].deps.length) {
@@ -65,9 +65,10 @@ const problems = []
 for (const name of Object.keys(nodes)) {
   for (const dep of nodes[name].deps) {
     if (!nodes[dep.name]) {
-      problems.push(
+      console.log(
         `${name} depends on ${dep.name} but it is not in the list of packages`
       )
+      process.exit(1)
     }
     if (nodes[dep.name].version !== dep.version.substring(1)) {
       problems.push(

@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@chijs/rpc": "^0.0.1",
-    "@chijs/util": "^0.0.1",
+    "@chijs/util": "^0.0.2",
     "@fastify/cors": "^8.0.0",
     "@fastify/static": "^6.4.0",
     "fastify": "^4.0.1",
