@@ -1,5 +1,5 @@
 import { createLogger, uniqueId, validateSchema } from '@chijs/util'
-import { SERVER_RPCID } from '../../common/index.js'
+import { ACTION_ONLOAD, SERVER_RPCID } from '../../common/index.js'
 import { IChiPlugin } from '../../plugin/index.js'
 import { resolvePath } from '../../util/index.js'
 import { ChiServer } from '../index.js'
@@ -51,8 +51,8 @@ export class PluginManager {
       const errors = validateSchema(params, info.params)
       if (errors.length) throw new Error(`Bad params for plugin ${id}`)
       this.map.set(id, { ...info, id, resolved, actualParams: params })
-      if ('@onload' in info.actions) {
-        this.app.actions.dispatch(SERVER_RPCID, id, '@onload', {})
+      if (ACTION_ONLOAD in info.actions) {
+        this.app.actions.dispatch(SERVER_RPCID, id, ACTION_ONLOAD, {})
       }
       worker.exit()
       return [true]

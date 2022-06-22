@@ -1,11 +1,8 @@
+import { definePlugin, PluginDescriptorOf } from '@chijs/app'
 import { Type } from '@chijs/core'
-import {
-  PluginBuilder,
-  PluginTypeDescriptor,
-  DescriptorOf
-} from '@chijs/runtime'
+import { RpcTypeDescriptor } from '@chijs/rpc'
 
-type SelfDescriptor = PluginTypeDescriptor<
+type FooURD = RpcTypeDescriptor<
   {
     foo(bar: string): Promise<number>
     bar(a: string, b: string): Promise<string>
@@ -13,34 +10,41 @@ type SelfDescriptor = PluginTypeDescriptor<
   {}
 >
 
-declare module '@chijs/core' {
+const plugin = definePlugin((b) =>
+  b
+    .params(
+      Type.Object({
+        foo: Type.String(),
+        wait: Type.String()
+      })
+    )
+    .action('#onload', (b) =>
+      b.build(async (ctx) => {
+        const service = await ctx
+          .plugin('~/foo.ts')
+          .unit('foo')
+          .create('plugin-foo-1', { wait: '123' })
+        await ctx.api.service.start(service.id)
+      })
+    )
+    .unit('foo', (b) =>
+      b
+        .attach<FooURD>()
+        .params(Type.Object({ wait: Type.Optional(Type.String()) }))
+        .build(async (ctx, params) => {
+          ctx.endpoint.provide('foo', (bar) => +bar)
+          ctx.endpoint.provide('bar', (a, b) => `${a} + ${b}!`)
+          ctx.logger.info(params)
+          ctx.logger.info(ctx.params)
+        })
+    )
+    .build()
+)
+
+declare module '@chijs/app' {
   interface IPluginDescriptors {
-    '~/plugin.ts': SelfDescriptor
+    '~/foo.ts': PluginDescriptorOf<typeof plugin>
   }
 }
 
-export default new PluginBuilder<SelfDescriptor>()
-  .params(
-    Type.Object({
-      foo: Type.String(),
-      wait: Type.String()
-    })
-  )
-  .build(async (ctx, params) => {
-    console.log('Service started')
-    ctx.endpoint.provide('foo', (bar) => +bar)
-    ctx.endpoint.provide('bar', (a, b) => `${a} + ${b}!`)
-    if (params.wait) {
-      const proxy = await ctx.getServiceProxy<DescriptorOf<'~/plugin.ts'>>(
-        params.wait
-      )
-      await proxy.internal.waitReady()
-    } else {
-      // wait for 2 sec
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-    }
-    console.log(params)
-    const proxy = await ctx.getServiceProxy<DescriptorOf<'~/plugin.ts'>>('test')
-    console.log(await proxy.foo('123'))
-    console.log(await proxy.bar('hello', 'world'))
-  })
+export default plugin

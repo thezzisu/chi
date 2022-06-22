@@ -59,7 +59,7 @@ export function startServer(options: {
   }
   options.config = config
   process.chdir(dirname(config))
-  const worker = fork(filepath, [], {
+  const worker = fork(filepath, ['--cli-server-worker'], {
     env: {
       ...process.env,
       APP_ROOT_PATH: dirname(config),
@@ -98,7 +98,7 @@ export function startServer(options: {
   })
 }
 
-if (process.argv[1] === filepath) {
+if (process.argv.includes('--cli-server-worker')) {
   try {
     let path = process.env.CHI_CONFIG_PATH
     if (!path) throw new Error(`CHI_CONFIG_PATH not set`)
