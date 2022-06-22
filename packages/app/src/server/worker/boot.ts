@@ -11,6 +11,7 @@ export interface IRunUnitParams {
   unitId: string
   serviceId: string
   params: unknown
+  pluginParams: unknown
 }
 
 export interface IRunActionParams {
@@ -21,6 +22,7 @@ export interface IRunActionParams {
   jobId: string
   initiator: RpcId
   params: unknown
+  pluginParams: unknown
 }
 
 export interface IWorkerRpcFns {

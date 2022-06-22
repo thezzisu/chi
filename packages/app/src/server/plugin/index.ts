@@ -1,4 +1,5 @@
-import { createLogger, uniqueId } from '@chijs/util'
+import { createLogger, uniqueId, validateSchema } from '@chijs/util'
+import { SERVER_RPCID } from '../../common/index.js'
 import { IChiPlugin } from '../../plugin/index.js'
 import { resolvePath } from '../../util/index.js'
 import { ChiServer } from '../index.js'
@@ -11,6 +12,7 @@ export interface IPlugin extends Omit<IChiPlugin, 'actions' | 'units'> {
 export interface IPluginInfo extends IPlugin {
   id: string
   resolved: string
+  actualParams: unknown
 }
 
 export class PluginManager {
@@ -32,7 +34,10 @@ export class PluginManager {
     return plugin
   }
 
-  async load(id: string): Promise<[ok: boolean, reason?: string]> {
+  async load(
+    id: string,
+    params: unknown
+  ): Promise<[ok: boolean, reason?: string]> {
     const worker = this.app.workers.fork({
       rpcId: uniqueId(),
       logPath: null,
@@ -43,9 +48,11 @@ export class PluginManager {
       const handle = worker.getHandle()
       await handle.call('waitForBootstrap')
       const info = await handle.call('loadPlugin', resolved)
-      this.map.set(id, { ...info, id, resolved })
+      const errors = validateSchema(params, info.params)
+      if (errors.length) throw new Error(`Bad params for plugin ${id}`)
+      this.map.set(id, { ...info, id, resolved, actualParams: params })
       if ('@onload' in info.actions) {
-        this.app.actions.dispatch('#server', id, '@onload', {})
+        this.app.actions.dispatch(SERVER_RPCID, id, '@onload', {})
       }
       worker.exit()
       return [true]

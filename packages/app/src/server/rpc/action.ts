@@ -1,4 +1,4 @@
-import { RpcEndpoint } from '@chijs/rpc'
+import { RpcEndpoint, RpcId } from '@chijs/rpc'
 import { IChiPluginAction } from '../../plugin/index.js'
 import { JobState } from '../action/index.js'
 import { ActionTask } from '../db/task.js'
@@ -11,7 +11,12 @@ export interface IActionInfo extends IChiPluginAction {
 
 export interface IActionProvides {
   list(pluginId?: string): Promise<IActionInfo[]>
-  dispatch(pluginId: string, actionId: string, params: unknown): Promise<string>
+  dispatch(
+    initiator: RpcId,
+    pluginId: string,
+    actionId: string,
+    params: unknown
+  ): Promise<string>
   run(
     taskId: string,
     jobId: string,
@@ -45,16 +50,11 @@ export function applyActionImpl(
     )
   })
 
-  e.provide('#server:action:dispatch', function (pluginId, actionId, params) {
-    return app.actions.dispatch(this.remoteId, pluginId, actionId, params)
-  })
-
-  e.provide(
-    '#server:action:run',
-    (taskId, jobId, pluginId, actionId, params) => {
-      return app.actions.run(taskId, jobId, pluginId, actionId, params)
-    }
+  e.provide('#server:action:dispatch', (...args) =>
+    app.actions.dispatch(...args)
   )
+
+  e.provide('#server:action:run', (...args) => app.actions.run(...args))
 
   const Tasks = app.db.ds.manager.getRepository(ActionTask)
 

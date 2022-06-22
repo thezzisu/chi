@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { RpcId } from '@chijs/rpc'
 import { Awaitable } from '@chijs/util'
+import { setTimeout } from 'node:timers/promises'
 import { ChiServer } from '../index.js'
 import { WorkerDescriptor } from './boot.js'
 import { forkWorker, IForkWorkerOptions } from './fork.js'
@@ -22,19 +23,21 @@ export class ChiWorker {
 
   constructor(
     public manager: WorkerManager,
-    public options: IForkWorkerOptions
+    public options: IForkWorkerOptions,
+    meta?: unknown
   ) {
     this.whenExit = new Promise<ExitResult>((resolve) => {
       this.resolve = resolve
     })
 
     try {
-      this.adapter = manager.app.rpc.router.createAdapter(
+      this.adapter = manager.app.rpc.router.create(
         options.rpcId,
         (msg) =>
           new Promise<void>((resolve, reject) =>
             this.child!.send(msg, (err) => (err ? reject(err) : resolve()))
-          )
+          ),
+        meta
       )
       this.child = forkWorker(options)
       this.child.on('message', (msg) => this.adapter!.recv(<never>msg))
@@ -59,7 +62,12 @@ export class ChiWorker {
     } catch {
       // ignore error here
     }
-    // TODO: kill the process if it is still running
+    // TODO: configurable timeout
+    Promise.race([this.whenExit, setTimeout(1000, null)]).then((value) => {
+      if (value === null) {
+        this.child?.kill()
+      }
+    })
   }
 
   kill(signal?: number | NodeJS.Signals) {
@@ -80,7 +88,7 @@ export class WorkerManager {
     this.workers = new Map<RpcId, ChiWorker>()
   }
 
-  fork(options: IForkWorkerOptions) {
-    return new ChiWorker(this, options)
+  fork(options: IForkWorkerOptions, meta?: unknown) {
+    return new ChiWorker(this, options, meta)
   }
 }

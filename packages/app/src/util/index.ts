@@ -37,3 +37,5 @@ export function moduleInfo(path: string) {
 export function resolveModule(path: string) {
   return require.resolve(path)
 }
+
+export type TrustMe<T, U> = T extends U ? T : never

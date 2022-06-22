@@ -113,3 +113,12 @@ export class PluginBuilder<
     return <any>clone
   }
 }
+
+export function definePlugin<
+  D extends PluginBaseDescriptor = PluginTypeDescriptor<{}, {}, TObject<{}>>
+>(plugin: IChiPlugin<D> | ((builder: PluginBuilder) => IChiPlugin<D>)) {
+  if (typeof plugin === 'function') {
+    return plugin(new PluginBuilder())
+  }
+  return plugin
+}

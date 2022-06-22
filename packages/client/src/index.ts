@@ -4,8 +4,8 @@ import {
   RpcEndpoint,
   RpcTypeDescriptor
 } from '@chijs/rpc'
-import type { ServerDescriptor } from '@chijs/server'
 import { createLogger } from '@chijs/util'
+import type { ServerDescriptor } from '@chijs/app'
 import type { Socket } from 'socket.io-client'
 
 export type ClientDescriptor = RpcTypeDescriptor<{}, {}>

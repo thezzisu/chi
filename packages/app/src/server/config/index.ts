@@ -2,15 +2,20 @@ import pino from 'pino'
 import { DataSourceOptions } from 'typeorm'
 import { IWebConfig } from '../web/index.js'
 
-export interface IChiLogConfig {
+export interface IChiConfigPluginItem {
+  id: string
+  params: unknown
+}
+
+export interface IChiConfigLog {
   path: string | null
   level?: pino.Level
 }
 
 export interface IChiConfig {
-  plugins: string[]
+  plugins: IChiConfigPluginItem[]
   resolve: Record<string, string>
-  log: IChiLogConfig
+  log: IChiConfigLog
   db: Omit<DataSourceOptions, 'entities'>
   web: IWebConfig
 }

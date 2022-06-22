@@ -1,3 +1,4 @@
+import { RpcId } from '@chijs/rpc'
 import { uniqueId, validateSchema } from '@chijs/util'
 import { EventEmitter } from 'node:events'
 import { join } from 'node:path'
@@ -30,6 +31,7 @@ export interface IServiceDefn {
 export interface IServiceInfo extends IServiceDefn {
   state: ServiceState
   logPath: string | null
+  rpcId: RpcId | null
 }
 
 interface IServiceData extends IServiceInfo {
@@ -77,7 +79,8 @@ export class ServiceManager extends EventEmitter {
       params,
       restartPolicy,
       logPath: null,
-      state: ServiceState.EXITED
+      state: ServiceState.EXITED,
+      rpcId: null
     })
     this.emitChange(id)
   }
@@ -110,6 +113,7 @@ export class ServiceManager extends EventEmitter {
       logPath,
       logger: this.logger
     })
+    service.rpcId = worker.options.rpcId
     service.worker = worker
     service.state = ServiceState.INITIALIZING
     this.emitChange(id)
@@ -124,7 +128,8 @@ export class ServiceManager extends EventEmitter {
         pluginId: service.pluginId,
         unitId: service.unitId,
         serviceId: id,
-        params: service.params
+        params: service.params,
+        pluginParams: plugin.actualParams
       })
       service.state = ServiceState.RUNNING
       this.emitChange(id)
@@ -138,6 +143,7 @@ export class ServiceManager extends EventEmitter {
         const originalState = service.state
         const isNormalExit = code === 0 && signal === null
         service.state = isNormalExit ? ServiceState.EXITED : ServiceState.FAILED
+        service.rpcId = null
         this.emitChange(id)
 
         if (originalState === ServiceState.STOPPING) return

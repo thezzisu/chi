@@ -74,7 +74,7 @@ export class WebServer {
 
   private onConnection(socket: Socket) {
     this.logger.info(`Client ${socket.id} connected`)
-    const adapter = this.app.rpc.router.createAdapter(socket.id, (msg) =>
+    const adapter = this.app.rpc.router.create(socket.id, (msg) =>
       socket.emit('rpc', msg)
     )
     socket.on('rpc', (msg) => adapter.recv(msg))

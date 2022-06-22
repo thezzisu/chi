@@ -15,11 +15,7 @@ export interface IServiceProvides {
   start(id: string): Promise<void>
   stop(id: string): Promise<void>
   list(): Promise<IServiceInfo[]>
-  get(
-    pluginId: string,
-    unitId: string,
-    serviceId: string
-  ): Promise<IServiceInfo | null>
+  get(id: string): Promise<IServiceInfo | null>
 }
 
 export interface IServicePublishes {

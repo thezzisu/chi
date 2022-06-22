@@ -120,6 +120,7 @@ export class ActionManager extends EventEmitter {
         jobId,
         initiator,
         params,
+        pluginParams: plugin.actualParams,
         resolved: plugin.resolved
       })
       job.return = result

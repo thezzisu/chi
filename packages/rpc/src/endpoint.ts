@@ -371,7 +371,7 @@ export class RpcHandle<D extends RpcBaseDescriptor> {
   async call<K extends ProvideKeys<D>>(
     name: K,
     ...args: ProvideArgs<D, K>
-  ): Promise<ProvideReturn<D, K>> {
+  ): Promise<Awaited<ProvideReturn<D, K>>> {
     if (this.disposed) throw new Error('RpcHandle is disposed')
     const callId = nanoid()
     const msg: IRpcCallRequest = {
@@ -382,7 +382,7 @@ export class RpcHandle<D extends RpcBaseDescriptor> {
       m: name,
       a: args
     }
-    const ret = new Promise<ProvideReturn<D, K>>((resolve, reject) => {
+    const ret = new Promise<Awaited<ProvideReturn<D, K>>>((resolve, reject) => {
       this.invocations.set(callId, { resolve, reject })
     })
     queueMicrotask(async () => {

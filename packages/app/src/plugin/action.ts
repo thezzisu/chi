@@ -9,7 +9,6 @@ import {
   Type,
   TypeBuilder
 } from '@chijs/util'
-import type { ServerDescriptor } from '../server/index.js'
 import { BaseContext, EntityBuilder, IChiPluginEntityMeta } from './common.js'
 import { PluginBaseDescriptor } from './plugin.js'
 
@@ -42,8 +41,6 @@ export class ActionContext<
   _A extends ActionBaseDescriptor,
   P extends PluginBaseDescriptor = PluginBaseDescriptor
 > extends BaseContext<P, RpcBaseDescriptor> {
-  server
-
   constructor(
     endpoint: RpcEndpoint<RpcTypeDescriptor<{}, {}>>,
     logger: Logger,
@@ -54,7 +51,6 @@ export class ActionContext<
     public readonly jobId: string
   ) {
     super(endpoint, logger, params)
-    this.server = endpoint.getHandle<ServerDescriptor>('#server')
   }
 }
 
