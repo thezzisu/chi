@@ -10,56 +10,7 @@
       </div>
     </q-card-section>
     <q-separator />
-    <q-list>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-power-plug" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>Plugin</q-item-label>
-          <q-item-label>
-            <router-link :to="urlPlugin">
-              {{ props.job?.pluginId }}
-            </router-link>
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-checkbox-blank-circle-outline" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>Action</q-item-label>
-          <q-item-label>
-            <router-link :to="actionUrl">
-              {{ props.job?.actionId }}
-            </router-link>
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-clock-plus-outline" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>Created</q-item-label>
-          <q-item-label>
-            {{ new Date(props.job.created).toLocaleString() }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-clock-minus-outline" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>Finished</q-item-label>
-          <q-item-label>
-            {{ new Date(props.job.finished).toLocaleString() }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list>
+    <simple-list :items="items" />
     <q-separator />
     <q-card-section>
       <div class="text-subtitle2">Params</div>
@@ -78,19 +29,37 @@ import type { IJobInfo } from '@chijs/app'
 import JobStatus from 'components/JobStatus.vue'
 import { baseKey } from 'src/shared/injections'
 import { computed, inject } from 'vue'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const base = inject(baseKey)
 const props = defineProps<{ job: IJobInfo }>()
-
-const urlPlugin = computed(
-  () => `${base}/plugin/view/` + encodeURIComponent('' + props.job?.pluginId)
-)
-
-const actionUrl = computed(
-  () =>
-    `${base}/action/view/` +
-    encodeURIComponent('' + props.job?.pluginId) +
-    '/' +
-    encodeURIComponent('' + props.job?.actionId)
-)
+const items = computed<ISimpleListItem[]>(() => [
+  {
+    icon: 'mdi-power-plug',
+    caption: 'Plugin',
+    label: props.job.pluginId,
+    labelTo:
+      `${base}/plugin/view/` + encodeURIComponent('' + props.job?.pluginId)
+  },
+  {
+    icon: 'mdi-checkbox-blank-circle-outline',
+    caption: 'Action',
+    label: props.job.actionId,
+    labelTo:
+      `${base}/action/view/` +
+      encodeURIComponent('' + props.job?.pluginId) +
+      '/' +
+      encodeURIComponent('' + props.job?.actionId)
+  },
+  {
+    icon: 'mdi-clock-plus-outline',
+    caption: 'Created',
+    label: new Date(props.job.created).toLocaleString()
+  },
+  {
+    icon: 'mdi-clock-minus-outline',
+    caption: 'Finished',
+    label: new Date(props.job.finished).toLocaleString()
+  }
+])
 </script>

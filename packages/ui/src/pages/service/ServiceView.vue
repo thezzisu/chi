@@ -44,63 +44,7 @@
           </div>
         </q-card-section>
         <q-separator />
-        <q-list>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-identifier" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>ID</q-item-label>
-              <q-item-label>
-                {{ service?.id }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-power-plug" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Plugin</q-item-label>
-              <q-item-label>
-                <router-link :to="pluginUrl">
-                  {{ service?.pluginId }}
-                </router-link>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-power-plug" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Unit</q-item-label>
-              <q-item-label>
-                <router-link :to="pluginUrl">
-                  {{ service?.unitId }}
-                </router-link>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item v-if="service?.logPath">
-            <q-item-section avatar>
-              <q-icon name="mdi-text-box" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Log path</q-item-label>
-              <q-item-label>{{ service.logPath }}</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item v-if="service?.rpcId">
-            <q-item-section avatar>
-              <q-icon name="mdi-cog" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Worker ID</q-item-label>
-              <q-item-label>{{ service.rpcId }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <simple-list :items="items" />
         <q-separator />
         <q-card-section>
           <div class="text-subtitle-1">Parameters</div>
@@ -161,6 +105,7 @@ import ServiceStatus from 'src/components/ServiceStatus.vue'
 import { baseKey, confirm, getClient } from 'src/shared'
 import { computed, inject, onBeforeUnmount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const base = inject(baseKey)
 const route = useRoute()
@@ -170,10 +115,36 @@ const service = ref<IServiceInfo>()
 const provides = ref<string[]>([])
 const publishes = ref<string[]>([])
 
-const pluginUrl = computed(
-  () =>
-    `${base}/plugin/view/` + encodeURIComponent('' + service.value?.pluginId)
-)
+const items = computed<ISimpleListItem[]>(() => [
+  { icon: 'mdi-identifier', caption: 'ID', label: service.value?.id },
+  {
+    icon: 'mdi-power-plug',
+    caption: 'Plugin',
+    label: service.value?.pluginId,
+    labelTo:
+      `${base}/plugin/view/` + encodeURIComponent('' + service.value?.pluginId)
+  },
+  {
+    icon: 'mdi-cog-outline',
+    caption: 'Unit',
+    label: service.value?.unitId,
+    labelTo:
+      `${base}/unit/view/` +
+      encodeURIComponent('' + service.value?.pluginId) +
+      '/' +
+      encodeURIComponent('' + service.value?.unitId)
+  },
+  {
+    icon: 'mdi-text-box',
+    caption: 'Log path',
+    label: service.value?.logPath ?? 'stdout'
+  },
+  {
+    icon: 'mdi-cog',
+    caption: 'RPC ID',
+    label: '' + service.value?.rpcId
+  }
+])
 
 async function update(info: IServiceInfo) {
   service.value = info

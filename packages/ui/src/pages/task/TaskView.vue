@@ -12,56 +12,7 @@
           </div>
         </q-card-section>
         <q-separator />
-        <q-list>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-power-plug" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Plugin</q-item-label>
-              <q-item-label>
-                <router-link :to="urlPlugin">
-                  {{ task?.pluginId }}
-                </router-link>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-checkbox-blank-circle-outline" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Action</q-item-label>
-              <q-item-label>
-                <router-link :to="urlAction">
-                  {{ task?.actionId }}
-                </router-link>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-clock-plus-outline" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Created</q-item-label>
-              <q-item-label>
-                {{ new Date(task?.created ?? 0).toLocaleString() }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-clock-minus-outline" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Finished</q-item-label>
-              <q-item-label>
-                {{ new Date(task?.finished ?? 0).toLocaleString() }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <simple-list :items="items" />
         <q-separator />
         <q-card-actions align="right">
           <async-btn
@@ -99,6 +50,7 @@ import AsyncBtn from 'components/AsyncBtn.vue'
 import JobStatus from 'components/JobStatus.vue'
 import JobsGraph from 'components/JobsGraph.vue'
 import JobInfo from 'components/JobInfo.vue'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const base = inject(baseKey)
 const router = useRouter()
@@ -107,18 +59,35 @@ const taskId = <string>route.params.taskId
 const client = getClient()
 const task = ref<ActionTask>()
 const job = ref<IJobInfo>()
-
-const urlPlugin = computed(
-  () => `${base}/plugin/view/` + encodeURIComponent('' + task.value?.pluginId)
-)
-
-const urlAction = computed(
-  () =>
-    `${base}/action/view/` +
-    encodeURIComponent('' + task.value?.pluginId) +
-    '/' +
-    encodeURIComponent('' + task.value?.actionId)
-)
+const items = computed<ISimpleListItem[]>(() => [
+  {
+    icon: 'mdi-power-plug',
+    caption: 'Plugin',
+    label: task.value?.pluginId,
+    labelTo:
+      `${base}/plugin/view/` + encodeURIComponent('' + task.value?.pluginId)
+  },
+  {
+    icon: 'mdi-checkbox-blank-circle-outline',
+    caption: 'Action',
+    label: task.value?.actionId,
+    labelTo:
+      `${base}/action/view/` +
+      encodeURIComponent('' + task.value?.pluginId) +
+      '/' +
+      encodeURIComponent('' + task.value?.actionId)
+  },
+  {
+    icon: 'mdi-clock-plus-outline',
+    caption: 'Created',
+    label: new Date(task.value?.created ?? 0).toLocaleString()
+  },
+  {
+    icon: 'mdi-clock-minus-outline',
+    caption: 'Finished',
+    label: new Date(task.value?.finished ?? 0).toLocaleString()
+  }
+])
 
 async function remove() {
   await confirm('Are you sure you want to remove this task?')
