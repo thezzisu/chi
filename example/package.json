@@ -9,7 +9,7 @@
   "dependencies": {
     "@chijs/cli": "^0.0.23",
     "@chijs/client": "^0.0.19",
-    "@chijs/server": "^0.0.22"
+    "@chijs/app": "^0.0.1"
   },
   "devDependencies": {},
   "scripts": {

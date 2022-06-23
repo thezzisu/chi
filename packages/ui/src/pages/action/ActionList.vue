@@ -13,13 +13,13 @@
             :key="i"
             :to="
               `${base}/action/view` +
-              `/${encodeURIComponent(action.serviceId)}` +
+              `/${encodeURIComponent(action.pluginId)}` +
               `/${encodeURIComponent(action.id)}`
             "
           >
             <q-item-section>
               <q-item-label>
-                {{ action.serviceId }} / {{ action.id }}
+                {{ action.pluginId }} / {{ action.id }}
               </q-item-label>
             </q-item-section>
           </q-item>
@@ -38,13 +38,13 @@
 <script lang="ts" setup>
 import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
-import { IActionInfoWithService } from '@chijs/client'
+import type { IActionInfo } from '@chijs/app'
 import { getClient } from 'src/shared/client'
 
 const client = getClient()
 const base = inject(baseKey)
 
-const actions = ref<IActionInfoWithService[]>([])
+const actions = ref<IActionInfo[]>([])
 
 async function load() {
   actions.value = await client.action.list()

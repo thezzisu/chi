@@ -30,7 +30,7 @@ import { baseKey } from 'src/shared/injections'
 import { useRouter } from 'vue-router'
 
 const props = defineProps<{
-  serviceId: string
+  pluginId: string
   actionId: string
   schema: unknown
 }>()
@@ -42,7 +42,8 @@ const client = getClient()
 
 async function dispatch() {
   const taskId = await client.action.dispatch(
-    props.serviceId,
+    client.endpoint.localId,
+    props.pluginId,
     props.actionId,
     toRaw(params.value)
   )

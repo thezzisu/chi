@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { validateJsonSchema } from '@chijs/client'
+import { validateSchema } from '@chijs/util'
 import { ref, watch } from 'vue'
 
 const props = defineProps<{
@@ -41,7 +41,7 @@ watch(
     if (!schema) return
     try {
       const parsed = JSON.parse(json.value)
-      const errors = validateJsonSchema(parsed, <never>schema)
+      const errors = validateSchema(parsed, <never>schema)
       if (errors.length) {
         throw new Error(errors.map((e) => e.message).join('\n'))
       }
@@ -57,7 +57,7 @@ watch(json, (cur) => {
   try {
     const parsed = JSON.parse(cur)
     if (props.schema) {
-      const errors = validateJsonSchema(parsed, <never>props.schema)
+      const errors = validateSchema(parsed, <never>props.schema)
       if (errors.length) {
         throw new Error(errors.map((e) => e.message).join('\n'))
       }

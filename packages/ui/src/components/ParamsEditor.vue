@@ -12,7 +12,7 @@ import JsonEditor from 'components/JsonEditor.vue'
 
 const props = defineProps<{
   modelValue: unknown
-  schema: unknown
+  schema?: unknown
 }>()
 
 const emit = defineEmits(['update:modelValue'])

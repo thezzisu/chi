@@ -73,12 +73,13 @@ const base = `/instance/${route.params.instanceId}`
 provide(baseKey, base)
 
 const menuItems = [
-  { icon: 'mdi-clipboard-text-outline', label: 'Overview', to: '/' },
-  { icon: 'mdi-power-plug-outline', label: 'Plugin', to: '/plugin' },
-  { icon: 'mdi-cog-outline', label: 'Service', to: '/service' },
-  { icon: 'mdi-play-outline', label: 'Action', to: '/action' },
+  { icon: 'mdi-clipboard-text', label: 'Overview', to: '/' },
+  { icon: 'mdi-power-plug', label: 'Plugin', to: '/plugin' },
+  { icon: 'mdi-cog-outline', label: 'Unit', to: '/unit' },
+  { icon: 'mdi-cogs', label: 'Service', to: '/service' },
+  { icon: 'mdi-checkbox-blank-circle-outline', label: 'Action', to: '/action' },
   {
-    icon: 'mdi-checkbox-multiple-blank-circle-outline',
+    icon: 'mdi-checkbox-multiple-blank-circle',
     label: 'Task',
     to: '/task'
   }

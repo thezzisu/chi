@@ -16,7 +16,7 @@
           >
             <q-item-section>
               <q-item-label>
-                {{ task.serviceId }} / {{ task.actionId }}
+                {{ task.pluginId }} / {{ task.actionId }}
               </q-item-label>
               <q-item-label caption class="text-mono">
                 {{ task.id }}
@@ -41,14 +41,14 @@
 <script lang="ts" setup>
 import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
-import { ITaskInfo } from '@chijs/client'
 import { getClient } from 'src/shared/client'
 import JobStatus from 'components/JobStatus.vue'
+import type { ActionTask } from '@chijs/app'
 
 const client = getClient()
 const base = inject(baseKey)
 
-const tasks = ref<ITaskInfo[]>([])
+const tasks = ref<ActionTask[]>([])
 
 async function load() {
   tasks.value = await client.task.list()

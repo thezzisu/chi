@@ -44,69 +44,13 @@
           </div>
         </q-card-section>
         <q-separator />
-        <q-list>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-identifier" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>ID</q-item-label>
-              <q-item-label>
-                {{ service?.id }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item v-if="service?.name">
-            <q-item-section avatar>
-              <q-icon name="mdi-format-letter-case" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Name</q-item-label>
-              <q-item-label>
-                {{ service?.name }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-power-plug" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Instantiated from</q-item-label>
-              <q-item-label>
-                <router-link :to="pluginUrl">
-                  {{ service?.pluginId }}
-                </router-link>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item v-if="service?.logPath">
-            <q-item-section avatar>
-              <q-icon name="mdi-text-box" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Log path</q-item-label>
-              <q-item-label>{{ service.logPath }}</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item v-if="service?.workerId">
-            <q-item-section avatar>
-              <q-icon name="mdi-cog" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Worker ID</q-item-label>
-              <q-item-label>{{ service.workerId }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-        <q-separator />
-        <description-view :desc="service?.desc" />
+        <simple-list :items="items" />
         <q-separator />
         <q-card-section>
           <div class="text-subtitle-1">Parameters</div>
           <pre>{{ JSON.stringify(service?.params, null, '  ') }}</pre>
         </q-card-section>
-        <template v-if="service?.workerId">
+        <template v-if="service?.rpcId">
           <q-separator />
           <div class="text-subtitle-1 q-px-md q-pt-md q-pb-sm">
             Provided Functions
@@ -147,29 +91,6 @@
             <q-icon name="mdi-bullhorn-variant-outline" size="xl" />
             <div class="text-caption">No published events</div>
           </div>
-          <q-separator />
-          <div class="text-subtitle-1 q-px-md q-pt-md q-pb-sm">
-            Registered actions
-          </div>
-          <q-list v-if="actions.length">
-            <q-item v-for="(action, i) of actions" :key="i">
-              <q-item-section avatar>
-                <q-icon name="mdi-play-outline" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>
-                  <code>{{ action.id }}</code>
-                </q-item-label>
-                <q-item-label caption>
-                  {{ action.desc ?? 'No description' }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-          <div v-else class="column items-center q-pb-md">
-            <q-icon name="mdi-play-outline" size="xl" />
-            <div class="text-caption">No registered actions</div>
-          </div>
         </template>
       </q-card>
     </div>
@@ -177,19 +98,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, onBeforeUnmount, ref } from 'vue'
-import {
-  IActionInfo,
-  InternalDescriptor,
-  IServiceInfo,
-  RPC,
-  WorkerDescriptor
-} from '@chijs/client'
-import { useRoute, useRouter } from 'vue-router'
-import { baseKey, getClient, confirm } from 'src/shared'
+import type { IServiceInfo } from '@chijs/app'
+import type { InternalDescriptor } from '@chijs/rpc'
 import AsyncBtn from 'src/components/AsyncBtn.vue'
 import ServiceStatus from 'src/components/ServiceStatus.vue'
-import DescriptionView from 'src/components/DescriptionView.vue'
+import { baseKey, confirm, getClient } from 'src/shared'
+import { computed, inject, onBeforeUnmount, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const base = inject(baseKey)
 const route = useRoute()
@@ -198,23 +114,47 @@ const client = getClient()
 const service = ref<IServiceInfo>()
 const provides = ref<string[]>([])
 const publishes = ref<string[]>([])
-const actions = ref<IActionInfo[]>([])
 
-const pluginUrl = computed(
-  () =>
-    `${base}/plugin/view/` + encodeURIComponent('' + service.value?.pluginId)
-)
+const items = computed<ISimpleListItem[]>(() => [
+  { icon: 'mdi-identifier', caption: 'ID', label: service.value?.id },
+  {
+    icon: 'mdi-power-plug',
+    caption: 'Plugin',
+    label: service.value?.pluginId,
+    labelTo:
+      `${base}/plugin/view/` + encodeURIComponent('' + service.value?.pluginId)
+  },
+  {
+    icon: 'mdi-cog-outline',
+    caption: 'Unit',
+    label: service.value?.unitId,
+    labelTo:
+      `${base}/unit/view/` +
+      encodeURIComponent('' + service.value?.pluginId) +
+      '/' +
+      encodeURIComponent('' + service.value?.unitId)
+  },
+  {
+    icon: 'mdi-text-box',
+    caption: 'Log path',
+    label: service.value?.logPath ?? 'stdout'
+  },
+  {
+    icon: 'mdi-cog',
+    caption: 'RPC ID',
+    label: '' + service.value?.rpcId
+  }
+])
 
 async function update(info: IServiceInfo) {
   service.value = info
-  if (service.value.workerId) {
-    const handle = client.endpoint.getHandle<
-      InternalDescriptor & WorkerDescriptor
-    >(RPC.worker(service.value.workerId))
-    const info = await handle.call('$:info')
-    provides.value = info.provides.filter((x) => !x.startsWith('$'))
-    publishes.value = info.publishes.filter((x) => !x.startsWith('$'))
-    actions.value = await handle.call('$w:action:list')
+  if (service.value.rpcId) {
+    const handle = client.endpoint.getHandle<InternalDescriptor>(
+      service.value.rpcId
+    )
+    const info = await handle.call('#:info')
+    provides.value = info.provides.filter((x) => !x.startsWith('#'))
+    publishes.value = info.publishes.filter((x) => !x.startsWith('#'))
   }
 }
 
@@ -248,9 +188,11 @@ async function remove() {
 }
 
 async function load() {
-  update(await client.service.get(serviceId))
+  const info = await client.service.get(serviceId)
+  if (!info) throw new Error('Service not found')
+  update(info)
   sub = client.server.subscribe(
-    '$s:service:update',
+    '#server:service:update',
     (info) => update(info),
     serviceId
   )

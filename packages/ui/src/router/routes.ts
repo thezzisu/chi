@@ -40,12 +40,16 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/plugin/PluginView.vue')
       },
       {
-        path: 'service',
-        component: () => import('src/pages/service/ServiceList.vue')
+        path: 'unit',
+        component: () => import('src/pages/unit/UnitList.vue')
       },
       {
-        path: 'service/add',
-        component: () => import('src/pages/service/ServiceAdd.vue')
+        path: 'unit/view/:pluginId/:unitId',
+        component: () => import('src/pages/unit/UnitView.vue')
+      },
+      {
+        path: 'service',
+        component: () => import('src/pages/service/ServiceList.vue')
       },
       {
         path: 'service/view/:serviceId',
@@ -56,7 +60,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/action/ActionList.vue')
       },
       {
-        path: 'action/view/:serviceId/:actionId',
+        path: 'action/view/:pluginId/:actionId',
         component: () => import('src/pages/action/ActionView.vue')
       },
       {

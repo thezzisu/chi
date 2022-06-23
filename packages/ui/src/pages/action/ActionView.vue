@@ -10,45 +10,9 @@
           </div>
         </q-card-section>
         <q-separator />
-        <q-list>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-identifier" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>ID</q-item-label>
-              <q-item-label>
-                {{ action?.id }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item v-if="action?.name">
-            <q-item-section avatar>
-              <q-icon name="mdi-format-letter-case" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Name</q-item-label>
-              <q-item-label>
-                {{ action?.name }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-cog" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Service</q-item-label>
-              <q-item-label>
-                <router-link :to="serviceUrl">
-                  {{ action?.serviceId }}
-                </router-link>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <simple-list :items="list" />
         <q-separator />
-        <description-view :desc="action?.desc" />
+        <description-view :desc="action?.meta.description" />
         <q-separator />
         <schema-viewer
           :schema="action?.params ?? { type: 'object' }"
@@ -56,14 +20,14 @@
         />
         <q-separator />
         <schema-viewer
-          :schema="action?.return ?? { type: 'void' }"
+          :schema="action?.result ?? { type: 'void' }"
           name="Returns"
         />
       </q-card>
     </div>
     <div class="q-pa-sm col-12 col-lg-6">
       <action-run
-        :service-id="serviceId"
+        :plugin-id="pluginId"
         :action-id="actionId"
         :schema="action?.params ?? {}"
       />
@@ -73,28 +37,42 @@
 
 <script lang="ts" setup>
 import { computed, inject, ref } from 'vue'
-import { IActionInfoWithService } from '@chijs/client'
+import type { IActionInfo } from '@chijs/app'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
 import ActionRun from 'components/ActionRun.vue'
 import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
 import DescriptionView from 'components/DescriptionView.vue'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const base = inject(baseKey)
 const route = useRoute()
-const serviceId = <string>route.params.serviceId
+const pluginId = <string>route.params.pluginId
 const actionId = <string>route.params.actionId
 const client = getClient()
-const action = ref<IActionInfoWithService>()
-
-const serviceUrl = computed(
-  () =>
-    `${base}/service/view/` + encodeURIComponent('' + action.value?.serviceId)
-)
+const action = ref<IActionInfo>()
+const list = computed<ISimpleListItem[]>(() => [
+  { icon: 'mdi-identifier', caption: 'ID', label: action.value?.id },
+  {
+    icon: 'mdi-format-letter-case',
+    caption: 'Name',
+    label: action.value?.meta.name,
+    hide: !action.value?.meta.name
+  },
+  {
+    icon: 'mdi-cog',
+    caption: 'Plugin',
+    label: action.value?.pluginId,
+    labelTo:
+      `${base}/plugin/view/` + encodeURIComponent('' + action.value?.pluginId)
+  }
+])
 
 async function load() {
-  action.value = await client.action.get(serviceId, actionId)
+  const result = await client.action.get(pluginId, actionId)
+  if (!result) throw new Error('Action not found')
+  action.value = result
 }
 
 load()

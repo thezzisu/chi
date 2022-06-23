@@ -1,0 +1,35 @@
+{
+  "name": "@chijs/util",
+  "version": "0.0.3",
+  "main": "lib/index.js",
+  "license": "AGPL-3.0",
+  "description": "Core components of Chi framwork",
+  "author": "thezzisu <thezzisu@gmail.com>",
+  "private": false,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thezzisu/chi.git",
+    "directory": "packages/util"
+  },
+  "bugs": {
+    "url": "https://github.com/thezzisu/chi/issues"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.23.5",
+    "ajv": "^8.11.0",
+    "ajv-formats": "^2.1.1",
+    "nanoid": "^4.0.0",
+    "pino": "^8.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "ts-node-esm ../../scripts/build.ts --package util",
+    "lint": "eslint --ext .js,.ts ./src/ ./test/",
+    "prepublishOnly": "ts-node-esm ../../scripts/build.ts --package util --rebuild",
+    "test": "mocha"
+  },
+  "files": [
+    "lib"
+  ]
+}

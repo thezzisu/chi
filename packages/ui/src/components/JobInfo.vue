@@ -3,73 +3,14 @@
     <q-card-section>
       <div class="row justify-between items-center">
         <div>
-          <div class="text-h6">Job Info</div>
-          <job-status :state="job.state" />
+          <div class="text-h6">Job Details</div>
+          <div class="text-mono">{{ job?.id }}</div>
         </div>
+        <job-status :state="job.state" />
       </div>
     </q-card-section>
     <q-separator />
-    <q-list>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-identifier" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>ID</q-item-label>
-          <q-item-label>
-            {{ props.job.id }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-cog-outline" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>Service</q-item-label>
-          <q-item-label>
-            <router-link :to="serviceUrl">
-              {{ props.job?.serviceId }}
-            </router-link>
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-play-outline" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>Action</q-item-label>
-          <q-item-label>
-            <router-link :to="actionUrl">
-              {{ props.job?.actionId }}
-            </router-link>
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-clock-plus-outline" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>Created</q-item-label>
-          <q-item-label>
-            {{ new Date(props.job.created).toLocaleString() }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-clock-minus-outline" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>Finished</q-item-label>
-          <q-item-label>
-            {{ new Date(props.job.finished).toLocaleString() }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list>
+    <simple-list :items="items" />
     <q-separator />
     <q-card-section>
       <div class="text-subtitle2">Params</div>
@@ -84,23 +25,41 @@
 </template>
 
 <script setup lang="ts">
-import {  computed, inject } from 'vue'
-import { IJobInfo } from '@chijs/client'
-import { baseKey } from 'src/shared/injections'
+import type { IJobInfo } from '@chijs/app'
 import JobStatus from 'components/JobStatus.vue'
+import { baseKey } from 'src/shared/injections'
+import { computed, inject } from 'vue'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const base = inject(baseKey)
 const props = defineProps<{ job: IJobInfo }>()
-
-const serviceUrl = computed(
-  () => `${base}/service/view/` + encodeURIComponent('' + props.job?.serviceId)
-)
-
-const actionUrl = computed(
-  () =>
-    `${base}/action/view/` +
-    encodeURIComponent('' + props.job?.serviceId) +
-    '/' +
-    encodeURIComponent('' + props.job?.actionId)
-)
+const items = computed<ISimpleListItem[]>(() => [
+  {
+    icon: 'mdi-power-plug',
+    caption: 'Plugin',
+    label: props.job.pluginId,
+    labelTo:
+      `${base}/plugin/view/` + encodeURIComponent('' + props.job?.pluginId)
+  },
+  {
+    icon: 'mdi-checkbox-blank-circle-outline',
+    caption: 'Action',
+    label: props.job.actionId,
+    labelTo:
+      `${base}/action/view/` +
+      encodeURIComponent('' + props.job?.pluginId) +
+      '/' +
+      encodeURIComponent('' + props.job?.actionId)
+  },
+  {
+    icon: 'mdi-clock-plus-outline',
+    caption: 'Created',
+    label: new Date(props.job.created).toLocaleString()
+  },
+  {
+    icon: 'mdi-clock-minus-outline',
+    caption: 'Finished',
+    label: new Date(props.job.finished).toLocaleString()
+  }
+])
 </script>

@@ -1,10 +1,19 @@
+import {
+  createRpcWrapper,
+  IRpcMsg,
+  RpcEndpoint,
+  RpcTypeDescriptor
+} from '@chijs/rpc'
+import { createLogger } from '@chijs/util'
+import type { ServerDescriptor } from '@chijs/app'
 import type { Socket } from 'socket.io-client'
-import { RpcEndpoint, createRpcWrapper, RPC, IRpcMsg } from '@chijs/core'
 
-import type { ClientDescriptor, ServerDescriptor } from '@chijs/core'
+export type ClientDescriptor = RpcTypeDescriptor<{}, {}>
+
 export class ChiClient {
   endpoint
   server
+  unit
   service
   plugin
   action
@@ -15,17 +24,19 @@ export class ChiClient {
 
   constructor(public socket: Socket) {
     this.endpoint = new RpcEndpoint<ClientDescriptor>(
-      RPC.client(socket.id),
-      (msg) => socket.emit('rpc', msg)
+      socket.id,
+      (msg) => socket.emit('rpc', msg),
+      createLogger(['client', 'endpoint'])
     )
     this.socketListener = (msg: unknown) => this.endpoint.recv(<IRpcMsg>msg)
     this.socket.on('rpc', this.socketListener)
-    this.server = this.endpoint.getHandle<ServerDescriptor>(RPC.server())
-    this.service = createRpcWrapper(this.server, '$s:service:')
-    this.plugin = createRpcWrapper(this.server, '$s:plugin:')
-    this.misc = createRpcWrapper(this.server, '$s:misc:')
-    this.action = createRpcWrapper(this.server, '$s:action:')
-    this.task = createRpcWrapper(this.server, '$s:task:')
+    this.server = this.endpoint.getHandle<ServerDescriptor>('#server')
+    this.unit = createRpcWrapper(this.server, '#server:unit:')
+    this.service = createRpcWrapper(this.server, '#server:service:')
+    this.plugin = createRpcWrapper(this.server, '#server:plugin:')
+    this.misc = createRpcWrapper(this.server, '#server:misc:')
+    this.action = createRpcWrapper(this.server, '#server:action:')
+    this.task = createRpcWrapper(this.server, '#server:task:')
   }
 
   dispose(reason: unknown) {
@@ -34,5 +45,5 @@ export class ChiClient {
   }
 }
 
-export * from '@chijs/core'
+export * from '@chijs/util'
 export * from 'socket.io-client'

@@ -7,61 +7,12 @@
             <div>
               <div class="text-h6">Task Details</div>
               <div class="text-mono">{{ task?.id }}</div>
-              <job-status :state="task?.state" />
             </div>
+            <job-status :state="task?.state" />
           </div>
         </q-card-section>
         <q-separator />
-        <q-list>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-cog" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Service</q-item-label>
-              <q-item-label>
-                <router-link :to="serviceUrl">
-                  {{ task?.serviceId }}
-                </router-link>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-play-outline" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Action</q-item-label>
-              <q-item-label>
-                <router-link :to="actionUrl">
-                  {{ task?.actionId }}
-                </router-link>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-clock-plus-outline" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Created</q-item-label>
-              <q-item-label>
-                {{ new Date(task?.created ?? 0).toLocaleString() }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-clock-minus-outline" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Finished</q-item-label>
-              <q-item-label>
-                {{ new Date(task?.finished ?? 0).toLocaleString() }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <simple-list :items="items" />
         <q-separator />
         <q-card-actions align="right">
           <async-btn
@@ -92,33 +43,51 @@
 
 <script lang="ts" setup>
 import { computed, inject, onBeforeUnmount, ref } from 'vue'
-import { IJobInfo, ITaskInfo, JobState } from '@chijs/client'
+import type { IJobInfo, ActionTask } from '@chijs/app'
 import { useRoute, useRouter } from 'vue-router'
 import { getClient, baseKey, confirm } from 'src/shared'
 import AsyncBtn from 'components/AsyncBtn.vue'
 import JobStatus from 'components/JobStatus.vue'
 import JobsGraph from 'components/JobsGraph.vue'
 import JobInfo from 'components/JobInfo.vue'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const base = inject(baseKey)
 const router = useRouter()
 const route = useRoute()
 const taskId = <string>route.params.taskId
 const client = getClient()
-const task = ref<ITaskInfo>()
+const task = ref<ActionTask>()
 const job = ref<IJobInfo>()
-
-const serviceUrl = computed(
-  () => `${base}/service/view/` + encodeURIComponent('' + task.value?.serviceId)
-)
-
-const actionUrl = computed(
-  () =>
-    `${base}/action/view/` +
-    encodeURIComponent('' + task.value?.serviceId) +
-    '/' +
-    encodeURIComponent('' + task.value?.actionId)
-)
+const items = computed<ISimpleListItem[]>(() => [
+  {
+    icon: 'mdi-power-plug',
+    caption: 'Plugin',
+    label: task.value?.pluginId,
+    labelTo:
+      `${base}/plugin/view/` + encodeURIComponent('' + task.value?.pluginId)
+  },
+  {
+    icon: 'mdi-checkbox-blank-circle-outline',
+    caption: 'Action',
+    label: task.value?.actionId,
+    labelTo:
+      `${base}/action/view/` +
+      encodeURIComponent('' + task.value?.pluginId) +
+      '/' +
+      encodeURIComponent('' + task.value?.actionId)
+  },
+  {
+    icon: 'mdi-clock-plus-outline',
+    caption: 'Created',
+    label: new Date(task.value?.created ?? 0).toLocaleString()
+  },
+  {
+    icon: 'mdi-clock-minus-outline',
+    caption: 'Finished',
+    label: new Date(task.value?.finished ?? 0).toLocaleString()
+  }
+])
 
 async function remove() {
   await confirm('Are you sure you want to remove this task?')
@@ -128,17 +97,18 @@ async function remove() {
 
 let sub: Promise<string> | null = null
 
-function update(info: ITaskInfo) {
+function update(info: ActionTask) {
   task.value = info
-  if (info.state !== JobState.RUNNING) unsub()
+  if (info.state !== 'running') unsub()
 }
 
 async function load() {
   const info = await client.task.get(taskId)
+  if (!info) throw new Error('Task not found')
   update(info)
-  if (info.state === JobState.RUNNING) {
+  if (info.state === 'running') {
     sub = client.server.subscribe(
-      '$s:task:update',
+      '#server:task:update',
       (info) => update(info),
       info.id
     )

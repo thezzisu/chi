@@ -1,6 +1,6 @@
 <template>
-  <div ref="el">
-    <div class="c-tn-wrapper row no-wrap items-center">
+  <div>
+    <div ref="el" class="c-tn-wrapper row no-wrap items-center">
       <svg ref="svg" class="c-tn-svg">
         <line
           v-for="(line, i) of lines"

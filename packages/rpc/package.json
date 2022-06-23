@@ -1,0 +1,31 @@
+{
+  "name": "@chijs/rpc",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "license": "AGPL-3.0",
+  "description": "Core components of Chi framwork",
+  "author": "thezzisu <thezzisu@gmail.com>",
+  "private": false,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thezzisu/chi.git",
+    "directory": "packages/rpc"
+  },
+  "bugs": {
+    "url": "https://github.com/thezzisu/chi/issues"
+  },
+  "dependencies": {
+    "@chijs/util": "^0.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "ts-node-esm ../../scripts/build.ts --package rpc",
+    "lint": "eslint --ext .js,.ts ./src/ ./test/",
+    "prepublishOnly": "ts-node-esm ../../scripts/build.ts --package rpc --rebuild",
+    "test": "mocha"
+  },
+  "files": [
+    "lib"
+  ]
+}

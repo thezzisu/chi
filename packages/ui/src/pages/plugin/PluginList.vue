@@ -44,8 +44,8 @@
 <script lang="ts" setup>
 import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
-import { IPluginInfo } from '@chijs/client'
 import { getClient } from 'src/shared/client'
+import type { IPluginInfo } from '@chijs/app'
 
 const client = getClient()
 const base = inject(baseKey)

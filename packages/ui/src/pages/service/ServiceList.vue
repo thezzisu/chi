@@ -43,9 +43,9 @@
 <script lang="ts" setup>
 import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
-import { IServiceInfo } from '@chijs/client'
 import { getClient } from 'src/shared/client'
 import ServiceStatus from 'src/components/ServiceStatus.vue'
+import type { IServiceInfo } from '@chijs/app'
 
 const client = getClient()
 const base = inject(baseKey)

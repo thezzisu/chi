@@ -81,7 +81,7 @@ export function sortPackages(packages: string[]) {
   }
   sorted.reverse()
   console.log(
-    `Topologically order: ${sorted.map((s) => chalk.green(s.name)).join(', ')}`
+    `Topo order: ${sorted.map((s) => chalk.green(s.name)).join(', ')}`
   )
   return sorted.map((x) => x.resolved)
 }

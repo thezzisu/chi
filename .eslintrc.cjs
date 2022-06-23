@@ -24,6 +24,7 @@ module.exports = {
         },
         extendDefaults: true
       }
-    ]
+    ],
+    '@typescript-eslint/no-empty-function': 'off'
   }
 }

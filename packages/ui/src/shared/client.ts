@@ -1,14 +1,16 @@
-import { AgentDescriptor, ChiClient, io, RpcEndpoint } from '@chijs/client'
+import { ChiClient, io } from '@chijs/client'
 import { ref, toRaw } from 'vue'
 import { Dialog, Notify } from 'quasar'
 import { getInstance, Instance } from './instance'
+import type { RpcEndpoint } from '@chijs/rpc'
+import type { AgentDescriptor } from '@chijs/app'
 
 function applyActions(client: ChiClient) {
   const endpoint = client.endpoint as RpcEndpoint<AgentDescriptor>
-  endpoint.provide('$a:notify', (ctx, options) => {
+  endpoint.provide('#action:notify', (ctx, options) => {
     Notify.create(options)
   })
-  endpoint.provide('$a:alert', (ctx, options) => {
+  endpoint.provide('#action:alert', (ctx, options) => {
     if (typeof options === 'string') {
       Dialog.create({
         title: 'Alert',
@@ -22,7 +24,7 @@ function applyActions(client: ChiClient) {
     }
   })
   endpoint.provide(
-    '$a:confirm',
+    '#action:confirm',
     (ctx, options) =>
       new Promise((resolve) => {
         Dialog.create(
@@ -40,7 +42,7 @@ function applyActions(client: ChiClient) {
       })
   )
   endpoint.provide(
-    '$a:prompt',
+    '#action:prompt',
     (ctx, options) =>
       new Promise((resolve, reject) => {
         Dialog.create(
