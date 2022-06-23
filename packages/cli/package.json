@@ -1,6 +1,6 @@
 {
   "name": "@chijs/cli",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Command line interface for Chi framework",
@@ -16,7 +16,7 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/util": "^0.0.2",
+    "@chijs/util": "^0.0.3",
     "chalk": "^5.0.1",
     "get-port": "^6.1.2",
     "json5": "^2.2.1",
@@ -27,8 +27,8 @@
     "@types/yargs": "^17.0.10"
   },
   "optionalDependencies": {
-    "@chijs/app": "^0.0.1",
-    "@chijs/client": "^0.0.19"
+    "@chijs/app": "^0.0.2",
+    "@chijs/client": "^0.0.21"
   },
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package cli",

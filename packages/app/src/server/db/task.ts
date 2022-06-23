@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
-import { IJobInfo, JobState } from '../action/index.js'
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import type { IJobInfo, JobState } from '../action/index.js'
 
 @Entity()
 export class ActionTask {
