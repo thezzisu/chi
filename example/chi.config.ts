@@ -10,7 +10,7 @@ export default defineConfig({
     }
   ],
   resolve: {
-    '@': resolve(dirname(fileURLToPath(import.meta.url)), 'plugins')
+    '~': resolve(dirname(fileURLToPath(import.meta.url)), 'plugins')
   },
   web: {
     port: -1,

@@ -55,7 +55,7 @@ export class UnitBuilder<
 
   constructor() {
     super()
-    this._params = Type.Object({})
+    this._params = Type.Strict(Type.Object({}))
   }
 
   clone() {
@@ -87,7 +87,9 @@ export class UnitBuilder<
     schema: T | ((builder: TypeBuilder) => T)
   ): UnitBuilder<P, UnitTypeDescriptor<D['provide'], D['publish'], T>> {
     const clone = this.clone()
-    clone._params = schema instanceof Function ? schema(Type) : schema
+    clone._params = Type.Strict(
+      schema instanceof Function ? schema(Type) : schema
+    )
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return <any>clone
   }

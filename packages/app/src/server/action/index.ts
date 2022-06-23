@@ -58,7 +58,9 @@ export class ActionManager extends EventEmitter {
     task.finished = 0
     task = await this.manager.save(task)
     this.running.set(task.id, { initiator, task })
-    this.run(task.id, '', pluginId, actionId, params)
+    this.run(task.id, '', pluginId, actionId, params).catch((err) =>
+      this.logger.error(err)
+    )
     return task.id
   }
 

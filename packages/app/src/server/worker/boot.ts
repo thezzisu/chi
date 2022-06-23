@@ -65,7 +65,9 @@ function apply(endpoint: RpcEndpoint<WorkerDescriptor>) {
   endpoint.provide('ping', () => Promise.resolve())
 
   endpoint.provide('loadPlugin', async (resolved) => {
-    const { actions, units, ...rest } = await import(resolved)
+    const {
+      default: { actions, units, ...rest }
+    } = await import(resolved)
     return {
       ...rest,
       actions: mapObject(actions, <never>stripImpl),

@@ -1,18 +1,21 @@
 export interface IRejection {
   e: number
   m: unknown
+  s?: string
 }
 
 export function encodeReject(reject: unknown): IRejection {
   if (reject instanceof Error) {
-    return { e: 1, m: reject.message }
+    return { e: 1, m: reject.message, s: reject.stack }
   }
   return { e: 0, m: reject }
 }
 
 export function decodeReject(reject: IRejection) {
   if (reject.e) {
-    return new Error(<string>reject.m)
+    const error = new Error(<string>reject.m)
+    error.stack = reject.s
+    return error
   }
   return reject.m
 }

@@ -1,6 +1,6 @@
 import { definePlugin, PluginDescriptorOf } from '@chijs/app'
-import { Type } from '@chijs/core'
 import { RpcTypeDescriptor } from '@chijs/rpc'
+import { Type } from '@chijs/util'
 
 type FooURD = RpcTypeDescriptor<
   {

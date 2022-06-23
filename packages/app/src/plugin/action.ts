@@ -63,8 +63,8 @@ export class ActionBuilder<
 
   constructor() {
     super()
-    this._params = Type.Object({})
-    this._result = Type.Unknown()
+    this._params = Type.Strict(Type.Object({}))
+    this._result = Type.Strict(Type.Unknown())
   }
 
   clone() {
@@ -94,7 +94,9 @@ export class ActionBuilder<
     schema: T | ((builder: TypeBuilder) => T)
   ): ActionBuilder<P, ActionTypeDescriptor<T, D['result']>> {
     const clone = this.clone()
-    clone._params = schema instanceof Function ? schema(Type) : schema
+    clone._params = Type.Strict(
+      schema instanceof Function ? schema(Type) : schema
+    )
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return <any>clone
   }
@@ -103,7 +105,9 @@ export class ActionBuilder<
     schema: T | ((builder: TypeBuilder) => T)
   ): ActionBuilder<P, ActionTypeDescriptor<D['params'], T>> {
     const clone = this.clone()
-    clone._result = schema instanceof Function ? schema(Type) : schema
+    clone._result = Type.Strict(
+      schema instanceof Function ? schema(Type) : schema
+    )
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return <any>clone
   }
