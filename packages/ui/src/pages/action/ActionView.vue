@@ -22,14 +22,14 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="action?.name">
+          <q-item v-if="action?.meta.name">
             <q-item-section avatar>
               <q-icon name="mdi-format-letter-case" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Name</q-item-label>
               <q-item-label>
-                {{ action?.name }}
+                {{ action?.meta.name }}
               </q-item-label>
             </q-item-section>
           </q-item>
@@ -38,17 +38,17 @@
               <q-icon name="mdi-cog" />
             </q-item-section>
             <q-item-section>
-              <q-item-label caption>Service</q-item-label>
+              <q-item-label caption>Plugin</q-item-label>
               <q-item-label>
-                <router-link :to="serviceUrl">
-                  {{ action?.serviceId }}
+                <router-link :to="urlPlugin">
+                  {{ action?.pluginId }}
                 </router-link>
               </q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
         <q-separator />
-        <description-view :desc="action?.desc" />
+        <description-view :desc="action?.meta.description" />
         <q-separator />
         <schema-viewer
           :schema="action?.params ?? { type: 'object' }"
@@ -56,7 +56,7 @@
         />
         <q-separator />
         <schema-viewer
-          :schema="action?.return ?? { type: 'void' }"
+          :schema="action?.result ?? { type: 'void' }"
           name="Returns"
         />
       </q-card>
@@ -73,7 +73,7 @@
 
 <script lang="ts" setup>
 import { computed, inject, ref } from 'vue'
-import { IActionInfoWithService } from '@chijs/client'
+import type { IActionInfo } from '@chijs/app'
 import { useRoute } from 'vue-router'
 import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
@@ -86,15 +86,16 @@ const route = useRoute()
 const serviceId = <string>route.params.serviceId
 const actionId = <string>route.params.actionId
 const client = getClient()
-const action = ref<IActionInfoWithService>()
+const action = ref<IActionInfo>()
 
-const serviceUrl = computed(
-  () =>
-    `${base}/service/view/` + encodeURIComponent('' + action.value?.serviceId)
+const urlPlugin = computed(
+  () => `${base}/plugin/view/` + encodeURIComponent('' + action.value?.pluginId)
 )
 
 async function load() {
-  action.value = await client.action.get(serviceId, actionId)
+  const result = await client.action.get(serviceId, actionId)
+  if (!result) throw new Error('Action not found')
+  action.value = result
 }
 
 load()

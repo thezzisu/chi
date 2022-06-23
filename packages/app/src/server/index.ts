@@ -70,6 +70,9 @@ export class ChiServer {
   }
 }
 
+export * from './action/index.js'
 export * from './config/index.js'
-export * from './rpc/base.js'
-export * from '../util/index.js'
+export * from './db/index.js'
+export * from './plugin/index.js'
+export * from './rpc/index.js'
+export * from './service/index.js'

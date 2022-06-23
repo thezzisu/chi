@@ -5,20 +5,15 @@ import { join } from 'node:path'
 import { ChiServer } from '../index.js'
 import { ChiWorker } from '../worker/index.js'
 
-export enum ServiceRestartPolicy {
-  ALWAYS = 'always',
-  ON_FAILURE = 'on-failure',
-  NEVER = 'never'
-}
+export type ServiceRestartPolicy = 'always' | 'on-failure' | 'never'
 
-export enum ServiceState {
-  INITIALIZING = 'initializing',
-  STARTING = 'starting',
-  RUNNING = 'running',
-  STOPPING = 'stopping',
-  FAILED = 'failed',
-  EXITED = 'exited'
-}
+export type ServiceState =
+  | 'initializing'
+  | 'starting'
+  | 'running'
+  | 'stopping'
+  | 'failed'
+  | 'exited'
 
 export interface IServiceDefn {
   id: string
@@ -59,12 +54,12 @@ export class ServiceManager extends EventEmitter {
     pluginId: string,
     unitId: string,
     params: unknown,
-    restartPolicy: ServiceRestartPolicy = ServiceRestartPolicy.ON_FAILURE
+    restartPolicy: ServiceRestartPolicy = 'on-failure'
   ) {
     if (this.services.has(id)) {
       throw new Error('Service already exists')
     }
-    const plugin = this.app.plugins.get(pluginId)
+    const plugin = this.app.plugins.getOrFail(pluginId)
     const unit = plugin.units[unitId]
     if (!unit) {
       throw new Error('Unit not found')
@@ -79,7 +74,7 @@ export class ServiceManager extends EventEmitter {
       params,
       restartPolicy,
       logPath: null,
-      state: ServiceState.EXITED,
+      state: 'exited',
       rpcId: null
     })
     this.emitChange(id)
@@ -97,7 +92,7 @@ export class ServiceManager extends EventEmitter {
     const service = this.services.get(id)
     if (!service) throw new Error('Service not found')
     if (service.worker) throw new Error('Service is running')
-    const plugin = this.app.plugins.get(service.pluginId)
+    const plugin = this.app.plugins.getOrFail(service.pluginId)
     const now = Date.now()
     const logPath =
       this.app.config.log.path &&
@@ -111,19 +106,20 @@ export class ServiceManager extends EventEmitter {
     const worker = this.app.workers.fork({
       rpcId: uniqueId(),
       logPath,
-      logger: this.logger
+      logger: this.logger,
+      level: this.app.config.log.level
     })
     service.rpcId = worker.options.rpcId
     service.worker = worker
-    service.state = ServiceState.INITIALIZING
+    service.state = 'initializing'
     this.emitChange(id)
     const handle = worker.getHandle()
     try {
-      await handle.call('waitForBootstrap')
-      service.state = ServiceState.STARTING
+      await handle.call('#worker:waitForBootstrap')
+      service.state = 'starting'
       this.emitChange(id)
 
-      await handle.exec('runUnit', {
+      await handle.exec('#worker:runUnit', {
         resolved: plugin.resolved,
         pluginId: service.pluginId,
         unitId: service.unitId,
@@ -131,7 +127,7 @@ export class ServiceManager extends EventEmitter {
         params: service.params,
         pluginParams: plugin.actualParams
       })
-      service.state = ServiceState.RUNNING
+      service.state = 'running'
       this.emitChange(id)
 
       worker.whenExit.then(([code, signal]) => {
@@ -142,11 +138,11 @@ export class ServiceManager extends EventEmitter {
         )
         const originalState = service.state
         const isNormalExit = code === 0 && signal === null
-        service.state = isNormalExit ? ServiceState.EXITED : ServiceState.FAILED
+        service.state = isNormalExit ? 'exited' : 'failed'
         service.rpcId = null
         this.emitChange(id)
 
-        if (originalState === ServiceState.STOPPING) return
+        if (originalState === 'stopping') return
 
         if (shouldRestart(service.restartPolicy, isNormalExit)) {
           // TODO: handle restart timeout
@@ -155,7 +151,7 @@ export class ServiceManager extends EventEmitter {
       })
     } catch (err) {
       worker.exit()
-      service.state = ServiceState.FAILED
+      service.state = 'failed'
     }
   }
 
@@ -163,7 +159,7 @@ export class ServiceManager extends EventEmitter {
     const service = this.services.get(id)
     if (!service) throw new Error('Service not found')
     if (!service.worker) throw new Error('Service is not running')
-    service.state = ServiceState.STOPPING
+    service.state = 'stopping'
     this.emitChange(id)
     service.worker.exit()
     await service.worker.whenExit
@@ -189,9 +185,9 @@ export class ServiceManager extends EventEmitter {
 
 function shouldRestart(policy: ServiceRestartPolicy, isNormalExit: boolean) {
   switch (policy) {
-    case ServiceRestartPolicy.ALWAYS:
+    case 'always':
       return true
-    case ServiceRestartPolicy.ON_FAILURE:
+    case 'on-failure':
       return !isNormalExit
     default:
       return false

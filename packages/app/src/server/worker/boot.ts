@@ -1,7 +1,19 @@
 import { IRpcMsg, RpcEndpoint, RpcId, RpcTypeDescriptor } from '@chijs/rpc'
-import { Awaitable, createBaseLogger, createLogger } from '@chijs/util'
+import {
+  Awaitable,
+  createBaseLogger,
+  createLogger,
+  Logger,
+  WithPrefix
+} from '@chijs/util'
 import type { IWorkerOptions } from './fork.js'
 import { IPlugin } from '../plugin/index.js'
+import {
+  ActionContext,
+  IChiPluginActionDefn,
+  IChiPluginUnitDefn,
+  UnitContext
+} from '../../plugin/index.js'
 
 export const WORKER_BOOTSTRAP_FAILED = 2
 
@@ -33,7 +45,10 @@ export interface IWorkerRpcFns {
   runUnit(params: IRunUnitParams): Promise<void>
   runAction(params: IRunActionParams): Promise<unknown>
 }
-export type WorkerDescriptor = RpcTypeDescriptor<IWorkerRpcFns, {}>
+export type WorkerDescriptor = RpcTypeDescriptor<
+  WithPrefix<IWorkerRpcFns, '#worker:'>,
+  {}
+>
 
 const initialization = {
   resolve: <(value: Awaitable<void>) => void>(<unknown>null),
@@ -59,12 +74,12 @@ function mapObject<V, T>(
   )
 }
 
-function apply(endpoint: RpcEndpoint<WorkerDescriptor>) {
-  endpoint.provide('waitForBootstrap', () => initialization.promise)
-  endpoint.provide('exit', () => process.exit(0))
-  endpoint.provide('ping', () => Promise.resolve())
+function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
+  endpoint.provide('#worker:waitForBootstrap', () => initialization.promise)
+  endpoint.provide('#worker:exit', () => process.exit(0))
+  endpoint.provide('#worker:ping', () => Promise.resolve())
 
-  endpoint.provide('loadPlugin', async (resolved) => {
+  endpoint.provide('#worker:loadPlugin', async (resolved) => {
     const {
       default: { actions, units, ...rest }
     } = await import(resolved)
@@ -74,10 +89,44 @@ function apply(endpoint: RpcEndpoint<WorkerDescriptor>) {
       units: mapObject(units, <never>stripImpl)
     }
   })
+
+  endpoint.provide('#worker:runAction', async (options) => {
+    const {
+      default: { actions }
+    } = await import(options.resolved)
+    const action = <IChiPluginActionDefn>actions[options.actionId]
+    const context = new ActionContext(
+      endpoint,
+      logger,
+      options.pluginParams,
+      options.pluginId,
+      options.actionId,
+      options.taskId,
+      options.jobId,
+      options.initiator
+    )
+    return action.impl(context, options.params)
+  })
+
+  endpoint.provide('#worker:runUnit', async (options) => {
+    const {
+      default: { units }
+    } = await import(options.resolved)
+    const unit = <IChiPluginUnitDefn>units[options.unitId]
+    const context = new UnitContext(
+      endpoint,
+      logger,
+      options.pluginParams,
+      options.pluginId,
+      options.unitId,
+      options.serviceId
+    )
+    await unit.impl(context, options.params)
+  })
 }
 
 export async function boot(options: IWorkerOptions) {
-  const baseLogger = createBaseLogger()
+  const baseLogger = createBaseLogger({ level: options.level })
   try {
     if (!options.rpcId || typeof options.rpcId !== 'string') {
       throw new Error('rpcId is required')
@@ -88,7 +137,7 @@ export async function boot(options: IWorkerOptions) {
       createLogger(['worker', 'endpoint'], {}, baseLogger)
     )
     process.on('message', (msg) => endpoint.recv(<IRpcMsg>msg))
-    apply(endpoint)
+    apply(endpoint, createLogger(['worker', 'rpc'], {}, baseLogger))
     initialization.resolve()
   } catch (err) {
     initialization.reject(err)

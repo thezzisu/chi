@@ -58,7 +58,7 @@ export class ChiWorker {
   exit(reason?: unknown) {
     try {
       const handle = this.getHandle()
-      handle.exec('exit', reason)
+      handle.exec('#worker:exit', reason)
     } catch {
       // ignore error here
     }

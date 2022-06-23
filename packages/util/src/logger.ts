@@ -1,4 +1,4 @@
-import { DestinationStream, pino, LoggerOptions, Logger } from 'pino'
+import pino, { DestinationStream, LoggerOptions, Logger } from 'pino'
 
 export function createBaseLogger(
   options?: LoggerOptions,

@@ -22,14 +22,14 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="plugin?.name">
+          <q-item v-if="plugin?.meta.name">
             <q-item-section avatar>
               <q-icon name="mdi-format-letter-case" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Name</q-item-label>
               <q-item-label>
-                {{ plugin?.name }}
+                {{ plugin?.meta.name }}
               </q-item-label>
             </q-item-section>
           </q-item>
@@ -46,7 +46,7 @@
           </q-item>
         </q-list>
         <q-separator />
-        <description-view :desc="plugin?.desc" />
+        <description-view :desc="plugin?.meta.description" />
         <q-separator />
         <schema-viewer
           :schema="plugin?.params ?? { type: 'object' }"
@@ -65,21 +65,17 @@
         </q-card-actions>
       </q-card>
     </div>
-    <div class="q-pa-sm col-12 col-lg-6">
-      <service-create :plugin-id="pluginId" :schema="plugin?.params" />
-    </div>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import { inject, ref } from 'vue'
-import { IPluginInfo } from '@chijs/client'
 import { useRoute, useRouter } from 'vue-router'
 import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
-import ServiceCreate from 'components/ServiceCreate.vue'
 import DescriptionView from 'components/DescriptionView.vue'
 import AsyncBtn from 'components/AsyncBtn.vue'
 import { getClient, baseKey, confirm } from 'src/shared'
+import type { IPluginInfo } from '@chijs/app'
 
 const route = useRoute()
 const pluginId = <string>route.params.pluginId

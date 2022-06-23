@@ -1,4 +1,4 @@
-import { IJobInfo, JobState } from '@chijs/core'
+import type { IJobInfo } from '@chijs/app'
 import { Node } from './treeview'
 
 function generateTreeGrid(
@@ -20,11 +20,16 @@ function generateTreeGrid(
 
 export function createJobTree(jobs: IJobInfo[]): Node {
   const map = new Map<string, IJobInfo[]>()
+  let root: IJobInfo | null = null
   for (const job of jobs) {
-    if (!map.has(job.parent)) map.set(job.parent, [])
-    map.get(job.parent)?.push(job)
+    if (!job.parent) {
+      root = job
+    } else {
+      if (!map.has(job.parent)) map.set(job.parent, [])
+      map.get(job.parent)?.push(job)
+    }
   }
-  const root = (map.get('') ?? [])[0]
+  if (!root) throw new Error('No root job')
   const node: Node = {
     value: root
   }
@@ -34,22 +39,26 @@ export function createJobTree(jobs: IJobInfo[]): Node {
 
 export function icon(job: IJobInfo): string {
   switch (job.state) {
-    case JobState.RUNNING:
+    case 'initializing':
+      return 'mdi-timer-sand-empty'
+    case 'running':
       return 'mdi-play'
-    case JobState.SUCCESS:
+    case 'success':
       return 'mdi-check'
-    case JobState.FAILED:
+    case 'failed':
       return 'mdi-error'
   }
 }
 
 export function color(job: IJobInfo): string {
   switch (job.state) {
-    case JobState.RUNNING:
+    case 'initializing':
+      return 'primary'
+    case 'running':
       return 'warning'
-    case JobState.SUCCESS:
+    case 'success':
       return 'positive'
-    case JobState.FAILED:
+    case 'failed':
       return 'negative'
   }
 }

@@ -19,7 +19,13 @@ export function applyMiscImpl(
 ) {
   endpoint.provide('#server:misc:versions', async () => {
     const content = await fs.readFile(
-      join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'package.json')
+      join(
+        dirname(fileURLToPath(import.meta.url)),
+        '..',
+        '..',
+        '..',
+        'package.json'
+      )
     )
     const json = JSON.parse(content.toString())
     return { server: json.version }

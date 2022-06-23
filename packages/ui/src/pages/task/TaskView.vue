@@ -18,10 +18,10 @@
               <q-icon name="mdi-cog" />
             </q-item-section>
             <q-item-section>
-              <q-item-label caption>Service</q-item-label>
+              <q-item-label caption>Plugin</q-item-label>
               <q-item-label>
-                <router-link :to="serviceUrl">
-                  {{ task?.serviceId }}
+                <router-link :to="pluginUrl">
+                  {{ task?.pluginId }}
                 </router-link>
               </q-item-label>
             </q-item-section>
@@ -92,7 +92,7 @@
 
 <script lang="ts" setup>
 import { computed, inject, onBeforeUnmount, ref } from 'vue'
-import { IJobInfo, ITaskInfo, JobState } from '@chijs/client'
+import type { IJobInfo, ActionTask } from '@chijs/app'
 import { useRoute, useRouter } from 'vue-router'
 import { getClient, baseKey, confirm } from 'src/shared'
 import AsyncBtn from 'components/AsyncBtn.vue'
@@ -105,17 +105,17 @@ const router = useRouter()
 const route = useRoute()
 const taskId = <string>route.params.taskId
 const client = getClient()
-const task = ref<ITaskInfo>()
+const task = ref<ActionTask>()
 const job = ref<IJobInfo>()
 
-const serviceUrl = computed(
-  () => `${base}/service/view/` + encodeURIComponent('' + task.value?.serviceId)
+const pluginUrl = computed(
+  () => `${base}/plugin/view/` + encodeURIComponent('' + task.value?.pluginId)
 )
 
 const actionUrl = computed(
   () =>
     `${base}/action/view/` +
-    encodeURIComponent('' + task.value?.serviceId) +
+    encodeURIComponent('' + task.value?.pluginId) +
     '/' +
     encodeURIComponent('' + task.value?.actionId)
 )
@@ -128,17 +128,17 @@ async function remove() {
 
 let sub: Promise<string> | null = null
 
-function update(info: ITaskInfo) {
+function update(info: ActionTask) {
   task.value = info
-  if (info.state !== JobState.RUNNING) unsub()
+  if (info.state !== 'running') unsub()
 }
 
 async function load() {
   const info = await client.task.get(taskId)
   update(info)
-  if (info.state === JobState.RUNNING) {
+  if (info.state === 'running') {
     sub = client.server.subscribe(
-      '$s:task:update',
+      '#server:task:update',
       (info) => update(info),
       info.id
     )

@@ -13,6 +13,7 @@ export type ClientDescriptor = RpcTypeDescriptor<{}, {}>
 export class ChiClient {
   endpoint
   server
+  unit
   service
   plugin
   action
@@ -30,6 +31,7 @@ export class ChiClient {
     this.socketListener = (msg: unknown) => this.endpoint.recv(<IRpcMsg>msg)
     this.socket.on('rpc', this.socketListener)
     this.server = this.endpoint.getHandle<ServerDescriptor>('#server')
+    this.unit = createRpcWrapper(this.server, '#server:unit:')
     this.service = createRpcWrapper(this.server, '#server:service:')
     this.plugin = createRpcWrapper(this.server, '#server:plugin:')
     this.misc = createRpcWrapper(this.server, '#server:misc:')

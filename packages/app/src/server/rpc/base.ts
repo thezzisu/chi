@@ -12,11 +12,13 @@ import { applyPluginImpl, IPluginProvides } from './plugin.js'
 import {
   applyServiceImpl,
   IServiceProvides,
-  IServicePublishes
+  IServicePublishes,
+  IUnitProvides
 } from './service.js'
 
 export interface IServerProvides
   extends WithPrefix<IPluginProvides, 'plugin:'>,
+    WithPrefix<IUnitProvides, 'unit:'>,
     WithPrefix<IServiceProvides, 'service:'>,
     WithPrefix<IActionProvides, 'action:'>,
     WithPrefix<ITaskProvides, 'task:'>,

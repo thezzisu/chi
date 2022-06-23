@@ -25,6 +25,7 @@ const plugin = definePlugin((b) =>
           .unit('foo')
           .create('plugin-foo-1', { wait: '123' })
         await ctx.api.service.start(service.id)
+        ctx.logger.info('plugin-foo-1 started')
       })
     )
     .unit('foo', (b) =>

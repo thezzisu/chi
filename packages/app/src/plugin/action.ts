@@ -1,4 +1,9 @@
-import { RpcBaseDescriptor, RpcEndpoint, RpcTypeDescriptor } from '@chijs/rpc'
+import {
+  RpcBaseDescriptor,
+  RpcEndpoint,
+  RpcId,
+  RpcTypeDescriptor
+} from '@chijs/rpc'
 import {
   Awaitable,
   Logger,
@@ -44,11 +49,12 @@ export class ActionContext<
   constructor(
     endpoint: RpcEndpoint<RpcTypeDescriptor<{}, {}>>,
     logger: Logger,
-    params: P,
+    params: Static<P['params']>,
     public readonly pluginId: string,
     public readonly actionId: string,
     public readonly taskId: string,
-    public readonly jobId: string
+    public readonly jobId: string,
+    public readonly initiator: RpcId
   ) {
     super(endpoint, logger, params)
   }

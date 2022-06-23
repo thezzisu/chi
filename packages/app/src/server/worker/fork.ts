@@ -2,12 +2,13 @@ import fs from 'fs-extra'
 import { fork } from 'node:child_process'
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { Logger } from '@chijs/util'
+import { Logger, pino } from '@chijs/util'
 import { RpcId } from '@chijs/rpc'
 import minimist from 'minimist'
 
 export interface IWorkerOptions {
   rpcId: RpcId
+  level: pino.Level | undefined
 }
 
 export interface IForkWorkerOptions extends IWorkerOptions {

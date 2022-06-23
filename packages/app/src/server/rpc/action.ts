@@ -1,16 +1,17 @@
 import { RpcEndpoint, RpcId } from '@chijs/rpc'
 import { IChiPluginAction } from '../../plugin/index.js'
-import { JobState } from '../action/index.js'
 import { ActionTask } from '../db/task.js'
 import { ChiServer } from '../index.js'
 import { ServerDescriptor } from './base.js'
 
 export interface IActionInfo extends IChiPluginAction {
   id: string
+  pluginId: string
 }
 
 export interface IActionProvides {
   list(pluginId?: string): Promise<IActionInfo[]>
+  get(pluginId: string, actionId: string): Promise<IActionInfo | null>
   dispatch(
     initiator: RpcId,
     pluginId: string,
@@ -27,7 +28,7 @@ export interface IActionProvides {
 }
 
 export interface ITaskProvides {
-  get(id: string): Promise<ActionTask>
+  get(id: string): Promise<ActionTask | null>
   list(pluginId?: string, actionId?: string): Promise<ActionTask[]>
   remove(id: string): Promise<void>
 }
@@ -41,13 +42,22 @@ export function applyActionImpl(
   app: ChiServer
 ) {
   e.provide('#server:action:list', (pluginId) => {
-    const plugins = pluginId ? [app.plugins.get(pluginId)] : app.plugins.list()
+    const plugins = pluginId
+      ? [app.plugins.getOrFail(pluginId)]
+      : app.plugins.list()
     return plugins.flatMap((plugin) =>
       Object.entries(plugin.actions).map(([id, action]) => ({
         id,
+        pluginId: plugin.id,
         ...action
       }))
     )
+  })
+
+  e.provide('#server:action:get', (pluginId, actionId) => {
+    const action = app.plugins.get(pluginId)?.actions[actionId]
+    if (!action) return null
+    return { id: actionId, pluginId, ...action }
   })
 
   e.provide('#server:action:dispatch', (...args) =>
@@ -59,7 +69,7 @@ export function applyActionImpl(
   const Tasks = app.db.ds.manager.getRepository(ActionTask)
 
   e.provide('#server:task:get', async (id) => {
-    return Tasks.findOneByOrFail({ id })
+    return Tasks.findOneBy({ id })
   })
 
   e.provide('#server:task:list', (pluginId, actionId) => {
@@ -73,7 +83,7 @@ export function applyActionImpl(
 
   e.provide('#server:task:remove', async (id) => {
     const task = await Tasks.findOneByOrFail({ id })
-    if (task.state === JobState.SUCCESS || task.state === JobState.FAILED) {
+    if (task.state === 'success' || task.state === 'failed') {
       await Tasks.remove(task)
     } else {
       throw new Error('Task is not finished')

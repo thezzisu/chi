@@ -13,11 +13,11 @@ export default defineConfig({
     '~': resolve(dirname(fileURLToPath(import.meta.url)), 'plugins')
   },
   web: {
-    port: -1,
+    port: 3000,
     token: 'example-token'
   },
   log: {
-    path: 'logs',
+    path: null,
     level: 'info'
   }
 })

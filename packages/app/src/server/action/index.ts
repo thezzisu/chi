@@ -5,12 +5,7 @@ import { join } from 'node:path'
 import { ActionTask } from '../db/task.js'
 import { ChiServer } from '../index.js'
 
-export enum JobState {
-  INITIALIZING = 'initializing',
-  RUNNING = 'running',
-  SUCCESS = 'success',
-  FAILED = 'failed'
-}
+export type JobState = 'initializing' | 'running' | 'success' | 'failed'
 
 export interface IJobInfo {
   id: string
@@ -52,13 +47,13 @@ export class ActionManager extends EventEmitter {
     task.id = uniqueId()
     task.pluginId = pluginId
     task.actionId = actionId
-    task.state = JobState.RUNNING
+    task.state = 'running'
     task.jobs = []
     task.created = Date.now()
     task.finished = 0
     task = await this.manager.save(task)
     this.running.set(task.id, { initiator, task })
-    this.run(task.id, '', pluginId, actionId, params).catch((err) =>
+    this.run(task.id, null, pluginId, actionId, params).catch((err) =>
       this.logger.error(err)
     )
     return task.id
@@ -71,7 +66,7 @@ export class ActionManager extends EventEmitter {
     actionId: string,
     params: unknown
   ) {
-    const plugin = this.app.plugins.get(pluginId)
+    const plugin = this.app.plugins.getOrFail(pluginId)
     const info = this.running.get(taskId)
     if (!info) throw new Error(`Task ${taskId} not found`)
     const { initiator, task } = info
@@ -91,7 +86,7 @@ export class ActionManager extends EventEmitter {
       actionId,
       params,
       return: null,
-      state: JobState.RUNNING,
+      state: 'initializing',
       created: Date.now(),
       finished: 0,
       logPath
@@ -103,19 +98,17 @@ export class ActionManager extends EventEmitter {
     const worker = this.app.workers.fork({
       rpcId: jobId,
       logPath,
-      logger: this.logger
+      logger: this.logger,
+      level: this.app.config.log.level
     })
-    job.state = JobState.INITIALIZING
-    await this.manager.save(task)
-    this.emit(taskId, task)
     try {
       const handle = worker.getHandle()
-      await handle.call('waitForBootstrap')
-      job.state = JobState.RUNNING
+      await handle.call('#worker:waitForBootstrap')
+      job.state = 'running'
       await this.manager.save(task)
       this.emit(taskId, task)
 
-      const result = await handle.call('runAction', {
+      const result = await handle.call('#worker:runAction', {
         pluginId,
         actionId,
         taskId,
@@ -126,10 +119,10 @@ export class ActionManager extends EventEmitter {
         resolved: plugin.resolved
       })
       job.return = result
-      job.state = JobState.SUCCESS
+      job.state = 'success'
     } catch (err) {
       job.return = err instanceof Error ? err.message : err
-      job.state = JobState.FAILED
+      job.state = 'failed'
       toThrow = err
     }
     worker.exit()

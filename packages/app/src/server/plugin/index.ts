@@ -28,7 +28,12 @@ export class PluginManager {
     return [...this.map.values()]
   }
 
-  get(id: string): IPluginInfo {
+  get(id: string): IPluginInfo | null {
+    const plugin = this.map.get(id)
+    return plugin ?? null
+  }
+
+  getOrFail(id: string): IPluginInfo {
     const plugin = this.map.get(id)
     if (!plugin) throw new Error(`Plugin not found: ${id}`)
     return plugin
@@ -41,13 +46,14 @@ export class PluginManager {
     const worker = this.app.workers.fork({
       rpcId: uniqueId(),
       logPath: null,
-      logger: this.logger
+      logger: this.logger,
+      level: this.app.config.log.level
     })
     try {
       const resolved = resolvePath(id, this.app.config.resolve)
       const handle = worker.getHandle()
-      await handle.call('waitForBootstrap')
-      const info = await handle.call('loadPlugin', resolved)
+      await handle.call('#worker:waitForBootstrap')
+      const info = await handle.call('#worker:loadPlugin', resolved)
       const errors = validateSchema(params, info.params)
       if (errors.length) throw new Error(`Bad params for plugin ${id}`)
       this.map.set(id, { ...info, id, resolved, actualParams: params })

@@ -7,7 +7,7 @@ export interface IPluginProvides {
   load(id: string, params: unknown): Promise<[ok: boolean, reason?: string]>
   unload(id: string): Promise<void>
   list(): Promise<IPluginInfo[]>
-  get(id: string): Promise<IPluginInfo>
+  get(id: string): Promise<IPluginInfo | null>
 }
 
 export function applyPluginImpl(

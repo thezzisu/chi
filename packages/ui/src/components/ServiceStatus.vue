@@ -12,22 +12,22 @@
 </template>
 
 <script setup lang="ts">
-import { ServiceState } from '@chijs/client'
 import { computed } from 'vue'
+import type { ServiceState } from '@chijs/app'
 
 const props = defineProps<{ state?: ServiceState }>()
 const status = computed(() => {
   switch (props.state) {
-    case ServiceState.FAILED:
+    case 'failed':
       return ['negative', 'mdi-alert-circle', 'Failed']
-    case ServiceState.RUNNING:
+    case 'running':
       return ['positive', 'mdi-play', 'Running']
-    case ServiceState.STARTING:
+    case 'starting':
       return ['secondary', 'mdi-play', 'Starting']
-    case ServiceState.STOPPING:
+    case 'stopping':
       return ['secondary', 'mdi-stop', 'Stopping']
-    case ServiceState.STOPPED:
-      return ['grey-9', 'mdi-stop', 'Stopped']
+    case 'exited':
+      return ['grey-9', 'mdi-stop', 'Exited']
     default:
       return ['black', 'mdi-timer-sand-empty', 'Loading']
   }

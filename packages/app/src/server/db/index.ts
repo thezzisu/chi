@@ -1,5 +1,4 @@
 import { DataSource } from 'typeorm'
-import { JobState } from '../action/index.js'
 import { ChiServer } from '../index.js'
 import { ActionTask } from './task.js'
 
@@ -18,20 +17,22 @@ export class Database {
   async init() {
     await this.ds.initialize()
     const badTasks = await this.ds.manager.find(ActionTask, {
-      where: { state: JobState.RUNNING }
+      where: { state: 'running' }
     })
     this.logger.info(`Cleanup ${badTasks.length} tasks`)
     for (const task of badTasks) {
       for (const job of task.jobs) {
-        if (job.state === JobState.RUNNING) {
-          job.state = JobState.FAILED
+        if (job.state === 'running') {
+          job.state = 'failed'
           job.finished = job.created
           job.return = 'Failed due to server shutdown'
         }
       }
-      task.state = JobState.FAILED
+      task.state = 'failed'
       task.finished = task.created
       await this.ds.manager.save(task)
     }
   }
 }
+
+export * from './task.js'
