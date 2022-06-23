@@ -109,7 +109,7 @@ export class PluginHandler<D extends PluginBaseDescriptor> {
 
   action<K extends keyof D['actions']>(
     id: K
-  ): ActionHandler<TrustMe<D['units'][K], ActionBaseDescriptor>> {
+  ): ActionHandler<TrustMe<D['actions'][K], ActionBaseDescriptor>> {
     return new ActionHandler(this.ctx, this, <string>id)
   }
 }
@@ -124,7 +124,8 @@ export class BaseContext<
   constructor(
     public readonly endpoint: RpcEndpoint<D>,
     public readonly logger: Logger,
-    public readonly params: Static<P['params']>
+    public readonly params: Static<P['params']>,
+    public readonly pluginId: string
   ) {
     this.server = endpoint.getHandle<ServerDescriptor>(SERVER_RPCID)
     this.api = {
@@ -141,6 +142,10 @@ export class BaseContext<
     T extends PluginBaseDescriptor = InjectedPluginDescriptor<K>
   >(id: K): PluginHandler<T> {
     return new PluginHandler(this, id)
+  }
+
+  self<T extends PluginBaseDescriptor = P>(): PluginHandler<T> {
+    return new PluginHandler(this, this.pluginId)
   }
 }
 

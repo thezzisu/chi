@@ -48,13 +48,6 @@ async function load() {
     label: 'Loaded Plugins',
     content: '' + plugins.length
   })
-  const services = await client.service.list()
-  infos.value.push({
-    label: 'All Services',
-    content: `Running: ${services.filter((s) => s.running).length} Total: ${
-      services.length
-    }`
-  })
 }
 
 load().catch(console.error)

@@ -28,6 +28,35 @@ const plugin = definePlugin((b) =>
         ctx.logger.info('plugin-foo-1 started')
       })
     )
+    .action('sumer', (b) =>
+      b
+        .name('sumer')
+        .params(Type.Object({ nums: Type.Array(Type.Number()) }))
+        .result(Type.Number())
+        .build(async (ctx, params) => params.nums.reduce((a, b) => a + b))
+    )
+    .action('quiz', (b) =>
+      b
+        .name('Simple Quiz')
+        .description('# A simple quiz')
+        .result(Type.Boolean())
+        .build(async (ctx) => {
+          const a = await ctx.agent.prompt('input a number:')
+          const b = parseInt(a, 10)
+          if (isNaN(b)) {
+            await ctx.agent.alert('invalid input')
+            throw new Error('Fucked!')
+          }
+          const c = await ctx.agent.prompt('input another number:')
+          const d = parseInt(c, 10)
+          const result = await ctx
+            .self()
+            .action('sumer')
+            .run({ nums: [1, 2, 3] })
+          ctx.agent.notify(`result = ${result}`)
+          return b === d
+        })
+    )
     .unit('foo', (b) =>
       b
         .attach<FooURD>()

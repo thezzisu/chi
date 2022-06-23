@@ -14,6 +14,7 @@ import {
   Type,
   TypeBuilder
 } from '@chijs/util'
+import { createActionWrapper } from './agent.js'
 import { BaseContext, EntityBuilder, IChiPluginEntityMeta } from './common.js'
 import { PluginBaseDescriptor } from './plugin.js'
 
@@ -46,17 +47,23 @@ export class ActionContext<
   _A extends ActionBaseDescriptor,
   P extends PluginBaseDescriptor = PluginBaseDescriptor
 > extends BaseContext<P, RpcBaseDescriptor> {
+  agent
+
   constructor(
     endpoint: RpcEndpoint<RpcTypeDescriptor<{}, {}>>,
     logger: Logger,
     params: Static<P['params']>,
-    public readonly pluginId: string,
+    pluginId: string,
     public readonly actionId: string,
     public readonly taskId: string,
     public readonly jobId: string,
     public readonly initiator: RpcId
   ) {
-    super(endpoint, logger, params)
+    super(endpoint, logger, params, pluginId)
+    this.agent = createActionWrapper(endpoint.getHandle(initiator), {
+      taskId,
+      jobId
+    })
   }
 }
 

@@ -43,6 +43,10 @@ export class ActionManager extends EventEmitter {
     actionId: string,
     params: unknown
   ) {
+    const plugin = this.app.plugins.getOrFail(pluginId)
+    if (!Object.hasOwn(plugin.actions, actionId))
+      throw new Error(`Action ${actionId} not found`)
+
     let task = new ActionTask()
     task.id = uniqueId()
     task.pluginId = pluginId
@@ -53,9 +57,7 @@ export class ActionManager extends EventEmitter {
     task.finished = 0
     task = await this.manager.save(task)
     this.running.set(task.id, { initiator, task })
-    this.run(task.id, null, pluginId, actionId, params).catch((err) =>
-      this.logger.error(err)
-    )
+    this.run(task.id, null, pluginId, actionId, params).catch(() => {})
     return task.id
   }
 
@@ -67,6 +69,9 @@ export class ActionManager extends EventEmitter {
     params: unknown
   ) {
     const plugin = this.app.plugins.getOrFail(pluginId)
+    if (!Object.hasOwn(plugin.actions, actionId))
+      throw new Error(`Action ${actionId} not found`)
+
     const info = this.running.get(taskId)
     if (!info) throw new Error(`Task ${taskId} not found`)
     const { initiator, task } = info
@@ -138,5 +143,9 @@ export class ActionManager extends EventEmitter {
     }
     if (toThrow) throw toThrow
     return job.return
+  }
+
+  has(taskId: string) {
+    return this.running.has(taskId)
   }
 }

@@ -126,7 +126,7 @@ function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
 }
 
 export async function boot(options: IWorkerOptions) {
-  const baseLogger = createBaseLogger({ level: options.level })
+  const baseLogger = createBaseLogger({ level: options.level ?? 'info' })
   try {
     if (!options.rpcId || typeof options.rpcId !== 'string') {
       throw new Error('rpcId is required')
@@ -139,6 +139,7 @@ export async function boot(options: IWorkerOptions) {
     process.on('message', (msg) => endpoint.recv(<IRpcMsg>msg))
     apply(endpoint, createLogger(['worker', 'rpc'], {}, baseLogger))
     initialization.resolve()
+    baseLogger.info(`Worker bootstrap complete rpcId=${options.rpcId}`)
   } catch (err) {
     initialization.reject(err)
     baseLogger.error(err)

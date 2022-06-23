@@ -1,4 +1,4 @@
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
 export type Point = [x: number, y: number]
 export function domRect(el: Element) {
@@ -31,11 +31,17 @@ export function useTreeViewLines() {
   const sep = ref<HTMLDivElement | null>(null)
   const children = ref<{ root: HTMLDivElement }[] | null>(null)
   const lines = ref<number[][]>([])
-  function render() {
-    if (!svg.value || !children.value || !sep.value || !root.value) return []
+  const render = () => {
+    if (!svg.value || !children.value || !sep.value || !root.value) {
+      lines.value = []
+      return
+    }
     const base = elemBase(svg.value)
     const elems = children.value.map((child) => child.root)
-    if (!elems.length) return []
+    if (!elems.length) {
+      lines.value = []
+      return
+    }
     const c = absToRel(base, elemCenter(sep.value))
     const t = [c[0], absToRel(base, elemCenter(elems[0]))[1]]
     const b = [c[0], absToRel(base, elemCenter(elems[elems.length - 1]))[1]]
@@ -49,7 +55,7 @@ export function useTreeViewLines() {
     const start = [c[0], e[1]]
     lines.value.push([...start, ...e])
   }
-  const observer = new ResizeObserver(() => render())
+  const observer = new ResizeObserver(() => nextTick(render))
   onMounted(() => {
     el.value && observer.observe(el.value)
   })

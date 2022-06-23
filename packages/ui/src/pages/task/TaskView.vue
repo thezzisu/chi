@@ -7,20 +7,20 @@
             <div>
               <div class="text-h6">Task Details</div>
               <div class="text-mono">{{ task?.id }}</div>
-              <job-status :state="task?.state" />
             </div>
+            <job-status :state="task?.state" />
           </div>
         </q-card-section>
         <q-separator />
         <q-list>
           <q-item>
             <q-item-section avatar>
-              <q-icon name="mdi-cog" />
+              <q-icon name="mdi-power-plug" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Plugin</q-item-label>
               <q-item-label>
-                <router-link :to="pluginUrl">
+                <router-link :to="urlPlugin">
                   {{ task?.pluginId }}
                 </router-link>
               </q-item-label>
@@ -28,12 +28,12 @@
           </q-item>
           <q-item>
             <q-item-section avatar>
-              <q-icon name="mdi-play-outline" />
+              <q-icon name="mdi-checkbox-blank-circle-outline" />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>Action</q-item-label>
               <q-item-label>
-                <router-link :to="actionUrl">
+                <router-link :to="urlAction">
                   {{ task?.actionId }}
                 </router-link>
               </q-item-label>
@@ -108,11 +108,11 @@ const client = getClient()
 const task = ref<ActionTask>()
 const job = ref<IJobInfo>()
 
-const pluginUrl = computed(
+const urlPlugin = computed(
   () => `${base}/plugin/view/` + encodeURIComponent('' + task.value?.pluginId)
 )
 
-const actionUrl = computed(
+const urlAction = computed(
   () =>
     `${base}/action/view/` +
     encodeURIComponent('' + task.value?.pluginId) +
@@ -135,6 +135,7 @@ function update(info: ActionTask) {
 
 async function load() {
   const info = await client.task.get(taskId)
+  if (!info) throw new Error('Task not found')
   update(info)
   if (info.state === 'running') {
     sub = client.server.subscribe(

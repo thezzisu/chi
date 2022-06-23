@@ -3,40 +3,30 @@
     <q-card-section>
       <div class="row justify-between items-center">
         <div>
-          <div class="text-h6">Job Info</div>
-          <job-status :state="job.state" />
+          <div class="text-h6">Job Details</div>
+          <div class="text-mono">{{ job?.id }}</div>
         </div>
+        <job-status :state="job.state" />
       </div>
     </q-card-section>
     <q-separator />
     <q-list>
       <q-item>
         <q-item-section avatar>
-          <q-icon name="mdi-identifier" />
+          <q-icon name="mdi-power-plug" />
         </q-item-section>
         <q-item-section>
-          <q-item-label caption>ID</q-item-label>
+          <q-item-label caption>Plugin</q-item-label>
           <q-item-label>
-            {{ props.job.id }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section avatar>
-          <q-icon name="mdi-cog-outline" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label caption>Service</q-item-label>
-          <q-item-label>
-            <router-link :to="serviceUrl">
-              {{ props.job?.serviceId }}
+            <router-link :to="urlPlugin">
+              {{ props.job?.pluginId }}
             </router-link>
           </q-item-label>
         </q-item-section>
       </q-item>
       <q-item>
         <q-item-section avatar>
-          <q-icon name="mdi-play-outline" />
+          <q-icon name="mdi-checkbox-blank-circle-outline" />
         </q-item-section>
         <q-item-section>
           <q-item-label caption>Action</q-item-label>
@@ -84,22 +74,22 @@
 </template>
 
 <script setup lang="ts">
-import {  computed, inject } from 'vue'
-import { IJobInfo } from '@chijs/client'
-import { baseKey } from 'src/shared/injections'
+import type { IJobInfo } from '@chijs/app'
 import JobStatus from 'components/JobStatus.vue'
+import { baseKey } from 'src/shared/injections'
+import { computed, inject } from 'vue'
 
 const base = inject(baseKey)
 const props = defineProps<{ job: IJobInfo }>()
 
-const serviceUrl = computed(
-  () => `${base}/service/view/` + encodeURIComponent('' + props.job?.serviceId)
+const urlPlugin = computed(
+  () => `${base}/plugin/view/` + encodeURIComponent('' + props.job?.pluginId)
 )
 
 const actionUrl = computed(
   () =>
     `${base}/action/view/` +
-    encodeURIComponent('' + props.job?.serviceId) +
+    encodeURIComponent('' + props.job?.pluginId) +
     '/' +
     encodeURIComponent('' + props.job?.actionId)
 )

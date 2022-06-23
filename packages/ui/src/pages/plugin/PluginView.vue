@@ -10,41 +10,7 @@
           </div>
         </q-card-section>
         <q-separator />
-        <q-list>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-identifier" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>ID</q-item-label>
-              <q-item-label>
-                {{ plugin?.id }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item v-if="plugin?.meta.name">
-            <q-item-section avatar>
-              <q-icon name="mdi-format-letter-case" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Name</q-item-label>
-              <q-item-label>
-                {{ plugin?.meta.name }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="mdi-file-link-outline" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label caption>Resolved</q-item-label>
-              <q-item-label>
-                <code>{{ plugin?.resolved }}</code>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <simple-list :items="list" />
         <q-separator />
         <description-view :desc="plugin?.meta.description" />
         <q-separator />
@@ -69,19 +35,39 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
 import DescriptionView from 'components/DescriptionView.vue'
 import AsyncBtn from 'components/AsyncBtn.vue'
 import { getClient, baseKey, confirm } from 'src/shared'
 import type { IPluginInfo } from '@chijs/app'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const route = useRoute()
 const pluginId = <string>route.params.pluginId
 const client = getClient()
 const plugin = ref<IPluginInfo>()
 const base = inject(baseKey)
+
+const list = computed<ISimpleListItem[]>(() => [
+  {
+    icon: 'mdi-identifier',
+    caption: 'ID',
+    label: plugin.value?.id
+  },
+  {
+    icon: 'mdi-format-letter-case',
+    caption: 'Name',
+    label: plugin.value?.meta.name,
+    hide: !plugin.value?.meta.name
+  },
+  {
+    icon: 'mdi-file-link-outline',
+    caption: 'Resolved',
+    label: plugin.value?.resolved
+  }
+])
 
 const router = useRouter()
 
@@ -92,7 +78,9 @@ async function remove() {
 }
 
 async function load() {
-  plugin.value = await client.plugin.get(pluginId)
+  const result = await client.plugin.get(pluginId)
+  if (!result) throw new Error('Plugin not found')
+  plugin.value = result
 }
 
 load()

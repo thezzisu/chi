@@ -89,4 +89,13 @@ export function applyActionImpl(
       throw new Error('Task is not finished')
     }
   })
+
+  e.publish('#server:task:update', (cb, taskId) => {
+    if (!app.actions.has(taskId))
+      throw new Error(`Task ${taskId} not found or not running`)
+    app.actions.on(taskId, cb)
+    return () => {
+      app.actions.off(taskId, cb)
+    }
+  })
 }

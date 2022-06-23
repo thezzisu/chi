@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url'
 import { ChiServer } from '../index.js'
 import { ServerDescriptor } from './base.js'
 
-/** @internal */
 export interface IMiscProvides {
   versions(): Promise<Record<string, string>>
   startTime(): Promise<number>

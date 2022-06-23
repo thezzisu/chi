@@ -39,11 +39,11 @@ export class UnitContext<
     endpoint: RpcEndpoint<RpcTypeDescriptor<{}, {}>>,
     logger: Logger,
     params: Static<P['params']>,
-    public readonly pluginId: string,
+    pluginId: string,
     public readonly unitId: string,
     public readonly serviceId: string
   ) {
-    super(endpoint, logger, params)
+    super(endpoint, logger, params, pluginId)
   }
 }
 
