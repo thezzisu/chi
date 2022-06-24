@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
-  "description": "Core components of Chi framwork",
+  "description": "RPC implementation of Chi framwork",
   "author": "thezzisu <thezzisu@gmail.com>",
   "private": false,
   "type": "module",
