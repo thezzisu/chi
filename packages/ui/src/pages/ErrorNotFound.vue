@@ -23,7 +23,7 @@
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const base = route.params.instanceId
-  ? `/instance/${route.params.instanceId}`
+const base = route.params.environmentId
+  ? `/environment/${route.params.environmentId}`
   : '/'
 </script>

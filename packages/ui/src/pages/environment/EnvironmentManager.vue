@@ -3,7 +3,7 @@
     <q-card style="max-width: 640px; min-width: 320px">
       <q-card-section>
         <div class="row justify-between items-center">
-          <div class="text-h6">Instances</div>
+          <div class="text-h6">Environments</div>
           <div>
             <q-btn padding="xs" color="primary" icon="mdi-plus" to="/edit" />
           </div>
@@ -11,16 +11,16 @@
       </q-card-section>
       <q-separator />
 
-      <q-list v-if="instances.length">
-        <q-item v-for="instance of instances" :key="instance.id">
+      <q-list v-if="environments.length">
+        <q-item v-for="env of environments" :key="env.id">
           <q-item-section avatar>
             <q-icon name="mdi-web" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>{{ instance.name }}</q-item-label>
-            <q-item-label overline>{{ instance.type }}</q-item-label>
+            <q-item-label>{{ env.name }}</q-item-label>
+            <q-item-label overline>{{ env.type }}</q-item-label>
             <q-item-label caption class="text-mono" lines="1">
-              {{ instance.type === 'local' ? instance.config : instance.url }}
+              {{ env.type === 'local' ? env.config : env.url }}
             </q-item-label>
           </q-item-section>
           <q-item-section side>
@@ -30,14 +30,14 @@
                 dense
                 round
                 icon="mdi-open-in-new"
-                @click="open(`/instance/${instance.id}/`)"
+                @click="open(`/environment/${env.id}/`)"
               />
               <q-btn
                 flat
                 dense
                 round
                 icon="mdi-pencil-box-outline"
-                :to="`/edit/${instance.id}`"
+                :to="`/edit/${env.id}`"
               />
             </div>
           </q-item-section>
@@ -48,14 +48,14 @@
         <div>
           <q-icon name="mdi-flask-empty-outline" size="xl" color="primary" />
         </div>
-        <div class="text-subtitle2">No instances</div>
+        <div class="text-subtitle2">No Environments</div>
       </q-card-section>
     </q-card>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import { instances } from 'src/shared/instance'
+import { environments } from 'src/shared/environment'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 

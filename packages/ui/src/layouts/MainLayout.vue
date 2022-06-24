@@ -63,13 +63,13 @@ import { baseKey } from 'src/shared/injections'
 import { provide, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import DisconnectedPage from 'src/pages/DisconnectedPage.vue'
-import { useInstance } from 'src/shared/client'
+import { useEnvironment } from 'src/shared/client'
 import AppHeader from 'src/components/AppHeader.vue'
 
 const navOpen = ref(false)
 
 const route = useRoute()
-const base = `/instance/${route.params.instanceId}`
+const base = `/environment/${route.params.environmentId}`
 provide(baseKey, base)
 
 const menuItems = [
@@ -85,7 +85,7 @@ const menuItems = [
   }
 ]
 
-const { connected, status, message } = useInstance(
-  <string>route.params.instanceId
+const { connected, status, message } = useEnvironment(
+  <string>route.params.environmentId
 )
 </script>

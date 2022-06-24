@@ -1,7 +1,7 @@
 import { ChiClient, io } from '@chijs/client'
 import { ref, toRaw } from 'vue'
 import { Dialog, Notify } from 'quasar'
-import { getInstance, Instance } from './instance'
+import { getEnvironment, Environment } from './environment'
 import type { RpcEndpoint } from '@chijs/rpc'
 import type { AgentDescriptor } from '@chijs/app'
 
@@ -67,30 +67,30 @@ function applyActions(client: ChiClient) {
 
 let client: ChiClient
 
-async function resolveClientInfo(instance: Instance) {
-  if (instance.type === 'remote') {
+async function resolveClientInfo(env: Environment) {
+  if (env.type === 'remote') {
     return {
-      url: instance.url,
-      token: instance.token
+      url: env.url,
+      token: env.token
     }
   }
   const result = await window.bridge?.startServer({
-    config: instance.config,
-    name: instance.name
+    config: env.config,
+    name: env.name
   })
-  if (!result) throw new Error('Cannot use local instances')
+  if (!result) throw new Error('Cannot use local environments')
   const [err, value] = result
   if (err) throw err
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return value!
 }
 
-export function useInstance(id: string) {
-  const instance = toRaw(getInstance(id).value)
+export function useEnvironment(id: string) {
+  const env = toRaw(getEnvironment(id).value)
   const connected = ref(false)
-  const message = ref(instance.type === 'remote' ? 'Connecting' : 'Starting')
+  const message = ref(env.type === 'remote' ? 'Connecting' : 'Starting')
   const status = ref('Disconnected')
-  resolveClientInfo(instance)
+  resolveClientInfo(env)
     .then(({ url, token }) => {
       const socket = io(url, {
         auth: {

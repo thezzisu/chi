@@ -71,7 +71,7 @@ export async function startServer(
     process.on('exit', (code, signal) => {
       processes.delete(config)
       new Notification({
-        title: 'Instance Stopped',
+        title: 'Environment Stopped',
         body:
           `${options.name ?? basename(config)} stopped with ` +
           (signal ? `signal ${signal}` : `code ${code}`)
