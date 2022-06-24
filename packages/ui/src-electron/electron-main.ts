@@ -5,11 +5,15 @@ import { createTray } from './tray'
 import './ipc'
 import './runner'
 
-app.whenReady().then(() => {
-  createTray()
-  createWindow()
-})
+if (app.requestSingleInstanceLock()) {
+  app.whenReady().then(() => {
+    createTray()
+    createWindow()
+  })
 
-app.on('window-all-closed', () => {
-  // Prevent the app from quitting when the user closes the window
-})
+  app.on('window-all-closed', () => {
+    // Prevent the app from quitting when the user closes the window
+  })
+} else {
+  app.quit()
+}

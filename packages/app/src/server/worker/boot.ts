@@ -6,14 +6,15 @@ import {
   Logger,
   WithPrefix
 } from '@chijs/util'
-import type { IWorkerOptions } from './fork.js'
-import { IPlugin } from '../plugin/index.js'
+import { pathToFileURL } from 'node:url'
 import {
   ActionContext,
   IChiPluginActionDefn,
   IChiPluginUnitDefn,
   UnitContext
 } from '../../plugin/index.js'
+import { IPlugin } from '../plugin/index.js'
+import type { IWorkerOptions } from './fork.js'
 
 export const WORKER_BOOTSTRAP_FAILED = 2
 
@@ -74,6 +75,10 @@ function mapObject<V, T>(
   )
 }
 
+function pathToUrl(p: string) {
+  return pathToFileURL(p).href
+}
+
 function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
   endpoint.provide('#worker:waitForBootstrap', () => initialization.promise)
   endpoint.provide('#worker:exit', () => process.exit(0))
@@ -82,7 +87,7 @@ function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
   endpoint.provide('#worker:loadPlugin', async (resolved) => {
     const {
       default: { actions, units, ...rest }
-    } = await import(resolved)
+    } = await import(pathToUrl(resolved))
     return {
       ...rest,
       actions: mapObject(actions, <never>stripImpl),
@@ -93,7 +98,7 @@ function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
   endpoint.provide('#worker:runAction', async (options) => {
     const {
       default: { actions }
-    } = await import(options.resolved)
+    } = await import(pathToUrl(options.resolved))
     const action = <IChiPluginActionDefn>actions[options.actionId]
     const context = new ActionContext(
       endpoint,
@@ -111,7 +116,7 @@ function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
   endpoint.provide('#worker:runUnit', async (options) => {
     const {
       default: { units }
-    } = await import(options.resolved)
+    } = await import(pathToUrl(options.resolved))
     const unit = <IChiPluginUnitDefn>units[options.unitId]
     const context = new UnitContext(
       endpoint,

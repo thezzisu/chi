@@ -30,7 +30,7 @@ export interface IServiceInfo extends IServiceDefn {
 }
 
 interface IServiceData extends IServiceInfo {
-  worker?: ChiWorker
+  worker: ChiWorker | null
 }
 
 export class ServiceManager extends EventEmitter {
@@ -75,7 +75,8 @@ export class ServiceManager extends EventEmitter {
       restartPolicy,
       logPath: null,
       state: 'exited',
-      rpcId: null
+      rpcId: null,
+      worker: null
     })
     this.emitChange(id)
   }
@@ -131,6 +132,8 @@ export class ServiceManager extends EventEmitter {
       this.emitChange(id)
 
       worker.whenExit.then(([code, signal]) => {
+        service.worker = null
+
         this.logger.info(
           `Service ` +
             `${service.pluginId}/${service.unitId}/${id}` +

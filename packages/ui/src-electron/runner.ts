@@ -1,6 +1,6 @@
 import { ChildProcess } from 'child_process'
 import spawn from 'cross-spawn'
-import { ipcMain, Notification } from 'electron'
+import { app, ipcMain, Notification } from 'electron'
 import { createRequire } from 'module'
 import { basename, dirname, join, resolve } from 'path'
 import * as readline from 'readline'
@@ -97,4 +97,10 @@ ipcMain.handle('startServer', (event, options: IChiProcessOptions) => {
 
 ipcMain.handle('stopServer', (event, config: string) => {
   stopServer(config)
+})
+
+app.on('quit', () => {
+  for (const process of processes.values()) {
+    process.kill()
+  }
 })

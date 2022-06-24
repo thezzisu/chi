@@ -1,1 +1,1 @@
-# `@chijs/core`
+# `@chijs/rpc`
