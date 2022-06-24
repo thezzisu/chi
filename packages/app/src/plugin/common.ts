@@ -168,6 +168,16 @@ export abstract class EntityBuilder<T> {
     return clone
   }
 
+  attr(key: string, value: unknown) {
+    const clone = this.clone()
+    clone.meta[key] = value
+    return clone
+  }
+
+  attrs(args: [key: string, value: unknown][]) {
+    return args.reduce((acc, [key, value]) => acc.attr(key, value), this)
+  }
+
   abstract clone(): this
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   abstract build(...args: any[]): T

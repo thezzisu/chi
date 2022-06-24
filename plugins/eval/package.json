@@ -15,8 +15,12 @@
   "bugs": {
     "url": "https://github.com/thezzisu/chi/issues"
   },
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "cross-spawn": "^7.0.3"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.2"
+  },
   "peerDependencies": {
     "@chijs/app": "^0.0.2"
   },
