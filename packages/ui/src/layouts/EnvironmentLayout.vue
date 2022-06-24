@@ -2,7 +2,7 @@
   <q-layout view="hHh Lpr lff">
     <app-header>
       <q-toolbar class="bg-blue-grey-10">
-        <q-toolbar-title>Instance Manager</q-toolbar-title>
+        <q-toolbar-title>Environment Manager</q-toolbar-title>
       </q-toolbar>
     </app-header>
 

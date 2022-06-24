@@ -6,8 +6,8 @@
           <div class="q-pr-sm">
             <q-btn flat padding="xs" icon="mdi-arrow-left" to="/" />
           </div>
-          <div v-if="isNew" class="text-h6 col-grow">New Instance</div>
-          <div v-else class="text-h6 col-grow">Edit Instance</div>
+          <div v-if="isNew" class="text-h6 col-grow">New Environment</div>
+          <div v-else class="text-h6 col-grow">Edit Environment</div>
           <div>
             <q-btn
               v-if="!isNew"
@@ -26,7 +26,7 @@
           <div class="text-grey-7 text-caption">Type</div>
           <q-option-group
             v-model="current.type"
-            :options="instanceTypes"
+            :options="environmentTypes"
             color="primary"
             inline
           />
@@ -68,10 +68,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { nanoid } from 'nanoid'
 import {
   easyDeepClone,
-  getInstance,
-  instanceMap,
-  Instance,
-  instanceTypes,
+  getEnvironment,
+  environmentMap,
+  Environment,
+  environmentTypes,
   selectConfig
 } from 'src/shared'
 import { useQuasar } from 'quasar'
@@ -80,19 +80,23 @@ const route = useRoute()
 const id = <string>route.params.id
 const isNew = !id
 
-const newInstance: Instance = {
+const newEnvironment: Environment = {
   id: nanoid(),
-  name: 'New Instance',
+  name: 'New Environment',
   desc: '',
   type: 'remote',
   url: 'ws://localhost:3000',
   token: ''
 }
 
-const current = ref(easyDeepClone(isNew ? newInstance : getInstance(id).value))
+const current = ref(
+  easyDeepClone(isNew ? newEnvironment : getEnvironment(id).value)
+)
 
 function reset() {
-  current.value = easyDeepClone(isNew ? newInstance : getInstance(id).value)
+  current.value = easyDeepClone(
+    isNew ? newEnvironment : getEnvironment(id).value
+  )
 }
 
 const $q = useQuasar()
@@ -105,9 +109,9 @@ function remove() {
     cancel: true,
     persistent: true
   }).onOk(() => {
-    delete instanceMap.value[id]
+    delete environmentMap.value[id]
     $q.notify({
-      message: 'Instance Deleted',
+      message: 'Environment Deleted',
       color: 'positive'
     })
     router.replace('/')
@@ -116,9 +120,9 @@ function remove() {
 
 function save() {
   const copy = easyDeepClone(current.value)
-  instanceMap.value[copy.id] = copy
+  environmentMap.value[copy.id] = copy
   $q.notify({
-    message: `Instance ${isNew ? 'created' : 'saved'}`,
+    message: `Environment ${isNew ? 'created' : 'saved'}`,
     color: 'positive'
   })
   if (isNew) {
