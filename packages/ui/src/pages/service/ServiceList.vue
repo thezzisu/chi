@@ -5,14 +5,6 @@
         <q-card-section>
           <div class="row justify-between items-center">
             <div class="text-h6">Services ({{ services.length }})</div>
-            <div>
-              <q-btn
-                padding="xs"
-                color="primary"
-                icon="mdi-plus"
-                :to="`${base}/service/add`"
-              />
-            </div>
           </div>
         </q-card-section>
         <q-list class="list bg-white" separator bordered>
@@ -22,7 +14,14 @@
             :to="`${base}/service/view/${encodeURIComponent(service.id)}`"
           >
             <q-item-section>
-              <q-item-section>{{ service.id }}</q-item-section>
+              <q-item-label>
+                <simple-breadcrumbs
+                  :labels="[service.pluginId, service.unitId]"
+                />
+              </q-item-label>
+              <q-item-label caption class="text-mono">{{
+                service.id
+              }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <service-status :state="service.state" />
@@ -46,6 +45,7 @@ import { inject, ref } from 'vue'
 import { getClient } from 'src/shared/client'
 import ServiceStatus from 'src/components/ServiceStatus.vue'
 import type { IServiceInfo } from '@chijs/app'
+import SimpleBreadcrumbs from 'components/SimpleBreadcrumbs'
 
 const client = getClient()
 const base = inject(baseKey)

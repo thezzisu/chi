@@ -19,7 +19,7 @@
           >
             <q-item-section>
               <q-item-label>
-                {{ action.pluginId }} / {{ action.id }}
+                <simple-breadcrumbs :labels="[action.pluginId, action.id]" />
               </q-item-label>
             </q-item-section>
           </q-item>
@@ -36,10 +36,11 @@
 </template>
 
 <script lang="ts" setup>
+import type { IActionInfo } from '@chijs/app'
+import SimpleBreadcrumbs from 'components/SimpleBreadcrumbs'
+import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
-import type { IActionInfo } from '@chijs/app'
-import { getClient } from 'src/shared/client'
 
 const client = getClient()
 const base = inject(baseKey)

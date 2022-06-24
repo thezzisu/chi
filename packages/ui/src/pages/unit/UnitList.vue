@@ -19,17 +19,7 @@
           >
             <q-item-section>
               <q-item-label>
-                <q-breadcrumbs>
-                  <template #separator>
-                    <q-icon
-                      size="1.5em"
-                      name="mdi-chevron-right"
-                      color="primary"
-                    />
-                  </template>
-                  <q-breadcrumbs-el :label="unit.pluginId" />
-                  <q-breadcrumbs-el :label="unit.id" />
-                </q-breadcrumbs>
+                <simple-breadcrumbs :labels="[unit.pluginId, unit.id]" />
               </q-item-label>
             </q-item-section>
           </q-item>
@@ -46,10 +36,11 @@
 </template>
 
 <script lang="ts" setup>
+import type { IUnitInfo } from '@chijs/app'
+import SimpleBreadcrumbs from 'components/SimpleBreadcrumbs'
+import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
-import type { IUnitInfo } from '@chijs/app'
-import { getClient } from 'src/shared/client'
 
 const client = getClient()
 const base = inject(baseKey)

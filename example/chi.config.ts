@@ -17,7 +17,7 @@ export default defineConfig({
     token: 'example-token'
   },
   log: {
-    path: null,
+    path: 'logs',
     level: 'info'
   }
 })

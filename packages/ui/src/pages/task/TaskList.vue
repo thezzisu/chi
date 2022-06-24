@@ -16,7 +16,7 @@
           >
             <q-item-section>
               <q-item-label>
-                {{ task.pluginId }} / {{ task.actionId }}
+                <simple-breadcrumbs :labels="[task.pluginId, task.actionId]" />
               </q-item-label>
               <q-item-label caption class="text-mono">
                 {{ task.id }}
@@ -39,11 +39,12 @@
 </template>
 
 <script lang="ts" setup>
+import type { ActionTask } from '@chijs/app'
+import JobStatus from 'components/JobStatus.vue'
+import SimpleBreadcrumbs from 'components/SimpleBreadcrumbs'
+import { getClient } from 'src/shared/client'
 import { baseKey } from 'src/shared/injections'
 import { inject, ref } from 'vue'
-import { getClient } from 'src/shared/client'
-import JobStatus from 'components/JobStatus.vue'
-import type { ActionTask } from '@chijs/app'
 
 const client = getClient()
 const base = inject(baseKey)
