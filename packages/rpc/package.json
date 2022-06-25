@@ -1,6 +1,6 @@
 {
   "name": "@chijs/rpc",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "RPC implementation of Chi framwork",
@@ -16,7 +16,7 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/util": "^0.0.3"
+    "@chijs/util": "^0.0.4"
   },
   "devDependencies": {},
   "scripts": {

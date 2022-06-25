@@ -18,8 +18,7 @@ export async function targetPackages() {
   if (argv.package) {
     packages = argv.package instanceof Array ? argv.package : [argv.package]
     packages = packages
-      .map((p) => [join('packages', p), join('plugins', p)])
-      .flat()
+      .flatMap((p) => [join('packages', p), join('plugins', p)])
       .filter((p) => fs.pathExistsSync(p))
   } else {
     packages = [await glob('packages/*'), await glob('plugins/*')].flat()
