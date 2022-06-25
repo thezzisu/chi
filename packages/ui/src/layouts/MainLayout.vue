@@ -11,21 +11,24 @@
       class="bg-grey-3"
       side="left"
       show-if-above
-      :width="170"
-      :breakpoint="500"
+      :width="220"
+      :breakpoint="540"
     >
       <q-list>
-        <q-item
-          v-for="(item, i) of menuItems"
-          :key="i"
-          :to="`${base}${item.to}`"
-          exact
-        >
+        <q-item v-for="(item, i) of menu" :key="i" :to="base + item.to" exact>
           <q-item-section avatar>
             <q-icon :name="item.icon" />
           </q-item-section>
           <q-item-section>
             <q-item-label>{{ item.label }}</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable @click="gotoManager">
+          <q-item-section avatar>
+            <q-icon name="mdi-arrow-left-circle" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Environments</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -61,7 +64,7 @@
 <script lang="ts" setup>
 import { baseKey } from 'src/shared/injections'
 import { provide, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DisconnectedPage from 'src/pages/DisconnectedPage.vue'
 import { useEnvironment } from 'src/shared/client'
 import AppHeader from 'src/components/AppHeader.vue'
@@ -69,21 +72,30 @@ import AppHeader from 'src/components/AppHeader.vue'
 const navOpen = ref(false)
 
 const route = useRoute()
+const router = useRouter()
 const base = `/environment/${route.params.environmentId}`
 provide(baseKey, base)
 
-const menuItems = [
+const menu = [
   { icon: 'mdi-clipboard-text', label: 'Overview', to: '/' },
   { icon: 'mdi-power-plug', label: 'Plugin', to: '/plugin' },
   { icon: 'mdi-cog-outline', label: 'Unit', to: '/unit' },
   { icon: 'mdi-cogs', label: 'Service', to: '/service' },
-  { icon: 'mdi-checkbox-blank-circle-outline', label: 'Action', to: '/action' },
+  {
+    icon: 'mdi-checkbox-blank-circle-outline',
+    label: 'Action',
+    to: '/action'
+  },
   {
     icon: 'mdi-checkbox-multiple-blank-circle',
     label: 'Task',
     to: '/task'
   }
 ]
+
+function gotoManager() {
+  window.open(router.resolve('/').href, '_blank')
+}
 
 const { connected, status, message } = useEnvironment(
   <string>route.params.environmentId
