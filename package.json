@@ -9,7 +9,7 @@
     "packages": [
       "packages/*",
       "plugins/*",
-      "example"
+      "examples/*"
     ],
     "nohoist": [
       "**/electron",

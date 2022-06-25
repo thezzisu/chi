@@ -44,6 +44,31 @@ const plugin = definePlugin((p) =>
           return exec(command)
         })
     )
+    .action('spawn', (action) =>
+      action
+        .name('Spawn')
+        .description('Spawn a process')
+        .params((type) =>
+          type.Object({
+            serviceId: type.Optional(type.String()),
+            command: type.Optional(type.String()),
+            args: type.Optional(type.Array(type.String()))
+          })
+        )
+        .result((type) => type.String())
+        .build(async (ctx, params) => {
+          const serviceId =
+            params.serviceId ?? (await ctx.agent.prompt('Create as service:'))
+          const command = params.command ?? (await ctx.agent.prompt('Command:'))
+          const service = await ctx
+            .self<Descriptor>()
+            .unit('spawn')
+            .create(serviceId, { command, args: params.args })
+          await service.start()
+          const id: string = service.id
+          return id
+        })
+    )
     .unit('spawn', (unit) =>
       unit
         .name('Spawn')
@@ -61,9 +86,11 @@ const plugin = definePlugin((p) =>
     .build()
 )
 
+type Descriptor = PluginDescriptorOf<typeof plugin>
+
 declare module '@chijs/app' {
   interface IPluginDescriptors {
-    '@chijs/plugin-eval': PluginDescriptorOf<typeof plugin>
+    '@chijs/plugin-eval': Descriptor
   }
 }
 

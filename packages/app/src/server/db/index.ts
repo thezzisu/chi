@@ -1,3 +1,4 @@
+import { createLogger } from '@chijs/util'
 import { DataSource } from 'typeorm'
 import { ChiServer } from '../index.js'
 import { ActionTask } from './task.js'
@@ -11,7 +12,7 @@ export class Database {
       ...app.config.db,
       entities: [ActionTask]
     })
-    this.logger = app.logger.child({ module: 'server/db' })
+    this.logger = createLogger(['db'], {}, app.logger)
   }
 
   async init() {

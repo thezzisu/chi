@@ -16,7 +16,8 @@ try {
   const resolved = require.resolve('@chijs/cli')
   if (resolved === fileURLToPath(import.meta.url)) throw 0
   console.log(chalk.blue('Local Chi CLI detected.'))
-  fork(resolved, { execArgv: process.argv.slice(2) })
+  console.log(resolved)
+  fork(resolved, process.argv.slice(2))
 } catch {
   const dir = dirname(fileURLToPath(import.meta.url))
   const { version } = JSON.parse(

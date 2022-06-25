@@ -1,5 +1,5 @@
 import { RpcId } from '@chijs/rpc'
-import { uniqueId, validateSchema } from '@chijs/util'
+import { createLogger, uniqueId, validateSchema } from '@chijs/util'
 import { EventEmitter } from 'node:events'
 import { join } from 'node:path'
 import { ChiServer } from '../index.js'
@@ -40,7 +40,7 @@ export class ServiceManager extends EventEmitter {
   constructor(private app: ChiServer) {
     super()
     this.services = new Map<string, IServiceData>()
-    this.logger = app.logger.child({ module: 'server/service' })
+    this.logger = createLogger(['service'], {}, app.logger)
   }
 
   private emitChange(id: string) {

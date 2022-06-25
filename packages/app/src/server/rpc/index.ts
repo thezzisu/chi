@@ -1,4 +1,5 @@
 import { RpcEndpoint, RpcRouter } from '@chijs/rpc'
+import { createLogger } from '@chijs/util'
 import { SERVER_RPCID } from '../../common/index.js'
 import { ChiServer } from '../index.js'
 import { applyServerImpl, ServerDescriptor } from './base.js'
@@ -10,7 +11,7 @@ export class RpcManager {
   private logger
 
   constructor(private app: ChiServer) {
-    this.logger = app.logger.child({ module: 'server/rpc' })
+    this.logger = createLogger(['rpc'], {}, app.logger)
     this.router = new RpcRouter(this.logger.child({ scope: 'router' }))
     this.adapter = this.router.create(SERVER_RPCID, (msg) =>
       this.endpoint.recv(msg)

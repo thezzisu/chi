@@ -26,8 +26,16 @@ export class ChiServer {
 
   constructor(options?: ChiAppOptions) {
     this.config = <IChiConfig>Object.assign({}, defaultConfig, options)
+    const level = this.config.log.level ?? 'info'
     const streams: (pino.DestinationStream | pino.StreamEntry)[] = [
-      { level: 'warn', stream: pretty() }
+      {
+        level,
+        stream: pretty({
+          customPrettifiers: {
+            component: (x) => `[${x instanceof Array ? x.join('/') : x}]`
+          }
+        })
+      }
     ]
     const logPath =
       this.config.log.path &&
@@ -36,7 +44,7 @@ export class ChiServer {
       fs.ensureDirSync(dirname(logPath))
       streams.push({
         stream: fs.createWriteStream(logPath),
-        level: this.config.log.level ?? 'info'
+        level
       })
     }
 
@@ -61,7 +69,7 @@ export class ChiServer {
     this.logger.info(`Loading plugins`)
     for (const plugin of this.config.plugins) {
       try {
-        this.logger.info(`Loading plugin ${plugin}`)
+        this.logger.info(`Loading plugin ${plugin.id}`)
         await this.plugins.load(plugin.id, plugin.params)
       } catch (e) {
         this.logger.error(e)

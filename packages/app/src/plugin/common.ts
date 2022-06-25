@@ -42,6 +42,20 @@ export class ServiceHandler<D extends UnitBaseDescriptor> {
     if (!info.rpcId) throw new Error(`Service ${this.id} not started`)
     return this.ctx.endpoint.getHandle(info.rpcId)
   }
+
+  async start() {
+    return this.ctx.api.service.start(this.id)
+  }
+
+  async stop() {
+    return this.ctx.api.service.stop(this.id)
+  }
+
+  async info() {
+    const result = await this.ctx.api.service.get(this.id)
+    if (!result) throw new Error(`Service ${this.id} not found`)
+    return result
+  }
 }
 
 export class UnitHandler<D extends UnitBaseDescriptor> {

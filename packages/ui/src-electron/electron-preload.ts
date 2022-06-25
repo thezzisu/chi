@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { startServer } from './runner'
+import { startServer, stopServer } from './runner'
 import type { dialog } from 'electron'
 
 const bridge = {
@@ -21,6 +21,10 @@ const bridge = {
   startServer(...args: Parameters<typeof startServer>) {
     type T = ReturnType<typeof startServer>
     return ipcRenderer.invoke('startServer', ...args) as T
+  },
+  stopServer(...args: Parameters<typeof stopServer>) {
+    type T = ReturnType<typeof stopServer>
+    return ipcRenderer.invoke('stopServer', ...args) as T
   },
   showOpenDialog(...args: Parameters<typeof dialog.showOpenDialog>) {
     type T = ReturnType<typeof dialog.showOpenDialog>
