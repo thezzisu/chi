@@ -61,7 +61,7 @@ export class ChiServer {
     for (const plugin of this.config.plugins) {
       try {
         this.logger.info(`Loading plugin ${plugin.id}`)
-        await this.plugins.load(plugin.id, plugin.params)
+        await this.plugins.load(plugin.id, plugin.params ?? {})
       } catch (e) {
         this.logger.error(e)
       }

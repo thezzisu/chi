@@ -1,0 +1,9 @@
+plugins:
+  - id: '@chijs/plugin-eval'
+resolve:
+  ~: plugins
+web:
+  port: -1 # random port
+log:
+  path: logs
+  level: info
