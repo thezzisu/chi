@@ -6,6 +6,7 @@ import {
   Logger,
   WithPrefix
 } from '@chijs/util'
+import { isAbsolute } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import {
   ActionContext,
@@ -79,6 +80,10 @@ function pathToUrl(p: string) {
   return pathToFileURL(p).href
 }
 
+function normalizeImport(resolved: string) {
+  return isAbsolute(resolved) ? pathToUrl(resolved) : resolved
+}
+
 function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
   endpoint.provide('#worker:waitForBootstrap', () => initialization.promise)
   endpoint.provide('#worker:exit', () => process.exit(0))
@@ -87,7 +92,7 @@ function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
   endpoint.provide('#worker:loadPlugin', async (resolved) => {
     const {
       default: { actions, units, ...rest }
-    } = await import(pathToUrl(resolved))
+    } = await import(normalizeImport(resolved))
     return {
       ...rest,
       actions: mapObject(actions, <never>stripImpl),
@@ -98,7 +103,7 @@ function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
   endpoint.provide('#worker:runAction', async (options) => {
     const {
       default: { actions }
-    } = await import(pathToUrl(options.resolved))
+    } = await import(normalizeImport(options.resolved))
     const action = <IChiPluginActionDefn>actions[options.actionId]
     const context = new ActionContext(
       endpoint,
@@ -116,7 +121,7 @@ function apply(endpoint: RpcEndpoint<WorkerDescriptor>, logger: Logger) {
   endpoint.provide('#worker:runUnit', async (options) => {
     const {
       default: { units }
-    } = await import(pathToUrl(options.resolved))
+    } = await import(normalizeImport(options.resolved))
     const unit = <IChiPluginUnitDefn>units[options.unitId]
     const context = new UnitContext(
       endpoint,

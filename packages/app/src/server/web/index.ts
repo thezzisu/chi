@@ -1,10 +1,11 @@
+import { createLogger } from '@chijs/util'
 import fastifyCors from '@fastify/cors'
 import fastifyStatic from '@fastify/static'
 import fastify from 'fastify'
 import { join } from 'node:path'
 import type { Socket } from 'socket.io'
-import { ChiServer } from '../index.js'
 import { resolveModule } from '../../util/index.js'
+import { ChiServer } from '../index.js'
 import fastifySocketIo from './io.js'
 
 type Origin = boolean | string | RegExp | (boolean | string | RegExp)[]
@@ -36,7 +37,7 @@ export class WebServer {
 
   constructor(private app: ChiServer) {
     this.config = app.config.web
-    this.logger = app.logger.child({ subcomponent: 'webserver' })
+    this.logger = createLogger(['web'], {}, app.logger)
     this.server = fastify({ logger: this.logger })
     this.clients = new Map<string, IClient>()
   }

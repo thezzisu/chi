@@ -77,6 +77,9 @@ export function applyActionImpl(
       where: {
         pluginId,
         actionId
+      },
+      order: {
+        ord: 'DESC'
       }
     })
   })

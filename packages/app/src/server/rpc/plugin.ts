@@ -4,6 +4,7 @@ import { IPluginInfo } from '../plugin/index.js'
 import { ServerDescriptor } from './base.js'
 
 export interface IPluginProvides {
+  touch(id: string): Promise<IPluginInfo>
   load(id: string, params: unknown): Promise<[ok: boolean, reason?: string]>
   unload(id: string): Promise<void>
   list(): Promise<IPluginInfo[]>
@@ -14,6 +15,10 @@ export function applyPluginImpl(
   endpoint: RpcEndpoint<ServerDescriptor>,
   app: ChiServer
 ) {
+  endpoint.provide('#server:plugin:touch', (...args) =>
+    app.plugins.touch(...args)
+  )
+
   endpoint.provide('#server:plugin:load', (...args) =>
     app.plugins.load(...args)
   )

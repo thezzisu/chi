@@ -2,7 +2,6 @@ import { createBaseLogger } from '@chijs/util'
 import fs from 'fs-extra'
 import { dirname, join } from 'node:path'
 import pino from 'pino'
-import pretty from 'pino-pretty'
 import 'reflect-metadata'
 import { ActionManager } from './action/index.js'
 import { ChiAppOptions, defaultConfig, IChiConfig } from './config/index.js'
@@ -28,14 +27,7 @@ export class ChiServer {
     this.config = <IChiConfig>Object.assign({}, defaultConfig, options)
     const level = this.config.log.level ?? 'info'
     const streams: (pino.DestinationStream | pino.StreamEntry)[] = [
-      {
-        level,
-        stream: pretty({
-          customPrettifiers: {
-            component: (x) => `[${x instanceof Array ? x.join('/') : x}]`
-          }
-        })
-      }
+      { level, stream: process.stdout }
     ]
     const logPath =
       this.config.log.path &&
@@ -65,7 +57,6 @@ export class ChiServer {
   async start() {
     this.logger.error(`Starting Chi`)
     await this.db.init()
-    await this.web.start()
     this.logger.info(`Loading plugins`)
     for (const plugin of this.config.plugins) {
       try {
@@ -75,6 +66,7 @@ export class ChiServer {
         this.logger.error(e)
       }
     }
+    await this.web.start()
   }
 }
 
