@@ -24,7 +24,7 @@
     <div class="row no-wrap">
       <q-toolbar
         class="col-auto q-px-none"
-        :class="{ 'bg-brand': !isElectron }"
+        :class="{ 'bg-brand': !isElectron, 'bg-blue-grey-10': isElectron }"
       >
         <q-btn
           flat
