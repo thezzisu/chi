@@ -18,6 +18,7 @@ Bring Geek Tools to General Users
 | `@chijs/rpc`    | ![npm (scoped)](https://img.shields.io/npm/v/@chijs/rpc?style=flat-square)    |
 | `@chijs/ui`     | ![npm (scoped)](https://img.shields.io/npm/v/@chijs/ui?style=flat-square)     |
 | `@chijs/util`   | ![npm (scoped)](https://img.shields.io/npm/v/@chijs/util?style=flat-square)   |
+| `create-chi`    | ![npm (scoped)](https://img.shields.io/npm/v/create-chi?style=flat-square)    |
 
 ### Plugins
 

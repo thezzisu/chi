@@ -1,0 +1,38 @@
+{
+  "name": "create-chi",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "license": "AGPL-3.0",
+  "description": "Starter kit for Chi framework",
+  "author": "thezzisu <thezzisu@gmail.com>",
+  "private": false,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thezzisu/chi.git",
+    "directory": "packages/create-chi"
+  },
+  "bugs": {
+    "url": "https://github.com/thezzisu/chi/issues"
+  },
+  "dependencies": {
+    "@chijs/util": "^0.0.4",
+    "chalk": "^5.0.1",
+    "yargs": "^17.5.1"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.10"
+  },
+  "scripts": {
+    "build": "ts-node-esm ../../scripts/build.ts --package create-chi",
+    "lint": "eslint --ext .js,.ts ./src/ ./test/",
+    "prepublishOnly": "ts-node-esm ../../scripts/build.ts --package create-chi --rebuild",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "files": [
+    "lib"
+  ],
+  "bin": {
+    "create-chi": "lib/index.js"
+  }
+}
