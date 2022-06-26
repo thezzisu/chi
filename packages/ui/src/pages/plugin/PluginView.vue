@@ -14,10 +14,31 @@
         <q-separator />
         <description-view :desc="plugin?.meta.description" />
         <q-separator />
-        <schema-viewer
-          :schema="plugin?.params ?? { type: 'object' }"
-          name="Parameters"
-        />
+        <q-list>
+          <q-expansion-item
+            icon="mdi-application-variable-outline"
+            label="Parameters Schema"
+          >
+            <q-card>
+              <schema-viewer
+                :schema="plugin?.params ?? { type: 'object' }"
+                name="root"
+              />
+            </q-card>
+          </q-expansion-item>
+        </q-list>
+        <q-separator />
+        <q-list>
+          <q-expansion-item icon="mdi-variable" label="Parameters">
+            <q-card>
+              <monaco-editor
+                :model-value="JSON.stringify(plugin?.actualParams, null, '  ')"
+                language="json"
+                readonly
+              />
+            </q-card>
+          </q-expansion-item>
+        </q-list>
         <q-separator />
         <q-card-actions align="right">
           <async-btn
@@ -35,14 +56,15 @@
 </template>
 
 <script lang="ts" setup>
+import type { IPluginInfo } from '@chijs/app'
+import AsyncBtn from 'components/AsyncBtn.vue'
+import DescriptionView from 'components/DescriptionView.vue'
+import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
+import MonacoEditor from 'components/MonacoEditor'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
+import { baseKey, confirm, getClient } from 'src/shared'
 import { computed, inject, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import SchemaViewer from 'components/json/viewer/SchemaViewer.vue'
-import DescriptionView from 'components/DescriptionView.vue'
-import AsyncBtn from 'components/AsyncBtn.vue'
-import { getClient, baseKey, confirm } from 'src/shared'
-import type { IPluginInfo } from '@chijs/app'
-import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const route = useRoute()
 const pluginId = <string>route.params.pluginId

@@ -3,9 +3,22 @@ import { resolve } from 'path'
 import { BrowserWindow } from 'electron'
 import { iconPath } from './utils'
 
-const windows = new Map<number, BrowserWindow>()
+interface IBrowserWindowMeta {
+  path: string
+}
 
-export function createWindow(path = '/') {
+const windows = new Map<number, BrowserWindow>()
+const metas = new WeakMap<BrowserWindow, IBrowserWindowMeta>()
+
+export function createWindow(path = '/', forceNew = false) {
+  if (!forceNew) {
+    const cur = [...windows.values()].find((x) => metas.get(x)?.path === path)
+    if (cur) {
+      cur.focus()
+      return cur
+    }
+  }
+
   const win = new BrowserWindow({
     icon: iconPath(),
     width: 1000,
@@ -20,6 +33,7 @@ export function createWindow(path = '/') {
 
   const id = win.webContents.id
   windows.set(id, win)
+  metas.set(win, { path })
 
   const url = new URL(process.env.APP_URL!)
   url.hash = path

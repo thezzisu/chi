@@ -64,3 +64,9 @@ pre,
 samp {
   font-family: 'Cascadia Code', 'Consolas', Courier, monospace;
 }
+
+.monaco-editor-wrapper {
+  height: 500px;
+  resize: vertical;
+  overflow: scroll hidden;
+}

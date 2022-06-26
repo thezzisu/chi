@@ -14,12 +14,12 @@
     <q-separator />
     <q-card-section>
       <div class="text-subtitle2">Params</div>
-      <pre>{{ JSON.stringify(props.job.params, null, '  ') }}</pre>
+      <json-block :data="props.job.params" />
     </q-card-section>
     <q-separator />
     <q-card-section>
       <div class="text-subtitle2">Return</div>
-      <pre>{{ JSON.stringify(props.job.return, null, '  ') }}</pre>
+      <json-block :data="props.job.return" />
     </q-card-section>
   </q-card>
 </template>
@@ -27,9 +27,10 @@
 <script setup lang="ts">
 import type { IJobInfo } from '@chijs/app'
 import JobStatus from 'components/JobStatus.vue'
+import JsonBlock from 'components/JsonBlock'
+import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 import { baseKey } from 'src/shared/injections'
 import { computed, inject } from 'vue'
-import SimpleList, { ISimpleListItem } from 'components/SimpleList'
 
 const base = inject(baseKey)
 const props = defineProps<{ job: IJobInfo }>()

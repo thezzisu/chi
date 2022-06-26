@@ -12,8 +12,8 @@ const bridge = {
   close() {
     ipcRenderer.invoke('close')
   },
-  open(path: string) {
-    ipcRenderer.invoke('open', path)
+  open(path: string, forceNew = false) {
+    ipcRenderer.invoke('open', path, forceNew)
   },
   openDevTools() {
     ipcRenderer.invoke('openDevTools')

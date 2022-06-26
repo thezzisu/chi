@@ -7,7 +7,8 @@
             <div class="text-h6">Services ({{ services.length }})</div>
           </div>
         </q-card-section>
-        <q-list class="list bg-white" separator bordered>
+        <q-separator />
+        <q-list class="list bg-white" separator>
           <q-item
             v-for="service of services"
             :key="service.id"

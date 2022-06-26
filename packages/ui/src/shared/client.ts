@@ -6,7 +6,7 @@ import type { RpcEndpoint } from '@chijs/rpc'
 import type { AgentDescriptor } from '@chijs/app'
 
 function applyActions(client: ChiClient) {
-  const endpoint = client.endpoint as RpcEndpoint<AgentDescriptor>
+  const endpoint = client.endpoint as unknown as RpcEndpoint<AgentDescriptor>
   endpoint.provide('#action:notify', (ctx, options) => {
     Notify.create(options)
   })

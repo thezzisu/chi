@@ -12,6 +12,16 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/settings',
+    component: () => import('src/layouts/EnvironmentLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('src/pages/SettingsPage.vue')
+      }
+    ]
+  },
+  {
     path: '/edit',
     component: () => import('src/layouts/EnvironmentLayout.vue'),
     children: [
@@ -36,6 +46,10 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
+      {
+        path: 'settings',
+        component: () => import('src/pages/SettingsPage.vue')
+      },
       {
         path: 'plugin',
         component: () => import('src/pages/plugin/PluginList.vue')

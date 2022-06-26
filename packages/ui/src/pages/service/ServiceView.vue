@@ -48,7 +48,7 @@
         <q-separator />
         <q-card-section>
           <div class="text-subtitle-1">Parameters</div>
-          <pre>{{ JSON.stringify(service?.params, null, '  ') }}</pre>
+          <json-block :data="service?.params" />
         </q-card-section>
         <template v-if="service?.rpcId">
           <q-separator />
@@ -106,6 +106,7 @@ import { baseKey, confirm, getClient } from 'src/shared'
 import { computed, inject, onBeforeUnmount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SimpleList, { ISimpleListItem } from 'components/SimpleList'
+import JsonBlock from 'components/JsonBlock'
 
 const base = inject(baseKey)
 const route = useRoute()

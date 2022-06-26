@@ -23,6 +23,14 @@
             <q-item-label>{{ item.label }}</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item v-if="showStop" clickable @click="stop">
+          <q-item-section avatar>
+            <q-icon name="mdi-stop-circle" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Stop</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item clickable @click="gotoManager">
           <q-item-section avatar>
             <q-icon name="mdi-arrow-left-circle" />
@@ -63,11 +71,12 @@
 
 <script lang="ts" setup>
 import { baseKey } from 'src/shared/injections'
-import { provide, ref } from 'vue'
+import { computed, provide, ref, toRaw } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DisconnectedPage from 'src/pages/DisconnectedPage.vue'
 import { useEnvironment } from 'src/shared/client'
 import AppHeader from 'src/components/AppHeader.vue'
+import { getEnvironment } from 'src/shared'
 
 const navOpen = ref(false)
 
@@ -90,14 +99,31 @@ const menu = [
     icon: 'mdi-checkbox-multiple-blank-circle',
     label: 'Task',
     to: '/task'
+  },
+  {
+    icon: 'mdi-application-cog-outline',
+    label: 'Settings',
+    to: '/settings'
   }
 ]
 
-function gotoManager() {
-  window.open(router.resolve('/').href, '_blank')
+const envId = <string>route.params.environmentId
+const showStop = computed(
+  () => !!window.bridge && getEnvironment(envId).value.type === 'local'
+)
+
+function stop() {
+  const info = toRaw(getEnvironment(envId).value)
+  info.type === 'local' && window.bridge?.stopServer(info.config)
 }
 
-const { connected, status, message } = useEnvironment(
-  <string>route.params.environmentId
-)
+function gotoManager() {
+  if (window.bridge?.open) {
+    window.bridge.open('/')
+  } else {
+    window.open(router.resolve('/').href, '_blank')
+  }
+}
+
+const { connected, status, message } = useEnvironment(envId)
 </script>

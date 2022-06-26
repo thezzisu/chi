@@ -17,8 +17,8 @@ ipcMain.handle('close', (event) => {
   win?.close()
 })
 
-ipcMain.handle('open', (event, path) => {
-  createWindow(path)
+ipcMain.handle('open', (event, path, forceNew) => {
+  createWindow(path, forceNew)
 })
 
 ipcMain.handle('openDevTools', (event) => {

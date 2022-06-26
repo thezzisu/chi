@@ -55,6 +55,7 @@ export function startServer(options: {
 }) {
   const config = resolveConfig(options.config)
   if (!config || !existsSync(config)) {
+    report(['Config not found', null])
     process.exit(CLI_CONFIG_NOT_FOUND)
   }
   options.config = config

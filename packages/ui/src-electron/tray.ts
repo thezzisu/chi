@@ -13,4 +13,7 @@ export function createTray() {
   ])
   tray.setContextMenu(contextMenu)
   tray.setToolTip('ChiUI ' + `v${process.env.CHIUI_VERSION}`)
+  tray.addListener('double-click', () => {
+    createWindow()
+  })
 }
