@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { basename, join, resolve } from 'node:path'
-import { argv, chalk, fs } from 'zx'
 import _glob from 'glob'
+import { basename, join, resolve } from 'node:path'
+import { $, argv, chalk, fs } from 'zx'
+
+if (process.platform === 'win32') {
+  $.shell = 'cmd.exe'
+  $.prefix = ''
+}
 
 export function glob(pattern: string, options: _glob.IOptions = {}) {
   return new Promise<string[]>((resolve, reject) =>
