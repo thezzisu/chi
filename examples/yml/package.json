@@ -5,11 +5,7 @@
   "author": "thezzisu <thezzisu@gmail.com>",
   "private": true,
   "type": "module",
-  "dependencies": {
-    "@chijs/cli": "^0.0.24",
-    "@chijs/client": "^0.0.21",
-    "@chijs/app": "^0.0.2"
-  },
+  "dependencies": {},
   "devDependencies": {},
   "scripts": {
     "lint": "eslint --ext .js,.ts ./src/",
