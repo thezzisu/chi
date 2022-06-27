@@ -1,6 +1,6 @@
 {
   "name": "create-chi",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Starter kit for Chi framework",
@@ -20,6 +20,7 @@
     "chalk": "^5.0.1",
     "cross-spawn": "^7.0.3",
     "fs-extra": "^10.1.0",
+    "node-fetch": "^3.2.6",
     "prompts": "^2.4.2",
     "yargs": "^17.5.1"
   },

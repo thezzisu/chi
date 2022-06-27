@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url'
 import prompts from 'prompts'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
+import { confirm, askForString, err, info, warn } from './common.js'
 import {
   configJs,
   configJson,
@@ -16,6 +17,7 @@ import {
   packageJson,
   tsconfig
 } from './data.js'
+import { useMirror } from './net.js'
 
 const banner = `
    _____ _     _ 
@@ -30,24 +32,6 @@ const dir = dirname(fileURLToPath(import.meta.url))
 const { version } = JSON.parse(
   readFileSync(join(dir, '..', './package.json'), 'utf8')
 )
-
-async function confirm(message: string): Promise<boolean> {
-  const res = await prompts({
-    type: 'confirm',
-    name: 'value',
-    message
-  })
-  return res.value
-}
-
-async function askForString(message: string): Promise<string> {
-  const res = await prompts({
-    type: 'text',
-    name: 'value',
-    message
-  })
-  return res.value
-}
 
 async function askForItem<T extends string>(
   message: string,
@@ -85,18 +69,6 @@ yargs(hideBin(process.argv))
   .recommendCommands()
   .strict()
   .parse()
-
-function info(msg: string, ...rest: unknown[]) {
-  console.log(`[-] ${msg}`, ...rest)
-}
-
-function err(msg: string, ...rest: unknown[]) {
-  console.log(chalk.redBright(`[!] ${msg}`), ...rest)
-}
-
-function warn(msg: string, ...rest: unknown[]) {
-  console.log(chalk.yellowBright(`[+] ${msg}`), ...rest)
-}
 
 async function main(argv: { dir?: string; packageManager?: string }) {
   try {
@@ -140,7 +112,7 @@ async function initWorkspace() {
 }
 
 async function installDeps(pm: PackageManager) {
-  const packages = [
+  const pkgs = [
     '@chijs/cli',
     '@chijs/app',
     '@chijs/ui',
@@ -148,13 +120,25 @@ async function installDeps(pm: PackageManager) {
     'ts-node',
     'sqlite3'
   ]
-  const p = packages.join(' ')
+  const p = pkgs.join(' ')
+  const mirrorArgs: string[] = []
+  if (await useMirror()) {
+    mirrorArgs.push(
+      '--registry=https://registry.npmmirror.com',
+      '--node_sqlite3_binary_host_mirror=https://cdn.npmmirror.com/binaries/sqlite3/'
+    )
+  }
+  const m = mirrorArgs.join(' ')
   if (pm === 'npm') {
-    info(`Will execute ${chalk.underline.whiteBright(`npm install ${p}`)}`)
-    spawn.sync('npm', ['install', ...packages], { stdio: 'inherit' })
+    info(`Will execute ${chalk.underline.whiteBright(`npm install ${p} ${m}`)}`)
+    spawn.sync('npm', ['install', ...pkgs, ...mirrorArgs], {
+      stdio: 'inherit'
+    })
   } else {
-    info(`Will execute ${chalk.underline.whiteBright(`yarn add ${p}`)}`)
-    spawn.sync('yarn', ['add', ...packages], { stdio: 'inherit' })
+    info(`Will execute ${chalk.underline.whiteBright(`yarn add ${p} ${m}`)}`)
+    spawn.sync('yarn', ['add', ...pkgs, ...mirrorArgs], {
+      stdio: 'inherit'
+    })
   }
 }
 
