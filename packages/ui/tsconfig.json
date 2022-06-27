@@ -3,34 +3,16 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "src/*": [
-        "src/*"
-      ],
-      "app/*": [
-        "*"
-      ],
-      "components/*": [
-        "src/components/*"
-      ],
-      "layouts/*": [
-        "src/layouts/*"
-      ],
-      "pages/*": [
-        "src/pages/*"
-      ],
-      "assets/*": [
-        "src/assets/*"
-      ],
-      "boot/*": [
-        "src/boot/*"
-      ],
-      "stores/*": [
-        "src/stores/*"
-      ]
+      "src/*": ["src/*"],
+      "app/*": ["*"],
+      "components/*": ["src/components/*"],
+      "layouts/*": ["src/layouts/*"],
+      "pages/*": ["src/pages/*"],
+      "assets/*": ["src/assets/*"],
+      "boot/*": ["src/boot/*"],
+      "stores/*": ["src/stores/*"]
     },
-    "lib": [
-      "DOM.Iterable"
-    ]
+    "lib": ["DOM.Iterable"]
   },
   "include": [
     "src/**/*.ts",
@@ -38,6 +20,6 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "src-electron/**/*.ts",
-    "src-electron/**/*.d.ts",
+    "src-electron/**/*.d.ts"
   ]
 }
