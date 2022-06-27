@@ -25,7 +25,7 @@
   },
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package create-chi",
-    "lint": "eslint --ext .js,.ts ./src/ ./test/",
+    "lint": "eslint --ext .js,.ts ./src/",
     "prepublishOnly": "ts-node-esm ../../scripts/build.ts --package create-chi --rebuild",
     "test": "echo \"No test specified\" && exit 0"
   },
