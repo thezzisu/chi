@@ -1,4 +1,4 @@
-import { createLogger } from '@chijs/util'
+import { createLogger, uniqueId } from '@chijs/util'
 import fastifyCors from '@fastify/cors'
 import fastifyStatic from '@fastify/static'
 import fastify from 'fastify'
@@ -44,9 +44,7 @@ export class WebServer {
 
   async start() {
     await this.server.register(fastifyStatic, {
-      root:
-        this.config.ui ??
-        join(resolveModule('@chijs/ui/package.json'), '..', 'dist', 'spa')
+      root: getRootDir(this.config.ui)
     })
     await this.server.register(fastifyCors, {
       origin: this.config.origin ?? true
@@ -92,4 +90,15 @@ export class WebServer {
     if (!client) throw new Error('Client not found')
     return client
   }
+}
+
+function getRootDir(ui: string | undefined) {
+  if (ui) return ui
+  try {
+    return join(resolveModule('@chijs/ui/package.json'), '..', 'dist', 'spa')
+  } catch {
+    // ui is not installed
+  }
+  // fallback to a impossible path
+  return join(uniqueId(), uniqueId(), uniqueId())
 }

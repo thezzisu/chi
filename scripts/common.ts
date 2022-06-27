@@ -3,6 +3,8 @@ import _glob from 'glob'
 import { basename, join, resolve } from 'node:path'
 import { $, argv, chalk, fs } from 'zx'
 
+process.env.FORCE_COLOR = '1'
+
 if (process.platform === 'win32') {
   $.shell = 'cmd.exe'
   $.prefix = ''

@@ -1,6 +1,6 @@
 {
   "name": "@chijs/plugin-eval",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "lib/index.js",
   "license": "MIT",
   "description": "A simple eval plugin",
@@ -22,7 +22,7 @@
     "@types/cross-spawn": "^6.0.2"
   },
   "peerDependencies": {
-    "@chijs/app": "^0.0.3"
+    "@chijs/app": "^0.0.5"
   },
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package eval",

@@ -1,6 +1,6 @@
 {
   "name": "@chijs/client",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Client for Chi framwork",
@@ -16,12 +16,12 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/rpc": "^0.0.2",
-    "@chijs/util": "^0.0.4",
+    "@chijs/rpc": "^0.0.3",
+    "@chijs/util": "^0.0.5",
     "socket.io-client": "^4.5.1"
   },
   "devDependencies": {
-    "@chijs/app": "^0.0.3"
+    "@chijs/app": "^0.0.5"
   },
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package client",

@@ -1,6 +1,6 @@
 {
   "name": "@chijs/ui",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "User Interface for Chi Framwork",
   "productName": "ChiUI",
   "author": "thezzisu <thezzisu@gmail.com>",
@@ -28,7 +28,7 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
-    "@chijs/client": "^0.0.22",
+    "@chijs/client": "^0.0.23",
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",
     "@quasar/app-vite": "^1.0.0",
     "@quasar/extras": "^1.0.0",

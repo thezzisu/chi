@@ -47,6 +47,7 @@ export class PluginBuilder<
     clone.meta = { ...this.meta }
     clone.actions = { ...this.actions }
     clone.units = { ...this.units }
+    clone._params = this._params
     return clone as this
   }
 

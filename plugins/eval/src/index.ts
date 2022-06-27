@@ -1,4 +1,5 @@
 import { definePlugin, PluginDescriptorOf } from '@chijs/app'
+import { Type as S } from '@chijs/util'
 import spawn from 'cross-spawn'
 import cp from 'node:child_process'
 import { readFileSync } from 'node:fs'
@@ -10,13 +11,42 @@ import { runInNewContext } from 'node:vm'
 const exec = promisify(cp.exec)
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 
+const SSpawnParams = S.Object({
+  command: S.String(),
+  args: S.Optional(S.Array(S.String()))
+})
+
 const plugin = definePlugin((p) =>
   p
     .name('Eval')
     .description(readFileSync(join(root, 'README.md'), 'utf8'))
     .params((type) =>
       type.Object({
-        shell: type.Optional(type.String())
+        shell: type.Optional(type.String()),
+        spawns: type.Optional(
+          type.Array(
+            type.Intersect([
+              SSpawnParams,
+              type.Object({
+                serviceId: type.String()
+              })
+            ])
+          )
+        )
+      })
+    )
+    .action('#onload', (action) =>
+      action.build(async (ctx) => {
+        if (ctx.params.spawns) {
+          for (const item of ctx.params.spawns) {
+            const { serviceId, ...params } = item
+            const service = await ctx
+              .self<Descriptor>()
+              .unit('spawn')
+              .create(serviceId, params)
+            service.start()
+          }
+        }
       })
     )
     .action('eval', (action) =>
@@ -73,12 +103,7 @@ const plugin = definePlugin((p) =>
       unit
         .name('Spawn')
         .description('Run a command as service')
-        .params((type) =>
-          type.Object({
-            command: type.String(),
-            args: type.Optional(type.Array(type.String()))
-          })
-        )
+        .params(SSpawnParams)
         .build((ctx, params) => {
           spawn(params.command, params.args, { stdio: 'inherit' })
         })
