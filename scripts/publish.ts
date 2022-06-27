@@ -1,7 +1,7 @@
 // @ts-check
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { fs, chalk, cd, $ } from 'zx'
+import { fs, chalk, cd, $, argv } from 'zx'
 import { targetPackages } from './common.js'
 
 cd(join(dirname(fileURLToPath(import.meta.url)), '..'))
@@ -35,4 +35,19 @@ if (success.length) {
 }
 if (fail.length) {
   console.log(`${chalk.red('Fail')}: ${fail.join(', ')}`)
+}
+
+if (argv.ci) {
+  const core = await import('@actions/core')
+  core.summary
+    .addHeading('Publish Results')
+    .addQuote(`${success.length} packages published`)
+    .addTable([
+      [
+        { data: 'Package', header: true },
+        { data: 'Result', header: true }
+      ],
+      ...success.map((name) => [name, 'Success ✅'])
+    ])
+    .write()
 }
