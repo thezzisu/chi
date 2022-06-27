@@ -18,9 +18,14 @@
   "dependencies": {
     "@chijs/util": "^0.0.4",
     "chalk": "^5.0.1",
+    "cross-spawn": "^7.0.3",
+    "fs-extra": "^10.1.0",
+    "prompts": "^2.4.2",
     "yargs": "^17.5.1"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/prompts": "^2.0.14",
     "@types/yargs": "^17.0.10"
   },
   "scripts": {
@@ -30,7 +35,8 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "files": [
-    "lib"
+    "lib",
+    "data"
   ],
   "bin": {
     "create-chi": "lib/index.js"

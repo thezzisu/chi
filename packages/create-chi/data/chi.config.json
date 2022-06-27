@@ -1,0 +1,17 @@
+{
+  // Comments are allowed
+  "plugins": [],
+  "resolve": {
+    "~": "."
+  },
+  "web": {
+    // "port": -1 for random port
+    "port": 3030,
+    // set a random token
+    "token": "#RANDOM"
+  },
+  "log": {
+    "path": "logs",
+    "level": "info"
+  }
+}

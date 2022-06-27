@@ -1,0 +1,11 @@
+plugins:
+resolve:
+  ~: '.'
+web:
+  # random port
+  # port: -1
+  port: 3030
+  token: '#RANDOM' # random token
+log:
+  path: logs
+  level: info

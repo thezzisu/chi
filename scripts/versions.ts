@@ -90,7 +90,7 @@ if (problems.length) {
           fs.writeFileSync(
             path,
             fs
-              .readFileSync(path, 'utf-8')
+              .readFileSync(path, 'utf8')
               .replace(
                 `"${dep.name}": "${dep.version}"`,
                 `"${dep.name}": "^${nodes[dep.name].version}"`
