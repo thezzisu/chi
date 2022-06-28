@@ -1,9 +1,10 @@
 import { RpcId } from '@chijs/rpc'
-import { createLogger, uniqueId } from '@chijs/util'
+import { createLogger, uniqueId, validateSchema } from '@chijs/util'
 import { EventEmitter } from 'node:events'
 import { join } from 'node:path'
 import { ActionTask } from '../db/task.js'
 import { ChiServer } from '../index.js'
+import { ChiWorker } from '../worker/index.js'
 
 export type JobState = 'initializing' | 'running' | 'success' | 'failed'
 
@@ -69,8 +70,8 @@ export class ActionManager extends EventEmitter {
     params: unknown
   ) {
     const plugin = this.app.plugins.getOrFail(pluginId)
-    if (!Object.hasOwn(plugin.actions, actionId))
-      throw new Error(`Action ${actionId} not found`)
+    const action = plugin.actions[actionId]
+    if (!action) throw new Error(`Action ${actionId} not found`)
 
     const info = this.running.get(taskId)
     if (!info) throw new Error(`Task ${taskId} not found`)
@@ -100,13 +101,18 @@ export class ActionManager extends EventEmitter {
     await this.manager.save(task)
     this.emit(taskId, task)
     let toThrow
-    const worker = this.app.workers.fork({
-      rpcId: jobId,
-      logPath,
-      logger: this.logger,
-      level: this.app.config.log.level
-    })
+    let worker: ChiWorker | undefined
     try {
+      if (validateSchema(params, action.params).length) {
+        throw new Error('Bad params')
+      }
+
+      worker = this.app.workers.fork({
+        rpcId: jobId,
+        logPath,
+        logger: this.logger,
+        level: this.app.config.log.level
+      })
       const handle = worker.getHandle()
       await handle.call('#worker:waitForBootstrap')
       job.state = 'running'
@@ -130,7 +136,7 @@ export class ActionManager extends EventEmitter {
       job.state = 'failed'
       toThrow = err
     }
-    worker.exit()
+    worker?.exit()
     job.finished = Date.now()
     if (!parent) {
       task.state = job.state
