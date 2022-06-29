@@ -24,7 +24,7 @@ export function forkWorker(options: IForkWorkerOptions) {
   log && fs.ensureDirSync(dirname(log))
   const out = log ? fs.openSync(log, 'a') : 'inherit'
   options.logger?.info(`Forking worker`)
-  const ps = fork(workerPath, ['--worker', '--rpcId', options.rpcId], {
+  const ps = fork(workerPath, ['--worker', `--rpcId=${options.rpcId}`], {
     env: {
       ...process.env
     },

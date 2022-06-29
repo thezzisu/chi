@@ -1,6 +1,6 @@
 {
   "name": "create-chi",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Starter kit for Chi framework",
@@ -16,7 +16,7 @@
     "url": "https://github.com/thezzisu/chi/issues"
   },
   "dependencies": {
-    "@chijs/util": "^0.0.6",
+    "@chijs/util": "^0.0.8",
     "chalk": "^5.0.1",
     "cross-spawn": "^7.0.3",
     "fs-extra": "^10.1.0",
