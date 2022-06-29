@@ -7,8 +7,8 @@
 </template>
 <script setup lang="ts">
 import { QBtnProps, useQuasar } from 'quasar'
-import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
+
 const props = withDefaults(
   defineProps<{
     callback: () => Promise<void | string>
@@ -21,8 +21,8 @@ const props = withDefaults(
   }>(),
   { notifyError: true }
 )
+
 const $q = useQuasar()
-const { t } = useI18n()
 const loading = ref(false)
 const dispatch = async () => {
   loading.value = true
@@ -31,7 +31,7 @@ const dispatch = async () => {
     if (props.notifySuccess) {
       $q.notify({
         color: 'positive',
-        message: ret ?? t('success')
+        message: ret ?? 'Success'
       })
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,7 +50,7 @@ const dispatchHold = async () => {
     if (props.notifySuccess) {
       $q.notify({
         color: 'positive',
-        message: ret ?? t('success')
+        message: ret ?? 'Success'
       })
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -59,11 +59,13 @@ export class ChiServer {
     await this.db.init()
     this.logger.info(`Loading plugins`)
     for (const plugin of this.config.plugins) {
-      try {
-        this.logger.info(`Loading plugin ${plugin.id}`)
-        await this.plugins.load(plugin.id, plugin.params ?? {})
-      } catch (e) {
-        this.logger.error(e)
+      this.logger.info(`Loading plugin ${plugin.id}`)
+      const [ok, reason] = await this.plugins.load(
+        plugin.id,
+        plugin.params ?? {}
+      )
+      if (!ok) {
+        this.logger.error(`Unable to load plugin ${plugin.id}: ${reason}`)
       }
     }
     await this.web.start()

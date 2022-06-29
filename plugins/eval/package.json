@@ -22,7 +22,7 @@
     "@types/cross-spawn": "^6.0.2"
   },
   "peerDependencies": {
-    "@chijs/app": "^0.0.8"
+    "@chijs/app": "^0.0.9"
   },
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package eval",
