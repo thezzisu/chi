@@ -10,19 +10,17 @@ function applyActions(client: ChiClient) {
   endpoint.provide('#action:notify', (ctx, options) => {
     Notify.create(options)
   })
-  endpoint.provide('#action:alert', (ctx, options) => {
-    if (typeof options === 'string') {
-      Dialog.create({
-        title: 'Alert',
-        message: options
+  endpoint.provide(
+    '#action:alert',
+    (ctx, options) =>
+      new Promise((resolve) => {
+        Dialog.create(
+          typeof options === 'string'
+            ? { title: 'Alert', message: options }
+            : { title: options.caption, message: options.message }
+        ).onDismiss(resolve)
       })
-    } else {
-      Dialog.create({
-        title: options.caption,
-        message: options.message
-      })
-    }
-  })
+  )
   endpoint.provide(
     '#action:confirm',
     (ctx, options) =>
