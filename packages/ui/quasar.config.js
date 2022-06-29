@@ -45,6 +45,10 @@ module.exports = configure(function () {
       builder: {
         appId: 'org.chijs.ui',
         productName: 'ChiUI',
+        nsis: {
+          oneClick: false,
+          allowToChangeInstallationDirectory: true
+        },
         linux: {
           executableName: 'chiui',
           artifactName: '${productName}-${version}.${ext}',
