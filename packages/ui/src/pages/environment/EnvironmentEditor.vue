@@ -63,7 +63,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { nanoid } from 'nanoid'
 import {
@@ -126,7 +126,7 @@ function save() {
     color: 'positive'
   })
   if (isNew) {
-    nextTick(() => router.replace('/'))
+    router.replace('/')
   }
 }
 

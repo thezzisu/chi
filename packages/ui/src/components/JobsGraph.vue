@@ -25,7 +25,9 @@
             </q-item-section>
             <q-item-section>
               <q-item-label>
-                {{ value.serviceId }}/{{ value.actionId }}
+                <simple-breadcrumbs
+                  :labels="[value.pluginId, value.actionId]"
+                />
               </q-item-label>
               <q-item-label caption class="text-mono">
                 {{ value.id }}
@@ -58,10 +60,11 @@
 </template>
 
 <script setup lang="ts">
-import { IJobInfo } from '@chijs/client'
-import { createJobTree, icon, color } from 'src/shared/tasks'
-import { computed, ref } from 'vue'
+import type { IJobInfo } from '@chijs/app'
+import SimpleBreadcrumbs from 'components/SimpleBreadcrumbs'
 import TreeView from 'components/treeview/TreeView.vue'
+import { color, createJobTree, icon } from 'src/shared/tasks'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   modelValue?: IJobInfo

@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, nextTick, ref, toRaw } from 'vue'
+import { inject, ref, toRaw } from 'vue'
 import { getClient } from 'src/shared/client'
 import AsyncBtn from 'components/AsyncBtn.vue'
 import ParamsEditor from 'components/ParamsEditor.vue'
@@ -47,8 +47,6 @@ async function dispatch() {
     props.actionId,
     toRaw(params.value)
   )
-  nextTick(() => {
-    router.push(`${base}/task/view/${taskId}`)
-  })
+  router.push(`${base}/task/view/${taskId}`)
 }
 </script>

@@ -28,7 +28,7 @@
 
 <script lang="ts" setup>
 import { baseKey } from 'src/shared/injections'
-import { inject, nextTick, ref, toRaw } from 'vue'
+import { inject, ref, toRaw } from 'vue'
 import { getClient } from 'src/shared/client'
 import AsyncBtn from 'src/components/AsyncBtn.vue'
 import { useRouter } from 'vue-router'
@@ -43,6 +43,6 @@ const params = ref({})
 async function load() {
   const [ok, reason] = await client.plugin.load(id.value, toRaw(params.value))
   if (!ok) throw new Error(reason)
-  nextTick(() => router.push(`${base}/plugin`))
+  router.push(`${base}/plugin`)
 }
 </script>
