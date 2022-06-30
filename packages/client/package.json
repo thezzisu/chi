@@ -1,6 +1,6 @@
 {
   "name": "@chijs/client",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Client for Chi framwork",
@@ -21,7 +21,7 @@
     "socket.io-client": "^4.5.1"
   },
   "devDependencies": {
-    "@chijs/app": "^0.0.9"
+    "@chijs/app": "^0.0.10"
   },
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package client",

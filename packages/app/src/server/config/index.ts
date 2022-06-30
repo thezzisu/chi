@@ -4,7 +4,7 @@ import { IWebConfig } from '../web/index.js'
 
 export interface IChiConfigPluginItem {
   id: string
-  params: unknown
+  params?: unknown
 }
 
 export interface IChiConfigLog {

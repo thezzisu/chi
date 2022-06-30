@@ -1,6 +1,6 @@
 {
   "name": "@chijs/cli",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "main": "lib/index.js",
   "license": "AGPL-3.0",
   "description": "Command line interface for Chi framework",
@@ -27,8 +27,8 @@
     "@types/yargs": "^17.0.10"
   },
   "optionalDependencies": {
-    "@chijs/app": "^0.0.9",
-    "@chijs/client": "^0.0.27"
+    "@chijs/app": "^0.0.10",
+    "@chijs/client": "^0.0.28"
   },
   "scripts": {
     "build": "ts-node-esm ../../scripts/build.ts --package cli",
